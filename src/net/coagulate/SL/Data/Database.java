@@ -83,7 +83,7 @@ public class Database {
         
     }
 
-    private static Connection getConnection() {
+    public static Connection getConnection() {
         try { return pool.getConnection(); }
         catch (SQLException e) { throw new DBException("Unable to get database pooled connection",e); }
     }
@@ -119,6 +119,7 @@ public class Database {
                         ps.setNull(i,Types.INTEGER); parsed=true;
                     }
                     if (p instanceof Boolean) { ps.setBoolean(i,(Boolean)p); parsed=true; }
+                    if (p instanceof Long) { ps.setLong(i, (Long)p); parsed=true; }
                     if (p==null) { ps.setNull(i,Types.VARCHAR); parsed=true; }
                     if (!parsed) { throw new DBException("Parameter "+i+" is not of a handled type ("+p.getClass().getName()+")"); }
             }

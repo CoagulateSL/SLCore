@@ -252,6 +252,11 @@ public class Database {
         if (row==null) { return null; }
         return row.getInt();
     }
+    public static Long dql(boolean mandatory,String sql,Object... params) {
+        Row row=dqone(mandatory,sql,params);
+        if (row==null) { return null; }
+        return row.getLong();
+    }
 
     /** Query for a string.
      * Returns the string from the first column of the only row returned.

@@ -37,6 +37,7 @@ public class Row
                 return null;
         }
         public Integer getInt() { if (getString()==null) { return null; } return Integer.parseInt(getString()); }
+        public Long getLong() { if (getString()==null) { return null; } return Long.parseLong(getString()); }
         public float getFloat() { return Float.parseFloat(getString()); }
         public Set<String> keySet() { return row.keySet(); }
         @Override

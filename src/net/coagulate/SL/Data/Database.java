@@ -149,6 +149,7 @@ public class Database {
             stm=prepare(conn,parameterisedcommand,params);
             long start=new Date().getTime();
             stm.execute();
+            conn.commit();
             long end=new Date().getTime();
             if (sqldebug_commands || (end-start)>=SLOWQUERYTHRESHOLD_UPDATE) { Log.debug(name,(end-start)+"ms "+stm.toString()); }
             if (logsql) {

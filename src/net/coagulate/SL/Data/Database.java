@@ -57,7 +57,7 @@ public class Database {
 
         try {
             pool = new MariaDbPoolDataSource(Config.getJdbc());
-            d("select 1");
+            if (!test()) { throw new SQLException("Failed to 'select 1'"); }
             // pointless stuff that slows us down =)
             Results tables=dq("show tables");
             Map<String,Integer> notempty=new TreeMap<>();
@@ -82,7 +82,15 @@ public class Database {
         Log.info(name,"Database connection established and responding to test statements.");
         
     }
-
+    public static boolean test() {
+        try {
+            int result=dqi(true,"select 1");
+            if (result!=1) { throw new AssertionError("Select 1 returned not 1"); }
+            return true;
+        }
+        catch (Exception e){}
+        return false;
+    }
     public static Connection getConnection() {
         try { return pool.getConnection(); }
         catch (SQLException e) { throw new DBException("Unable to get database pooled connection",e); }

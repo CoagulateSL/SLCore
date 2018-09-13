@@ -87,8 +87,8 @@ public class Database {
     }
     public static boolean test() {
         try {
-            int result=dqi(true,"select 1");
-            if (result!=1) { throw new AssertionError("Select 1 returned not 1"); }
+            int result=dqi(true,"select count(*) from ping");
+            if (result!=0) { throw new AssertionError("Select count(*) from ping returned not 1"); }
             return true;
         }
         catch (Exception e){}

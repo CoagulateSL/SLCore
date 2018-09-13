@@ -60,7 +60,7 @@ public class Database {
 
         try {
             pool = new MariaDbPoolDataSource(Config.getJdbc());
-            if (!test()) { throw new SQLException("Failed to 'select 1'"); }
+            if (!test()) { throw new SQLException("Failed to count(*) on table ping which should have one row only"); }
             // pointless stuff that slows us down =)
             Results tables=dq("show tables");
             Map<String,Integer> notempty=new TreeMap<>();

@@ -88,10 +88,10 @@ public class Database {
     public static boolean test() {
         try {
             int result=dqi(true,"select count(*) from ping");
-            if (result!=0) { throw new AssertionError("Select count(*) from ping returned not 1"); }
+            if (result!=0) { throw new AssertionError("Select count(*) from ping returned not 1 ("+result+")"); }
             return true;
         }
-        catch (Exception e){}
+        catch (Exception e){ Log.error("SL","Database connectivity test failure",e); }
         return false;
     }
     public static Connection getConnection() {

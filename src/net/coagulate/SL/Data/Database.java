@@ -48,7 +48,10 @@ public class Database {
     }    
     private static final String name="DATABASE";
 
-    public static void shutdown() {}
+    public static void shutdown() {
+        Log.debug(name,"Closing database connection");
+        pool.close();
+    }
 
     private static MariaDbPoolDataSource pool;
     

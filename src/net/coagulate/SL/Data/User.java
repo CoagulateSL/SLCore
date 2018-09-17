@@ -93,10 +93,10 @@ public class User {
     
     public static User getSSO(String token) {
         // purge old tokens
-        Database.d("update users set ssotoken=null where ssoexpires<?",Tools.getUnixTime());
+        Database.d("update users set ssotoken=null,ssoexpires=null where ssoexpires<?",Tools.getUnixTime());
         Integer match=Database.dqi(false,"select id from users where ssotoken=?",token);
         if (match==null) { return null; }
-        Database.d("update users set ssotoken=null where id=?",match);
+        Database.d("update users set ssotoken=null,ssoexpires=null where id=?",match);
         return get(match);
     }
     

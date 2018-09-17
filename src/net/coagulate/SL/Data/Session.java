@@ -33,6 +33,8 @@ public class Session {
     }
     
     public static Session create(User user) {
+        // we abuse this "pipeline" to purge old sessions
+        try { Database.d("delete from sessions where expires<?",Tools.getUnixTime()); } catch (Exception e) {}
         int userid=user.getId();
         String sessionid=Tools.generateToken();
         int expires=Tools.getUnixTime()+Config.SESSIONLIFESPANSECONDS;

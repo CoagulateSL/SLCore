@@ -1,5 +1,6 @@
 package net.coagulate.SL.HTTPPipelines;
 
+import net.coagulate.SL.Data.Session;
 import net.coagulate.SL.Data.User;
 import net.coagulate.SL.Log;
 import org.apache.http.HttpRequest;
@@ -28,33 +29,19 @@ public class SSOExchange implements HttpRequestHandler {
                 return;
             }
             Log.debug(this,"Successful SSO signon for "+user.toString());
-            /*resp.setEntity(new StringEntity(""));
-            resp.addHeader("Set-Cookie","coagulateslsessionid="+state.sessionid+"; HttpOnly; Path=/; Domain=coagulate.net; Secure;");
+            Session session=Session.create(user);
+            resp.setEntity(new StringEntity(""));
+            resp.addHeader("Set-Cookie","coagulateslsessionid="+session.token()+"; HttpOnly; Path=/; Domain=coagulate.net; Secure;");
             resp.addHeader("Location","/");
-            resp.setStatusCode(HttpStatus.SC_SEE_OTHER);*/
+            resp.setStatusCode(HttpStatus.SC_SEE_OTHER);
             return;
         } catch (Exception ex) {
-            Log.warn("StringHandler","Unexpected exception thrown in page handler",ex);
+            Log.warn("StringHandler","Unexpected exception thrown in SSO page handler",ex);
             resp.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
             resp.setEntity(new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>",ContentType.TEXT_HTML));
             return;
         }
     }    
-
-    protected String handleString(State state) {
-        return "Hello I'm the SSO Exchange";
-    }
-    
-    protected String header() {
-        return "<html><head><title>Coagulate SL Services</title></head><body>"
-                + "<h1 align=center>Coagulate SL Services</h1><p><hr>"
-                + "Hello<span style='display:block;float:right;'>There</span>"
-                + "<hr></p>";
-    }
-    protected String footer() {
-        return "<div style='position:absolute;bottom:5;right:5;left:5;'><hr><span style='display:block;float:right;'>(C) Iain Maltz @ Second Life</span></div></body></html>";
-    }
-    
    @Override
     public String toString() { return "SSOExchange"; }
     

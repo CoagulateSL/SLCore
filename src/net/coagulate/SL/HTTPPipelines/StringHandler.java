@@ -47,7 +47,8 @@ public abstract class StringHandler implements HttpRequestHandler {
             }
             state.cookies=cookiemap;
             state.sessionid=cookiemap.get("coagulateslsessionid");
-            resp.setEntity(new StringEntity(header()+handleString(state)+footer(),ContentType.TEXT_HTML));
+            state.loadSession();
+            resp.setEntity(new StringEntity(header(state)+handleString(state)+footer(state),ContentType.TEXT_HTML));
             if (state.sessionid!=null) {
                 if (!state.sessionid.equals(cookiemap.get("coagulateslsessionid"))) {
                     resp.addHeader("Set-Cookie","coagulateslsessionid="+state.sessionid+"; HttpOnly; Path=/; Domain=coagulate.net;");
@@ -65,13 +66,18 @@ public abstract class StringHandler implements HttpRequestHandler {
 
     protected abstract String handleString(State state);
     
-    protected String header() {
-        return "<html><head><title>Coagulate SL Services</title></head><body>"
+    protected String header(State state) {
+        String r="<html><head><title>Coagulate SL Services</title></head><body>"
                 + "<h1 align=center>Coagulate SL Services</h1><p><hr>"
-                + "Hello<span style='display:block;float:right;'>There</span>"
+                + "Greetings";
+        if (state.user!=null) {
+            r+=", "+state.user.getUsername();
+        }
+        r+="<span style='display:block;float:right;'>There</span>"
                 + "<hr></p>";
+        return r;
     }
-    protected String footer() {
+    protected String footer(State state) {
         return "<div style='position:absolute;bottom:5;right:5;left:5;'><hr><span style='display:block;float:right;'>(C) Iain Maltz @ Second Life</span></div></body></html>";
     }
 }

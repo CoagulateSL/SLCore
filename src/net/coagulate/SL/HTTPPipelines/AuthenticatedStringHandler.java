@@ -4,11 +4,12 @@ package net.coagulate.SL.HTTPPipelines;
  *
  * @author Iain Price
  */
-public class AuthenticatedStringHandler extends StringHandler {
+public abstract class AuthenticatedStringHandler extends StringHandler {
 
     @Override
     protected String handleString(State state) {
-        return loginpage;
+        if (state.user==null) { return loginpage; }
+        return handleAuthenticated(state);
     }
     
     private static final String loginpage="<p align=center><table><tr><td colspan=2>&nbsp;</td></tr><tr><td></td><td colspan=2 align=center><font size=5><u>Login</u></font></td></tr>"
@@ -23,4 +24,5 @@ public class AuthenticatedStringHandler extends StringHandler {
             + "</table></p>";
             
     
+    public abstract String handleAuthenticated(State state);
 }

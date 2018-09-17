@@ -2,8 +2,10 @@ package net.coagulate.SL.Data;
 
 import java.util.HashMap;
 import java.util.Map;
+import net.coagulate.SL.Config;
 import net.coagulate.SL.Database.Database;
 import net.coagulate.SL.SystemException;
+import net.coagulate.SL.Tools;
 
 /**
  *
@@ -16,6 +18,7 @@ public class User {
 
     public String getUsername() { return username; }
     public int getId() { return id; }
+    public boolean superuser() { if (id==1 && username.equalsIgnoreCase("Iain Maltz")) { return true; } return false; }
 
     private static final Map<Integer,User> users=new HashMap<>();
     
@@ -75,4 +78,18 @@ public class User {
     
     public static User get(String username) { return get(username,false); }
 
+    
+    
+    
+    
+    
+    
+    public String generateSSO() {
+        String token=Tools.generateToken();
+        int expires=Tools.getUnixTime()+Config.SSOWINDOWSECONDS;
+        Database.d("update users set ssotoken=?,ssoexpires=? where id=?",token,expires,id);
+        return token;
+    }
+    
+    
 }

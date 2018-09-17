@@ -1,17 +1,9 @@
 package net.coagulate.SL.HTTPPipelines;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import net.coagulate.SL.Log;
-import org.apache.http.Header;
-import org.apache.http.HeaderElement;
-import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
@@ -25,35 +17,13 @@ public class SSOExchange implements HttpRequestHandler {
    @Override
     public void handle(HttpRequest req, HttpResponse resp, HttpContext hc) {
         try {
-            Map<String,String> parameters=new HashMap<>();
-            if (req instanceof HttpEntityEnclosingRequest) {
-                HttpEntityEnclosingRequest r=(HttpEntityEnclosingRequest) req;
-                List<NameValuePair> map = URLEncodedUtils.parse(r.getEntity());
-                for (NameValuePair kv:map) {
-                    parameters.put(kv.getName(),kv.getValue());
-                }
-            }
-            State state=new State();
-            state.request=req;
-            state.response=resp;
-            state.httpcontext=hc;
-            state.parameters=parameters;
-            Map<String,String> cookiemap=new HashMap<>();
-            Header cookies = req.getFirstHeader("Cookie");
-            if (cookies!=null) {
-                for (HeaderElement cookieelement:cookies.getElements()) {
-                    cookiemap.put(cookieelement.getName(), cookieelement.getValue());
-                }
-            }
-            state.cookies=cookiemap;
-            state.sessionid=cookiemap.get("coagulateslsessionid");
-            resp.setEntity(new StringEntity(header()+handleString(state)+footer(),ContentType.TEXT_HTML));
-            if (state.sessionid!=null) {
-                if (!state.sessionid.equals(cookiemap.get("coagulateslsessionid"))) {
-                    resp.addHeader("Set-Cookie","coagulateslsessionid="+state.sessionid+"; HttpOnly; Path=/; Domain=coagulate.net;");
-                }
-            }
-            resp.setStatusCode(HttpStatus.SC_OK);
+            
+            System.out.println(req.getRequestLine().getUri());
+            
+            /*resp.setEntity(new StringEntity(""));
+            resp.addHeader("Set-Cookie","coagulateslsessionid="+state.sessionid+"; HttpOnly; Path=/; Domain=coagulate.net; Secure;");
+            resp.addHeader("Location","/");
+            resp.setStatusCode(HttpStatus.SC_SEE_OTHER);*/
             return;
         } catch (Exception ex) {
             Log.warn("StringHandler","Unexpected exception thrown in page handler",ex);

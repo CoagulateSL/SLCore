@@ -1,5 +1,6 @@
 package net.coagulate.SL.HTTPPipelines;
 
+import net.coagulate.SL.Data.User;
 import net.coagulate.SL.Log;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -18,8 +19,15 @@ public class SSOExchange implements HttpRequestHandler {
     public void handle(HttpRequest req, HttpResponse resp, HttpContext hc) {
         try {
             
-            System.out.println(req.getRequestLine().getUri());
-            
+            String token=req.getRequestLine().getUri().replaceFirst("/SSO/","");
+            User user=User.getSSO(token);
+            if (user==null) {
+                Log.note(this, "SSO Exchange of token failed to return a valid user.");
+                resp.addHeader("Location","/");
+                resp.setStatusCode(HttpStatus.SC_SEE_OTHER);
+                return;
+            }
+            Log.debug(this,"Successful SSO signon for "+user.toString());
             /*resp.setEntity(new StringEntity(""));
             resp.addHeader("Set-Cookie","coagulateslsessionid="+state.sessionid+"; HttpOnly; Path=/; Domain=coagulate.net; Secure;");
             resp.addHeader("Location","/");
@@ -46,5 +54,8 @@ public class SSOExchange implements HttpRequestHandler {
     protected String footer() {
         return "<div style='position:absolute;bottom:5;right:5;left:5;'><hr><span style='display:block;float:right;'>(C) Iain Maltz @ Second Life</span></div></body></html>";
     }
+    
+   @Override
+    public String toString() { return "SSOExchange"; }
     
 }

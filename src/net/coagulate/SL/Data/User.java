@@ -12,12 +12,14 @@ import net.coagulate.SL.Tools;
  * @author Iain Price
  */
 public class User {
-    
+
     int id;
     String username;
 
     public String getUsername() { return username; }
     public int getId() { return id; }
+    @Override
+    public String toString() { return getUsername()+"#"+getId(); }
     public boolean superuser() { if (id==1 && username.equalsIgnoreCase("Iain Maltz")) { return true; } return false; }
 
     private static final Map<Integer,User> users=new HashMap<>();
@@ -58,8 +60,6 @@ public class User {
         }
     }
 
-
-    
     public static User get(String username,boolean createifnecessary) {
         username=formatUsername(username);
         boolean mandatory=true;
@@ -89,6 +89,15 @@ public class User {
         int expires=Tools.getUnixTime()+Config.SSOWINDOWSECONDS;
         Database.d("update users set ssotoken=?,ssoexpires=? where id=?",token,expires,id);
         return token;
+    }
+    
+    public static User getSSO(String token) {
+        // purge old tokens
+        Database.d("update users set ssotoken=null where ssoexpires<?",Tools.getUnixTime());
+        Integer match=Database.dqi(false,"select id from users where ssotoken=?",token);
+        if (match==null) { return null; }
+        Database.d("update users set ssotoken=null where id=?",match);
+        return get(match);
     }
     
     

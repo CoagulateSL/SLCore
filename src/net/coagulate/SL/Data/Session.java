@@ -17,7 +17,7 @@ public class Session {
     private Session(String sessionid,User user) { this.id=sessionid; this.user=user; }
     
     public static Session get(String sessionid) {
-        Row user=Database.dqone(false,"select userid,expires from sessions where cookie=?",sessionid);
+        Row user=Database.dqone(false,"select userid,expires from sessions where cookie=? and expires>?",sessionid,Tools.getUnixTime());
         if (user==null) {
             Log.note("Session","Invalid session id presented");
             return null;

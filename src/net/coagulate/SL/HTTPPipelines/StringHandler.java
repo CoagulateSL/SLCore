@@ -72,9 +72,15 @@ public abstract class StringHandler implements HttpRequestHandler {
                 + "Greetings";
         if (state.user!=null) {
             r+=", "+state.user.getUsername();
+            r+="<span style='display:block;float:right;'>"
+                    + "<a href=\"\">[ Set Password ]</a>"
+                    + "_|_"
+                    + "<a href=\"\">[ Billing ]</a>"
+                    + "_|_"
+                    + "<a href=\"\">[ Logout ]</a>"
+                    + "</span>"
+                    + "<hr></p>";
         }
-        r+="<span style='display:block;float:right;'>There</span>"
-                + "<hr></p>";
         return r;
     }
     protected String footer(State state) {

@@ -25,10 +25,10 @@ public abstract class AuthenticatedStringHandler extends StringHandler {
             + "<table width=50%>"
             + "<tr><td align=center>Registering</td></tr>"
             + "<tr><td></td></tr>"
-            + "<p>If you do not have a password, you must log in through Second Life<br>"
+            + "<tr><td><p>If you do not have a password, you must log in through Second Life<br>"
             + "===> Click <a href=\"secondlife:///app/agent/"+Launch.bot.getUUID().toUUIDString()+"/im\">to instant message the bot "+Launch.bot.getUsername()+"</a><br>"
             + "Send the message 'login', and the bot will reply with a URL that will log you in.</p>"
-            + "<p>If you wish to avoid the Second Life step in future, and use a password, follow the above to get logged in, and then click 'Set Password' on the top right of the web pages</p>"
+            + "<p>If you wish to avoid the Second Life step in future, and use a password, follow the above to get logged in, and then click 'Set Password' on the top right of the web pages</p></td></tr>"
             + "</table></p>";
             
     

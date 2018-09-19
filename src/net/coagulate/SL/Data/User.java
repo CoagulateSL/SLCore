@@ -6,6 +6,7 @@ import net.coagulate.SL.Config;
 import net.coagulate.SL.Database.Database;
 import net.coagulate.SL.SystemException;
 import net.coagulate.SL.Tools;
+import net.coagulate.SL.UserException;
 
 /**
  *
@@ -98,6 +99,11 @@ public class User {
         if (match==null) { return null; }
         Database.d("update users set ssotoken=null,ssoexpires=null where id=?",match);
         return get(match);
+    }
+
+    public void setPassword(String password) {
+        if (password.length()<6) { throw new UserException("Password not long enough"); }
+        Database.d("update users set password=? where id=?",Tools.createHash(password),id);
     }
     
     

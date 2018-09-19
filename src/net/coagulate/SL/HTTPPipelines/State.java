@@ -59,5 +59,6 @@ public class State {
         if (session!=null) { user=session.user(); }
     }
     Session session=null;
-    User user=null;
+    User user=null; public User user() { return user; }
+
 }

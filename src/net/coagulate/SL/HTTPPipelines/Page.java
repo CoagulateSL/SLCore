@@ -42,5 +42,6 @@ public abstract class Page extends AuthenticatedStringHandler {
         for (String k:p.keySet()) { raw("<p>"+k+"="+p.get(k)+"</p>"); }
         return this;
     }
+    public Page error(String errormessage) { return raw("<font color=red><b>"+errormessage+"</b></font>"); }
     
 }

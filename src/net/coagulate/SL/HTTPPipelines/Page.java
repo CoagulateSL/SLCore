@@ -13,7 +13,7 @@ public abstract class Page extends AuthenticatedStringHandler {
         String page=State.get().page;
         if (pagetype==PAGETYPE.NONE) { return page; }
         if (pagetype==PAGETYPE.CENTERPANEL) { 
-            return "<div style=\"align: center;\"><table style=\"align: left; min-width: 600px;vertical-align: top;\">\n"+page+"</table></div>\n";
+            return "<table style=\"align: center; min-width: 600px;vertical-align: top;\">\n"+page+"</table>\n";
         }
         throw new AssertionError("Page Type must be one of the above? "+pagetype);
     }

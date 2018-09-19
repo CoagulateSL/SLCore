@@ -31,7 +31,7 @@ public abstract class Page extends AuthenticatedStringHandler {
         return raw("<h3 align=center><u>"+header+"</u></h3><br><br>");
     }
     public Page para(String content) { return raw("<p>"+content+"</p>"); }
-    public Page startForm() { return raw("<form>"); }
+    public Page startForm() { return raw("<form method=post>"); }
     public Page endForm() { return raw("</form>"); }
     public Page label(String label) { if (!label.endsWith(":")) { label+=":"; } return raw("<b>"+label+"</b> "); }
     public Page passwordInput(String fieldname) { return raw("<input type=password name=\""+fieldname+"\">"); }

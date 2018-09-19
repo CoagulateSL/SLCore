@@ -24,7 +24,7 @@ public abstract class Page extends AuthenticatedStringHandler {
     
     public abstract void content();
     
-    public Page raw(String string) { State.get().page+=string; return this; }
+    public Page raw(String string) { State.get().page+=string+"\n"; return this; }
     public Page pageHeader(String header) {
         return raw("<h3 align=center><u>"+header+"</u></h3>");
     }

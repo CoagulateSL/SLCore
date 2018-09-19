@@ -51,6 +51,7 @@ public class State {
     Map<String, String> parameters;
     Map<String, String> cookies;
     String sessionid;
+    String page;
 
     void loadSession() {
         session=null;

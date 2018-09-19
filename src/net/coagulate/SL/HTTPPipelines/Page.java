@@ -1,5 +1,7 @@
 package net.coagulate.SL.HTTPPipelines;
 
+import java.util.Map;
+
 /**
  *
  * @author Iain Price
@@ -35,5 +37,10 @@ public abstract class Page extends AuthenticatedStringHandler {
     public Page passwordInput(String fieldname) { return raw("<input type=password name=\""+fieldname+"\">"); }
     public Page linebreak() { return raw("<br>"); }
     public Page submit(String label) { return raw("<button type=submit name=\""+label+"\" value=\""+label+"\">"+label+"</button>"); }
+    public Page dumpParameters() {
+        Map<String, String> p = State.get().parameters;
+        for (String k:p.keySet()) { raw("<p>"+k+"="+p.get(k)+"</p>"); }
+        return this;
+    }
     
 }

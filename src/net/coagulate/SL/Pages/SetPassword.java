@@ -12,7 +12,7 @@ public class SetPassword extends Page {
     @Override
     public void content() {
         pageHeader("Set Password");
-        
+        dumpParameters();
         centralisePage();
         State state=State.get();
         if (state.get("Set Password").equals("Set Password"))

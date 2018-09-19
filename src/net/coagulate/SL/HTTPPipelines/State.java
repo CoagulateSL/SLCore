@@ -48,7 +48,7 @@ public class State {
     HttpRequest request;
     HttpResponse response;
     HttpContext httpcontext;
-    Map<String, String> parameters;
+    Map<String, String> parameters; public String get(String parameter) { String v=parameters.get(parameter); if (v==null) { v=""; } return v; }
     Map<String, String> cookies;
     String sessionid;
     String page;

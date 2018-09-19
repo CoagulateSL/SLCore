@@ -11,11 +11,13 @@ public class SetPassword extends Page {
     @Override
     public void content() {
         pageHeader("Set Password");
+        
+        centralisePage();
         startForm();
-        label("New Password:");
-        passwordInput("password");
+        label("New Password:").passwordInput("password");
         linebreak();
         submit("Set Password");
+        endForm();
     }
 
     

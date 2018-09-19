@@ -26,8 +26,9 @@ public abstract class Page extends AuthenticatedStringHandler {
     
     public Page raw(String string) { State.get().page+=string+"\n"; return this; }
     public Page pageHeader(String header) {
-        return raw("<h3 align=center><u>"+header+"</u></h3>");
+        return raw("<h3 align=center><u>"+header+"</u></h3><br><br>");
     }
+    public Page para(String content) { return raw("<p>"+content+"</p>"); }
     public Page startForm() { return raw("<form>"); }
     public Page endForm() { return raw("</form>"); }
     public Page label(String label) { if (!label.endsWith(":")) { label+=":"; } return raw("<b>"+label+"</b> "); }

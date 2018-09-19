@@ -1,13 +1,17 @@
 package net.coagulate.SL.HTTPPipelines;
 
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import net.coagulate.JSLBot.Log;
 import net.coagulate.SL.Data.Session;
 import net.coagulate.SL.Data.User;
+import org.apache.http.HttpInetConnection;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 
 /**
@@ -45,8 +49,16 @@ public class State {
         }
     }
     public static void destroy() { synchronized(threadstate) { threadstate.remove(Thread.currentThread()); } }
-    HttpRequest request;
-    HttpResponse response;
+    public String getClientIP() {
+        try { 
+            HttpInetConnection connection = (HttpInetConnection) httpcontext.getAttribute(ExecutionContext.HTTP_CONNECTION);
+            InetAddress ia = connection.getRemoteAddress();        
+            return ia.getCanonicalHostName()+" / "+ia.getHostAddress();
+        } catch (Exception e) { Log.note("State","Exception getting client address",e); }
+        return "UNKNOWN";
+    }
+    HttpRequest request; //public HttpRequest request() {  return request; }
+    HttpResponse response; 
     HttpContext httpcontext;
     Map<String, String> parameters; public String get(String parameter) { String v=parameters.get(parameter); if (v==null) { v=""; } return v; }
     Map<String, String> cookies;

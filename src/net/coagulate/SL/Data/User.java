@@ -2,8 +2,10 @@ package net.coagulate.SL.Data;
 
 import java.util.HashMap;
 import java.util.Map;
+import net.coagulate.JSLBot.Log;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.Database.Database;
+import net.coagulate.SL.HTTPPipelines.State;
 import net.coagulate.SL.SystemException;
 import net.coagulate.SL.Tools;
 import net.coagulate.SL.UserException;
@@ -104,6 +106,7 @@ public class User {
     public void setPassword(String password) {
         if (password.length()<6) { throw new UserException("Password not long enough"); }
         Database.d("update users set password=? where id=?",Tools.createHash(password),id);
+        Log.note(this,"User has set password "+State.get().getClientIP());
     }
     
     

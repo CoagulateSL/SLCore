@@ -33,7 +33,7 @@ public abstract class StringHandler implements HttpRequestHandler {
                     parameters.put(kv.getName(),kv.getValue());
                 }
             }
-            State state=new State();
+            State state=State.create();
             state.request=req;
             state.response=resp;
             state.httpcontext=hc;
@@ -48,7 +48,7 @@ public abstract class StringHandler implements HttpRequestHandler {
             state.cookies=cookiemap;
             state.sessionid=cookiemap.get("coagulateslsessionid");
             state.loadSession();
-            resp.setEntity(new StringEntity(header(state)+handleString(state)+footer(state),ContentType.TEXT_HTML));
+            resp.setEntity(new StringEntity(pageHeader()+handleString()+pageFooter(),ContentType.TEXT_HTML));
             if (state.sessionid!=null) {
                 if (!state.sessionid.equals(cookiemap.get("coagulateslsessionid"))) {
                     resp.addHeader("Set-Cookie","coagulateslsessionid="+state.sessionid+"; HttpOnly; Path=/; Domain=coagulate.net;");
@@ -64,16 +64,17 @@ public abstract class StringHandler implements HttpRequestHandler {
         }
     }    
 
-    protected abstract String handleString(State state);
+    protected abstract String handleString();
     
-    protected String header(State state) {
+    protected String pageHeader() {
+        State state=State.get();
         String r="<html><head><title>Coagulate SL Services</title></head><body>"
                 + "<h1 align=center>Coagulate SL Services</h1><p><hr>"
                 + "Greetings";
         if (state.user!=null) {
             r+=", "+state.user.getUsername();
             r+="<span style='display:block;float:right;'>"
-                    + "<a href=\"\">[ Set Password ]</a>"
+                    + "<a href=\"/SetPassword\">[ Set Password ]</a>"
                     + "&nbsp;&nbsp;&nbsp;"
                     + "<a href=\"\">[ Billing ]</a>"
                     + "&nbsp;&nbsp;&nbsp;"
@@ -84,7 +85,7 @@ public abstract class StringHandler implements HttpRequestHandler {
         r+= "<hr></p>";
         return r;
     }
-    protected String footer(State state) {
+    protected String pageFooter() {
         return "<div style='position:absolute;bottom:5;right:5;left:5;'><hr><span style='display:block;float:right;'>(C) Iain Maltz @ Second Life</span></div></body></html>";
     }
 }

@@ -9,9 +9,10 @@ import net.coagulate.SL.Launch;
 public abstract class AuthenticatedStringHandler extends StringHandler {
 
     @Override
-    protected String handleString(State state) {
+    protected String handleString() {
+        State state=State.get();
         if (state.user==null) { return loginpage; }
-        return handleAuthenticated(state);
+        return handleAuthenticated();
     }
     
     private static final String loginpage="<p align=center><table><tr><td colspan=2>&nbsp;</td></tr><tr><td></td><td colspan=2 align=center><font size=5><u>Login</u></font></td></tr>"
@@ -31,5 +32,5 @@ public abstract class AuthenticatedStringHandler extends StringHandler {
             + "</table></p>";
             
     
-    public abstract String handleAuthenticated(State state);
+    public abstract String handleAuthenticated();
 }

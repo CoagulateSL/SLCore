@@ -72,6 +72,6 @@ public class State {
     }
     Session session=null;
     private User user=null; public User user() { return user; }
-    public void user(User user) { session.setUser(user); this.user=user; }
+    public void user(User user) { session=Session.create(user); this.sessionid=session.token(); this.user=user; }
 
 }

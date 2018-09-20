@@ -23,20 +23,20 @@ public abstract class AuthenticatedStringHandler extends StringHandler {
             try { User.get(username, false); } catch (NoDataException ignore) {}
             if (u==null) {
                 Log.note("Authentication", "Attempt to authenticate as invalid user '"+username+"' from "+state.getClientIP());
-                return loginpage1+"<font color=red><b>Invalid Login</b></font>"+loginpage2;
+                return failPage();
             }
             if (u.checkPassword(password)) {
                 state.user=u;
                 return handleAuthenticated();
             }
             Log.note("Authentication", "Attempt to authenticate with incorrect password as '"+username+"' from "+state.getClientIP());
-            return loginpage1+"<font color=red><b>Invalid Login</b></font>"+loginpage2;
+            return failPage();
         }
         return loginpage1+loginpage2;
     }
     
-    private static final String loginpage1="<form method=post><p align=center><table><tr><td colspan=2>&nbsp;</td></tr><tr><td></td><td colspan=2 align=center><font size=5><u>Login</u></font></td></tr>";
-    private static final String loginpage2="<tr><th>Username:</th><td><input type=text size=20 name=login_username></td></tr>"
+    private static final String loginpage1="<form method=post><p align=center><table><tr><td colspan=2>&nbsp;</td></tr><tr><td></td><td colspan=2 align=center><font size=5><u>Login</u></font></td></tr><tr><th>Username:</th><td><input type=text size=20 name=login_username></td></tr>";
+    private static final String loginpage2=""
             + "<tr><th>Password:</th><td><input type=password size=20 name=login_password></td></tr>"
             + "<tr><th></th><td><i><b>NOT</b> your SL password</i></td></tr>"
             + "<tr><td colspan=2>&nbsp;</td></tr>"
@@ -51,6 +51,6 @@ public abstract class AuthenticatedStringHandler extends StringHandler {
             + "<p>If you wish to avoid the Second Life step in future, and use a password, follow the above to get logged in, and then click 'Set Password' on the top right of the web pages</p></td></tr>"
             + "</table></p></form>";
             
-    
+    private String failPage() { return loginpage1+"<tr><td colspan=2><font color=red><b>Invalid Login</b></font></td></tr>"+loginpage2; }
     public abstract String handleAuthenticated();
 }

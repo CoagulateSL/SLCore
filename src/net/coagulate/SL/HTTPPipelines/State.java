@@ -71,6 +71,7 @@ public class State {
         if (session!=null) { user=session.user(); }
     }
     Session session=null;
-    User user=null; public User user() { return user; }
+    private User user=null; public User user() { return user; }
+    public void user(User user) { session.setUser(user); this.user=user; }
 
 }

@@ -41,4 +41,8 @@ public class Session {
         Database.d("insert into sessions(cookie,userid,expires) values(?,?,?)",sessionid,userid,expires);
         return new Session(sessionid,user);
     }
+
+    public void setUser(User user) {
+        Database.d("update sessions set userid=? where cookie=?",user.getId(),token());
+    }
 }

@@ -14,7 +14,7 @@ public abstract class AuthenticatedStringHandler extends StringHandler {
     @Override
     protected String handleString() {
         State state=State.get();
-        if (state.user!=null) { return handleAuthenticated(); }
+        if (state.user()!=null) { return handleAuthenticated(); }
         // not (yet?) logged in
         String username=state.get("login_username");
         String password=state.get("login_password");
@@ -26,7 +26,7 @@ public abstract class AuthenticatedStringHandler extends StringHandler {
                 return failPage();
             }
             if (u.checkPassword(password)) {
-                state.user=u;
+                state.user(u);
                 return handleAuthenticated();
             }
             Log.note("Authentication", "Attempt to authenticate with incorrect password as '"+username+"' from "+state.getClientIP());

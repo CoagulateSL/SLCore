@@ -1,16 +1,19 @@
 package net.coagulate.SL.Pages;
 
-import net.coagulate.SL.HTTPPipelines.AuthenticatedStringHandler;
+import net.coagulate.SL.HTTPPipelines.Page;
 
 /**
  *
  * @author Iain Price
  */
-public class Index extends AuthenticatedStringHandler {
+public class Index extends Page {
 
     @Override
-    public String handleAuthenticated() {
-        return "<p>Welcome to Coagulate SL.  Nothing to see here.</p>";
+    public void content() {
+        linebreak();linebreak();
+        centralisePage();
+        pageHeader("Welcome");
+        para("Welcome to Coagulate Second Life services");
     }
     
 }

@@ -106,7 +106,12 @@ public class User {
     public void setPassword(String password) {
         if (password.length()<6) { throw new UserException("Password not long enough"); }
         Database.d("update users set password=? where id=?",Tools.createHash(password),id);
-        Log.note(this,"User has set password "+State.get().getClientIP());
+        Log.note(this,"User has set password from "+State.get().getClientIP());
+    }
+
+    public boolean checkPassword(String password) {
+        String hash=Database.dqs(true,"select password from users where id=?",id);
+        return Tools.verifyPassword(password,hash);
     }
     
     

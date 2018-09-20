@@ -1,5 +1,7 @@
 package net.coagulate.SL.HTTPPipelines;
 
+import net.coagulate.JSLBot.Log;
+import net.coagulate.SL.Data.User;
 import net.coagulate.SL.Launch;
 
 /**
@@ -11,12 +13,28 @@ public abstract class AuthenticatedStringHandler extends StringHandler {
     @Override
     protected String handleString() {
         State state=State.get();
-        if (state.user==null) { return loginpage; }
-        return handleAuthenticated();
+        if (state.user!=null) { return handleAuthenticated(); }
+        // not (yet?) logged in
+        String username=state.get("username");
+        String password=state.get("password");
+        if (state.get("Login").equals("Login") && !username.isEmpty() && !password.isEmpty()) {
+            User u=User.get(username, false);
+            if (u==null) {
+                Log.note("Authentication", "Attempt to authenticate as invalid user '"+username+"' from "+state.getClientIP());
+                return loginpage1+"<font color=red><b>Invalid Login</b></font>"+loginpage2;
+            }
+            if (u.checkPassword(password)) {
+                state.user=u;
+                return handleAuthenticated();
+            }
+            Log.note("Authentication", "Attempt to authenticate with incorrect password as '"+username+"' from "+state.getClientIP());
+            return loginpage1+"<font color=red><b>Invalid Login</b></font>"+loginpage2;
+        }
+        return loginpage1+loginpage2;
     }
     
-    private static final String loginpage="<p align=center><table><tr><td colspan=2>&nbsp;</td></tr><tr><td></td><td colspan=2 align=center><font size=5><u>Login</u></font></td></tr>"
-            + "<tr><th>Username:</th><td><input type=text size=20 name=username></td></tr>"
+    private static final String loginpage1="<p align=center><table><tr><td colspan=2>&nbsp;</td></tr><tr><td></td><td colspan=2 align=center><font size=5><u>Login</u></font></td></tr>";
+    private static final String loginpage2="<tr><th>Username:</th><td><input type=text size=20 name=username></td></tr>"
             + "<tr><th>Password:</th><td><input type=password size=20 name=password></td></tr>"
             + "<tr><th></th><td><i><b>NOT</b> your SL password</i></td></tr>"
             + "<tr><td colspan=2>&nbsp;</td></tr>"

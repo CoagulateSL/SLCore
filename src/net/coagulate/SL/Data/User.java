@@ -69,6 +69,7 @@ public class User {
         boolean mandatory=true;
         if (createifnecessary) { mandatory=false; }
         Integer id=Database.dqi(mandatory,"select id from users where username=?",username);
+        System.out.println("Get user:"+username+"="+id);
         if (id!=null) { return factory(id,username); }
         Database.d("insert into users(username) values(?)",username);
         id=Database.dqi(false,"select id from users where username=?",username);

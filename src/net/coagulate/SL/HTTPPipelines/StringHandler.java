@@ -46,15 +46,14 @@ public abstract class StringHandler implements HttpRequestHandler {
                 }
             }
             state.cookies=cookiemap;
-            state.sessionid=cookiemap.get("coagulateslsessionid");
-            state.loadSession();
+            state.setSessionId(cookiemap.get("coagulateslsessionid"));
             String content=handleString();
             resp.setEntity(new StringEntity(pageHeader()+content+pageFooter(),ContentType.TEXT_HTML));
             if (state.sessionid!=null) {
                 if (!state.sessionid.equals(cookiemap.get("coagulateslsessionid"))) {
                     resp.addHeader("Set-Cookie","coagulateslsessionid="+state.sessionid+"; HttpOnly; Path=/; Domain=coagulate.net;");
                 }
-            }
+            } else { resp.addHeader("Set-Cookie","coagulateslsessionid=; HttpOnly; Path=/; Domain=coagulate.net; expires=Thu, 01 Jan 1970 00:00:00 GMT"); }
             resp.setStatusCode(HttpStatus.SC_OK);
             return;
         } catch (Exception ex) {

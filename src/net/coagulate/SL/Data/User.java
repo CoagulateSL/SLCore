@@ -65,6 +65,7 @@ public class User {
 
     public static User get(String username,boolean createifnecessary) {
         username=formatUsername(username);
+        System.out.println("Get user:"+username);
         boolean mandatory=true;
         if (createifnecessary) { mandatory=false; }
         Integer id=Database.dqi(mandatory,"select id from users where username=?",username);

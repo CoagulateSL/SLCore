@@ -84,7 +84,7 @@ public class State {
     }
 
     void setSessionId(String sessionid) {
-        if (sessionid.isEmpty()) { sessionid=null; }
+        if (sessionid!=null && sessionid.isEmpty()) { sessionid=null; }
         this.sessionid=sessionid;
         loadSession();
     }

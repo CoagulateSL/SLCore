@@ -2,6 +2,7 @@ package net.coagulate.SL.HTTPPipelines;
 
 import net.coagulate.JSLBot.Log;
 import net.coagulate.SL.Data.User;
+import net.coagulate.SL.Database.NoDataException;
 import net.coagulate.SL.Launch;
 
 /**
@@ -18,7 +19,8 @@ public abstract class AuthenticatedStringHandler extends StringHandler {
         String username=state.get("login_username");
         String password=state.get("login_password");
         if (state.get("Login").equals("Login") && !username.isEmpty() && !password.isEmpty()) {
-            User u=User.get(username, false);
+            User u=null;
+            try { User.get(username, false); } catch (NoDataException ignore) {}
             if (u==null) {
                 Log.note("Authentication", "Attempt to authenticate as invalid user '"+username+"' from "+state.getClientIP());
                 return loginpage1+"<font color=red><b>Invalid Login</b></font>"+loginpage2;

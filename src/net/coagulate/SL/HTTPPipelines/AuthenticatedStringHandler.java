@@ -35,7 +35,7 @@ public abstract class AuthenticatedStringHandler extends StringHandler {
         return loginpage1+loginpage2;
     }
     
-    private static final String loginpage1="<form method=post><p align=center><table><tr><td colspan=2>&nbsp;</td></tr><tr><td></td><td colspan=2 align=center><font size=5><u>Login</u></font></td></tr><tr><th>Username:</th><td><input type=text size=20 name=login_username></td></tr>";
+    private static final String loginpage1="<form method=post><p align=center><table><tr><td colspan=2>&nbsp;</td></tr><tr><td></td><td colspan=2 align=center><font size=5><u>Login</u></font></td></tr><tr><th>Username:</th><td><input autofocus type=text size=20 name=login_username></td></tr>";
     private static final String loginpage2=""
             + "<tr><th>Password:</th><td><input type=password size=20 name=login_password></td></tr>"
             + "<tr><th></th><td><i><b>NOT</b> your SL password</i></td></tr>"

@@ -49,6 +49,8 @@ public class State {
         }
     }
     public static void destroy() { synchronized(threadstate) { threadstate.remove(Thread.currentThread()); } }
+    Page.PAGETYPE pagetype=Page.PAGETYPE.NONE;
+    boolean page_firstinput=true;
     public String getClientIP() {
         try { 
             HttpInetConnection connection = (HttpInetConnection) httpcontext.getAttribute(ExecutionContext.HTTP_CONNECTION);

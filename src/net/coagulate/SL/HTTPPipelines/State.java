@@ -74,4 +74,13 @@ public class State {
     private User user=null; public User user() { return user; }
     public void user(User user) { session=Session.create(user); this.sessionid=session.token(); this.user=user; }
 
+    public void logout() {
+        if (session!=null) {
+            session.logout();
+        }
+        session=null;
+        sessionid=null;
+        user=null;
+    }
+
 }

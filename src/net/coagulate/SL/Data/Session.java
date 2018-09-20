@@ -45,4 +45,8 @@ public class Session {
     public void setUser(User user) {
         Database.d("update sessions set userid=? where cookie=?",user.getId(),token());
     }
+
+    public void logout() {
+        Database.d("delete from sessions where cookie=?",token());
+    }
 }

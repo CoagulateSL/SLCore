@@ -79,7 +79,7 @@ public abstract class StringHandler implements HttpRequestHandler {
                     + "&nbsp;&nbsp;&nbsp;"
                     + "<a href=\"\">[ Billing ]</a>"
                     + "&nbsp;&nbsp;&nbsp;"
-                    + "<a href=\"\">[ Logout ]</a>"
+                    + "<a href=\"/Logout\">[ Logout ]</a>"
                     + "&nbsp;&nbsp;&nbsp;"
                     + "</span>";
         }

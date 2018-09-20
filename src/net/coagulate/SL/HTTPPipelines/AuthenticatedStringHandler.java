@@ -20,7 +20,7 @@ public abstract class AuthenticatedStringHandler extends StringHandler {
         String password=state.get("login_password");
         if (state.get("Login").equals("Login") && !username.isEmpty() && !password.isEmpty()) {
             User u=null;
-            try { User.get(username, false); } catch (NoDataException ignore) {}
+            try { u=User.get(username, false); } catch (NoDataException ignore) {}
             if (u==null) {
                 Log.note("Authentication", "Attempt to authenticate as invalid user '"+username+"' from "+state.getClientIP());
                 return failPage();

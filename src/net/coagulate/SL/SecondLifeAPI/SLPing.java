@@ -9,6 +9,8 @@ import org.json.JSONObject;
 public class SLPing extends SLAPI {
 
     @Override
+    public String toString() { return "SLPing"; }
+    @Override
     protected JSONObject handleJSON(JSONObject object) {
         return object;
     }

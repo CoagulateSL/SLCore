@@ -42,7 +42,7 @@ public abstract class SLAPI implements HttpRequestHandler {
                 resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return;
             }
             String targetdigest=Tools.SHA1(key+timestamp+"***REMOVED***");
-            if (!targetdigest.equalsIgnoreCase("digest")) {
+            if (!targetdigest.equalsIgnoreCase(digest)) {
                 Log.error(this,"Incorrect digest provided to Second Life API");
                 resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return;                
             }

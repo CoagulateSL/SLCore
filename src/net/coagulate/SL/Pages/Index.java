@@ -13,7 +13,7 @@ public class Index extends Page {
         centralisePage();
         para("Welcome to Coagulate Second Life services, select a service for more information.");
         raw("<table style=\"max-width: 900px;\" align=center>");
-        raw("<tr width=100%><td width=100%><td width=100%><ul>");
+        raw("<tr width=100%><td width=100%><ul>");
         openServiceCell("Region Monitoring");
         p("Region Monitoring monitors the status of specified regions, polling every minute and logging the data.");
         p("This data can be reviewed on the website, or linked to in-world objects to provide region status updates.");
@@ -32,7 +32,7 @@ public class Index extends Page {
 
     private void openServiceCell(String title) {
         raw("<li style=\"color:black; border-style: solid; border-width: 10px; width: 200px; height: 200px; text-align: center; margin: 5px; list-style-type: none; display: inline-block;\">");
-        raw("<h3 align=center>"+title+"</h3><p>");        
+        raw("<h3 align=center>"+title+"</h3>");        
     }
-    private void closeServiceCell() { raw("</p></li>"); }
+    private void closeServiceCell() { raw("</li>"); }
 }

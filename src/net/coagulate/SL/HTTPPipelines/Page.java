@@ -38,6 +38,7 @@ public abstract class Page extends AuthenticatedStringHandler {
         return raw("<h3 align=center><u>"+header+"</u></h3><br><br>");
     }
     public Page p(String s) { return para(s); }
+    public Page p() { return p(""); }
     public Page para(String content) { return raw("<p>"+content+"</p>"); }
     public Page startForm() { return raw("<form method=post>"); }
     public Page endForm() { return raw("</form>"); }
@@ -45,6 +46,7 @@ public abstract class Page extends AuthenticatedStringHandler {
     public Page textInput(String fieldname) { return raw("<input "+autofocusString()+" type=text name=\""+fieldname+"\">"); }
     public Page passwordInput(String fieldname) { return raw("<input "+autofocusString()+" type=password name=\""+fieldname+"\">"); }
     public Page linebreak() { return raw("<br>"); }
+    public Page br() { return linebreak(); }
     public Page submit(String label) { return raw("<button type=submit name=\""+label+"\" value=\""+label+"\">"+label+"</button>"); }
     public Page dumpParameters() {
         Map<String, String> p = State.get().parameters;

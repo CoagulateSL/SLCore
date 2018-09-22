@@ -70,7 +70,7 @@ public abstract class StringHandler implements HttpRequestHandler {
         State state=State.get();
         String r="<html><head><title>Coagulate SL Services</title></head><body>"
                 + "<h1 align=center>Coagulate SL Services</h1><p><hr>";
-        r+="<table width=100%><td align=left>"
+        r+="<table width=100%><tr width=100%><td align=left width=300px>"
                 + "Greetings";
         if (state.user()!=null) { r+=", "+state.user().getUsername(); }        
         r+="</td><td align=center>";
@@ -78,7 +78,7 @@ public abstract class StringHandler implements HttpRequestHandler {
                 + "&nbsp;&nbsp;&nbsp;"
                 + "<a href=\"\">[ App2 ]</a>"
                 + "</span>";        
-        r+="</td><td align=right>";
+        r+="</td><td align=right width=300px>";
         if (state.user()!=null) {
             r+="<a href=\"/SetPassword\">[ Set Password ]</a>"
                     + "&nbsp;&nbsp;&nbsp;"

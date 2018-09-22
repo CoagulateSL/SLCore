@@ -52,5 +52,5 @@ public abstract class Page extends AuthenticatedStringHandler {
         return this;
     }
     public Page error(String errormessage) { return raw("<font color=red><b>"+errormessage+"</b></font>"); }
-    
+    public Page buttonGET(String buttonlabel,String url) { return raw("<a href=\""+url+"\"><button type=submit>"+buttonlabel+"</button></a>"); }
 }

@@ -37,6 +37,7 @@ public abstract class Page extends AuthenticatedStringHandler {
     public Page pageHeader(String header) {
         return raw("<h3 align=center><u>"+header+"</u></h3><br><br>");
     }
+    public Page p(String s) { return para(s); }
     public Page para(String content) { return raw("<p>"+content+"</p>"); }
     public Page startForm() { return raw("<form method=post>"); }
     public Page endForm() { return raw("</form>"); }

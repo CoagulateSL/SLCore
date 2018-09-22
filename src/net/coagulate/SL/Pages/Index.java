@@ -12,8 +12,8 @@ public class Index extends Page {
     public void content() {
         centralisePage();
         para("Welcome to Coagulate Second Life services, select a service for more information.");
-        raw("<table style=\"max-width: 700px;\" align=center>");
-        raw("<tr width=100%>");
+        raw("<table style=\"max-width: 900px;\" align=center>");
+        raw("<tr width=100%><td width=100%><td width=100%><ul>");
         openServiceCell("Region Monitoring");
         p("Region Monitoring monitors the status of specified regions, polling every minute and logging the data.");
         p("This data can be reviewed on the website, or linked to in-world objects to provide region status updates.");
@@ -26,13 +26,13 @@ public class Index extends Page {
         p("This allows you to operate an automated agent in Second Life (a 'bot').");
         p("This can be used to automate group invites, group ejects, and other features");
         closeServiceCell();
-        raw("</tr>");
+        raw("</ul></td></tr>");
         raw("</table>");
     }
 
     private void openServiceCell(String title) {
-        raw("<td style=\"padding: 10px; vertical-align: top; border-width: 1px; border-style: solid;\" width=33%>");
-        raw("<h3 align=center>"+title+"</h3>");        
+        raw("<li style=\"color:black; border-style: solid; border-width: 10px; width: 200px; height: 200px; text-align: center; margin: 5px; list-style-type: none; display: inline-block;\">");
+        raw("<h3 align=center>"+title+"</h3><p>");        
     }
-    private void closeServiceCell() { raw("</td>"); }
+    private void closeServiceCell() { raw("</p></li>"); }
 }

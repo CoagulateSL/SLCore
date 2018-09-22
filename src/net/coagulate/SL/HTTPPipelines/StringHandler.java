@@ -74,7 +74,7 @@ public abstract class StringHandler implements HttpRequestHandler {
                 + "Greetings";
         if (state.user()!=null) { r+=", "+state.user().getUsername(); }        
         r+="</td><td align=center>";
-        r+= "<a href=\"/App1\">[ App1 ]</a>"
+        r+= "<a href=\"/\">[ Home ]</a>"
                 + "&nbsp;&nbsp;&nbsp;"
                 + "<a href=\"\">[ App2 ]</a>"
                 + "</span>";        

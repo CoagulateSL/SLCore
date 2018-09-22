@@ -113,6 +113,12 @@ public class User {
         String hash=Database.dqs(true,"select password from users where id=?",id);
         return Tools.verifyPassword(password,hash);
     }
+
+    public int balance() {
+        Integer balance=Database.dqi(false, "select sum(ammount) from journal where userid=?",id);
+        if (balance==null) { return 0; }
+        return balance;
+    }
     
     
 }

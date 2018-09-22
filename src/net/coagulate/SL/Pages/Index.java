@@ -10,10 +10,8 @@ public class Index extends Page {
 
     @Override
     public void content() {
-        linebreak();linebreak();
         centralisePage();
-        pageHeader("Welcome");
-        para("Welcome to Coagulate Second Life services");
+        para("Welcome to Coagulate Second Life services, select a service for more information.");
         raw("<table style=\"max-width: 700px;\" align=center>");
         raw("<tr width=100%>");
         openServiceCell("Region Monitoring");

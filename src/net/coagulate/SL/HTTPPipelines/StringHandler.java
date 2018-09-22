@@ -69,17 +69,18 @@ public abstract class StringHandler implements HttpRequestHandler {
     protected String pageHeader() {
         State state=State.get();
         String r="<html><head><title>Coagulate SL Services</title></head><body>"
-                + "<h1 align=center>Coagulate SL Services</h1><p><hr>"
+                + "<h1 align=center>Coagulate SL Services</h1><p><hr>";
+        r+="<table width=100%><td align=left>"
                 + "Greetings";
-        r+="<span style='display:block;float:center;'>"
-                + "<a href=\"/App1\">[ App1 ]</a>"
+        if (state.user()!=null) { r+=", "+state.user().getUsername(); }        
+        r+="</td><td align=center>";
+        r+= "<a href=\"/App1\">[ App1 ]</a>"
                 + "&nbsp;&nbsp;&nbsp;"
                 + "<a href=\"\">[ App2 ]</a>"
                 + "</span>";        
+        r+="</td><td align=right>";
         if (state.user()!=null) {
-            r+=", "+state.user().getUsername();
-            r+="<span style='display:block;float:right;'>"
-                    + "<a href=\"/SetPassword\">[ Set Password ]</a>"
+            r+="<a href=\"/SetPassword\">[ Set Password ]</a>"
                     + "&nbsp;&nbsp;&nbsp;"
                     + "<a href=\"\">[ Billing ]</a>"
                     + "&nbsp;&nbsp;&nbsp;"
@@ -87,6 +88,7 @@ public abstract class StringHandler implements HttpRequestHandler {
                     + "&nbsp;&nbsp;&nbsp;"
                     + "</span>";
         }
+        r+="</td></tr></table>";
         r+= "<hr></p>";
         return r;
     }

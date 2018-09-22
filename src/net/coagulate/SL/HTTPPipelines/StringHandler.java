@@ -71,6 +71,11 @@ public abstract class StringHandler implements HttpRequestHandler {
         String r="<html><head><title>Coagulate SL Services</title></head><body>"
                 + "<h1 align=center>Coagulate SL Services</h1><p><hr>"
                 + "Greetings";
+        r+="<span style='display:block;float:center;'>"
+                + "<a href=\"/App1\">[ App1 ]</a>"
+                + "&nbsp;&nbsp;&nbsp;"
+                + "<a href=\"\">[ App2 ]</a>"
+                + "</span>";        
         if (state.user()!=null) {
             r+=", "+state.user().getUsername();
             r+="<span style='display:block;float:right;'>"

@@ -32,7 +32,7 @@ public class User extends IdentifiableTable{
     public String getTableName() { return "users"; }
     @Override
     public String toString() { return getUsername()+"#"+getId(); }
-    public boolean superuser() { if (id==1 && username.equalsIgnoreCase("Iain Maltz")) { return true; } return false; }
+    public boolean superuser() { return id==1 && username.equalsIgnoreCase("Iain Maltz"); }
 
     private static final Map<Integer,User> users=new HashMap<>();
     
@@ -142,10 +142,10 @@ public class User extends IdentifiableTable{
     public Set<Subscription> getSubscriptions(Pricing.SERVICE service,boolean activeonly,boolean paidonly) {
         Results res;
         int paiduntilfilter=Tools.getUnixTime();
-        if (paidonly=false) { paiduntilfilter=0; }
+        if (paidonly==false) { paiduntilfilter=0; }
         String activeonlysql;
         if (activeonly) { activeonlysql=" and active=1"; } else { activeonlysql=""; }
-        if (service==null) {
+        if (service!=null) {
             res=Database.dq("select id from subscriptions where ownerid=? and servicetype=? and paiduntil>?"+activeonlysql,getId(),service.getValue(),paiduntilfilter);
         } else {
             res=Database.dq("select id from subscriptions where ownerid=? and paiduntil>?"+activeonlysql,getId(),paiduntilfilter);

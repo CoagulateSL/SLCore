@@ -14,5 +14,7 @@ public abstract class IdentifiableTable {
     public int lock() { return Database.lock(getTableName(),getId()); }
     public void unlock(int serial) { Database.unlock(getTableName(),getId(),serial); }
     public void extendLock(int serial,int seconds) { Database.extendLock(getTableName(), getId(), serial, seconds); }
+    protected int getInt(String column) { return Database.dqi(true, "select "+column+" from "+getTableName()+" where id=?",getId()); }
+    protected String getString(String column) { return Database.dqs(true, "select "+column+" from "+getTableName()+" where id=?",getId()); }
     
 }

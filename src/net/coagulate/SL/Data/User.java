@@ -143,10 +143,12 @@ public class User extends IdentifiableTable{
         Results res;
         int paiduntilfilter=Tools.getUnixTime();
         if (paidonly=false) { paiduntilfilter=0; }
-        if (activeonly) {
-            res=Database.dq("select id from subscriptions where ownerid=? and servicetype=? and paiduntil>? and active=1",getId(),service.getValue(),paiduntilfilter);
+        String activeonlysql;
+        if (activeonly) { activeonlysql=" and active=1"; } else { activeonlysql=""; }
+        if (service==null) {
+            res=Database.dq("select id from subscriptions where ownerid=? and servicetype=? and paiduntil>?"+activeonlysql,getId(),service.getValue(),paiduntilfilter);
         } else {
-            res=Database.dq("select id from subscriptions where ownerid=? and servicetype=? and paiduntil>?",getId(),service.getValue(),paiduntilfilter);
+            res=Database.dq("select id from subscriptions where ownerid=? and paiduntil>?"+activeonlysql,getId(),paiduntilfilter);
         }
         Set<Subscription> subs=new HashSet<>();
         for (Row r:res) {

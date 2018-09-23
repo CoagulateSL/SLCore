@@ -14,13 +14,16 @@ import net.coagulate.SL.UserException;
  *
  * @author Iain Price
  */
-public class User {
+public class User extends IdentifiableTable{
 
     int id;
     String username;
 
     public String getUsername() { return username; }
+    @Override
     public int getId() { return id; }
+    @Override
+    public String getTableName() { return "users"; }
     @Override
     public String toString() { return getUsername()+"#"+getId(); }
     public boolean superuser() { if (id==1 && username.equalsIgnoreCase("Iain Maltz")) { return true; } return false; }
@@ -119,6 +122,16 @@ public class User {
         if (balance==null) { return 0; }
         return balance;
     }
-    
+    public void bill(int ammount,String description) {
+        int serial=lock();
+        try {
+            int balance=balance();
+            if (balance<ammount) { throw new UserException("Insufficient balance (L$"+balance+") to pay charge L$"+ammount); }
+            Database.d("insert into journal(tds,userid,ammount,description) values(?,?,?,?)",Tools.getUnixTime(),getId(),ammount,description);
+        }
+        finally { unlock(serial); }
+    }
+
+   
     
 }

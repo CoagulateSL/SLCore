@@ -51,9 +51,9 @@ public abstract class StringHandler implements HttpRequestHandler {
             resp.setEntity(new StringEntity(pageHeader()+content+pageFooter(),ContentType.TEXT_HTML));
             if (state.sessionid!=null) {
                 if (!state.sessionid.equals(cookiemap.get("coagulateslsessionid"))) {
-                    resp.addHeader("Set-Cookie","coagulateslsessionid="+state.sessionid+"; HttpOnly; Path=/; Domain=coagulate.net;");
+                    resp.addHeader("Set-Cookie","coagulateslsessionid="+state.sessionid+"; HttpOnly; Path=/; Domain=coagulate.net; Secure;");
                 }
-            } else { resp.addHeader("Set-Cookie","coagulateslsessionid=; HttpOnly; Path=/; Domain=coagulate.net; expires=Thu, 01 Jan 1970 00:00:00 GMT"); }
+            } else { resp.addHeader("Set-Cookie","coagulateslsessionid=none; HttpOnly; Path=/; Domain=coagulate.net; expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure;"); }
             resp.setStatusCode(HttpStatus.SC_OK);
             return;
         } catch (Exception ex) {

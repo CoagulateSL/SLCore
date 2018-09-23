@@ -70,7 +70,7 @@ public class State {
     void loadSession() {
         session=null;
         if (sessionid!=null) { session=Session.get(sessionid); } 
-        if (session!=null) { user=session.user(); }
+        if (session!=null) { user=session.user(); } else { sessionid=null; }
     }
     Session session=null;
     private User user=null; public User user() { return user; }
@@ -87,6 +87,7 @@ public class State {
 
     void setSessionId(String sessionid) {
         if (sessionid!=null && sessionid.isEmpty()) { sessionid=null; }
+        if (sessionid.equalsIgnoreCase("none")) { sessionid=null; }
         this.sessionid=sessionid;
         loadSession();
     }

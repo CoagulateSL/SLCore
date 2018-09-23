@@ -129,7 +129,7 @@ public class User extends IdentifiableTable{
         try {
             int balance=balance();
             if (balance<ammount) { throw new UserException("Insufficient balance (L$"+balance+") to pay charge L$"+ammount); }
-            Database.d("insert into journal(tds,userid,ammount,description) values(?,?,?,?)",Tools.getUnixTime(),getId(),ammount,description);
+            Database.d("insert into journal(tds,userid,ammount,description) values(?,?,?,?)",Tools.getUnixTime(),getId(),-ammount,description);
         }
         finally { unlock(serial); }
     }

@@ -70,18 +70,18 @@ public abstract class StringHandler implements HttpRequestHandler {
         State state=State.get();
         String r="<html><head><title>Coagulate SL Services</title></head><body>"
                 + "<h1 align=center>Coagulate SL Services</h1><p><hr>";
-        r+="<table width=100%><tr width=100%><td align=left width=300px>"
+        r+="<table width=100%><tr width=100%><td align=left width=400px>"
                 + "Greetings";
-        if (state.user()!=null) { r+=", "+state.user().getUsername(); }        
+        if (state.user()!=null) { r+=",&nbsp;"+state.user().getUsername().replaceAll(" ", "&nbsp;"); }        
         r+="</td><td align=center>";
-        r+= "<a href=\"/\">[ Home ]</a>";
-        r+="</td><td align=right width=300px>";
+        r+= "<a href=\"/\">[&nbsp;Home&nbsp;]</a>";
+        r+="</td><td align=right width=400px>";
         if (state.user()!=null) {
-            r+="<a href=\"\">[ Billing (L$"+state.user().balance()+") ]</a>"
+            r+="<a href=\"\">[&nbsp;Billing&nbsp;(L$"+state.user().balance()+")&nbsp;]</a>"
                     + "&nbsp;&nbsp;&nbsp;"
-                    + "<a href=\"/SetPassword\">[ Set Password ]</a>"
+                    + "<a href=\"/SetPassword\">[&nbsp;Set&nbsp;Password&nbsp;]</a>"
                     + "&nbsp;&nbsp;&nbsp;"
-                    + "<a href=\"/Logout\">[ Logout ]</a>"
+                    + "<a href=\"/Logout\">[&nbsp;Logout&nbsp;]</a>"
                     + "&nbsp;&nbsp;&nbsp;"
                     + "</span>";
         }

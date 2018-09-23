@@ -1,6 +1,5 @@
 package net.coagulate.SL.Data;
 
-import net.coagulate.JSLBot.Log;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.Database.Database;
 import net.coagulate.SL.Database.Row;
@@ -19,7 +18,7 @@ public class Session {
     public static Session get(String sessionid) {
         Row user=Database.dqone(false,"select userid,expires from sessions where cookie=? and expires>?",sessionid,Tools.getUnixTime());
         if (user==null) {
-            Log.note("Session","Invalid session id presented");
+            //Log.note("Session","Invalid session id presented");
             return null;
         }
         int userid=user.getInt("userid");

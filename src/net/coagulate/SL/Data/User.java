@@ -6,6 +6,7 @@ import net.coagulate.JSLBot.Log;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.Database.Database;
 import net.coagulate.SL.HTTPPipelines.State;
+import net.coagulate.SL.LockException;
 import net.coagulate.SL.SystemException;
 import net.coagulate.SL.Tools;
 import net.coagulate.SL.UserException;
@@ -123,7 +124,8 @@ public class User extends IdentifiableTable{
         return balance;
     }
     public void bill(int ammount,String description) {
-        int serial=lock();
+        int serial;
+        try {serial=lock();} catch (LockException e) { throw new UserException("Your balance is currently being updated elsewhere, please retry in a moment"); }
         try {
             int balance=balance();
             if (balance<ammount) { throw new UserException("Insufficient balance (L$"+balance+") to pay charge L$"+ammount); }

@@ -1,12 +1,17 @@
 package net.coagulate.SL.Data;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import net.coagulate.JSLBot.Log;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.Database.Database;
+import net.coagulate.SL.Database.Results;
+import net.coagulate.SL.Database.Row;
 import net.coagulate.SL.HTTPPipelines.State;
 import net.coagulate.SL.LockException;
+import net.coagulate.SL.Pricing;
 import net.coagulate.SL.SystemException;
 import net.coagulate.SL.Tools;
 import net.coagulate.SL.UserException;
@@ -132,6 +137,22 @@ public class User extends IdentifiableTable{
             Database.d("insert into journal(tds,userid,ammount,description) values(?,?,?,?)",Tools.getUnixTime(),getId(),-ammount,description);
         }
         finally { unlock(serial); }
+    }
+
+    public Set<Subscription> getSubscriptions(Pricing.SERVICE service,boolean activeonly,boolean paidonly) {
+        Results res;
+        int paiduntilfilter=Tools.getUnixTime();
+        if (paidonly=false) { paiduntilfilter=0; }
+        if (activeonly) {
+            res=Database.dq("select id from subscriptions where ownerid=? and servicetype=? and paiduntil>? and active=1",getId(),service.getValue(),paiduntilfilter);
+        } else {
+            res=Database.dq("select id from subscriptions where ownerid=? and servicetype=? and paiduntil>?",getId(),service.getValue(),paiduntilfilter);
+        }
+        Set<Subscription> subs=new HashSet<>();
+        for (Row r:res) {
+            subs.add(new Subscription(r.getInt("id")));
+        }
+        return subs;
     }
 
    

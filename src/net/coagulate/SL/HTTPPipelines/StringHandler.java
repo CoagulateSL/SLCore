@@ -77,9 +77,9 @@ public abstract class StringHandler implements HttpRequestHandler {
         r+= "<a href=\"/\">[ Home ]</a>";
         r+="</td><td align=right width=300px>";
         if (state.user()!=null) {
-            r+="<a href=\"/SetPassword\">[ Set Password ]</a>"
+            r+="<a href=\"\">[ Billing (L$"+state.user().balance()+") ]</a>"
                     + "&nbsp;&nbsp;&nbsp;"
-                    + "<a href=\"\">[ Billing ]</a>"
+                    + "<a href=\"/SetPassword\">[ Set Password ]</a>"
                     + "&nbsp;&nbsp;&nbsp;"
                     + "<a href=\"/Logout\">[ Logout ]</a>"
                     + "&nbsp;&nbsp;&nbsp;"

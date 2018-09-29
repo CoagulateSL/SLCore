@@ -1,9 +1,8 @@
 package net.coagulate.SL.HTTPPipelines;
 
-import net.coagulate.JSLBot.Log;
 import net.coagulate.SL.Data.User;
 import net.coagulate.SL.Database.NoDataException;
-import net.coagulate.SL.Launch;
+import net.coagulate.SL.SL;
 
 /**
  *
@@ -22,14 +21,14 @@ public abstract class AuthenticatedStringHandler extends StringHandler {
             User u=null;
             try { u=User.get(username, false); } catch (NoDataException ignore) {}
             if (u==null) {
-                Log.note("Authentication", "Attempt to authenticate as invalid user '"+username+"' from "+state.getClientIP());
+                SL.getLogger().warning("Attempt to authenticate as invalid user '"+username+"' from "+state.getClientIP());
                 return failPage();
             }
             if (u.checkPassword(password)) {
                 state.user(u);
                 return handleAuthenticated();
             }
-            Log.note("Authentication", "Attempt to authenticate with incorrect password as '"+username+"' from "+state.getClientIP());
+            SL.getLogger().warning("Attempt to authenticate with incorrect password as '"+username+"' from "+state.getClientIP());
             return failPage();
         }
         return loginpage1+loginpage2;
@@ -46,7 +45,7 @@ public abstract class AuthenticatedStringHandler extends StringHandler {
             + "<table border=1 width=\"600px\">"
             + "<tr><td align=center>Registering</td></tr>"
             + "<tr><td><p>If you do not have a password, you must log in through Second Life<br>"
-            + "===> Click <a href=\"secondlife:///app/agent/"+Launch.bot.getUUID().toUUIDString()+"/im\">to instant message the bot "+Launch.bot.getUsername()+"</a><br>"
+            + "===> Click <a href=\"secondlife:///app/agent/"+SL.bot.getUUID().toUUIDString()+"/im\">to instant message the bot "+SL.bot.getUsername()+"</a><br>"
             + "Send the message 'login', and the bot will reply with a URL that will log you in.</p>"
             + "<p>If you wish to avoid the Second Life step in future, and use a password, follow the above to get logged in, and then click 'Set Password' on the top right of the web pages</p></td></tr>"
             + "</table></p></form>";

@@ -3,7 +3,8 @@ package net.coagulate.SL.HTTPPipelines;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.coagulate.SL.Log;
+import static java.util.logging.Level.SEVERE;
+import net.coagulate.SL.SL;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -57,7 +58,7 @@ public abstract class StringHandler implements HttpRequestHandler {
             resp.setStatusCode(HttpStatus.SC_OK);
             return;
         } catch (Exception ex) {
-            Log.warn("StringHandler","Unexpected exception thrown in page handler",ex);
+            SL.getLogger().log(SEVERE,"Unexpected exception thrown in page handler",ex);
             resp.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
             resp.setEntity(new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>",ContentType.TEXT_HTML));
             return;

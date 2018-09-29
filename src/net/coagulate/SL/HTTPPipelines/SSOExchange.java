@@ -1,8 +1,9 @@
 package net.coagulate.SL.HTTPPipelines;
 
+import static java.util.logging.Level.SEVERE;
 import net.coagulate.SL.Data.Session;
 import net.coagulate.SL.Data.User;
-import net.coagulate.SL.Log;
+import net.coagulate.SL.SL;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -23,12 +24,12 @@ public class SSOExchange implements HttpRequestHandler {
             String token=req.getRequestLine().getUri().replaceFirst("/SSO/","");
             User user=User.getSSO(token);
             if (user==null) {
-                Log.note(this, "SSO Exchange of token failed to return a valid user.");
+                SL.getLogger().warning("SSO Exchange of token failed to return a valid user.");
                 resp.addHeader("Location","/");
                 resp.setStatusCode(HttpStatus.SC_SEE_OTHER);
                 return;
             }
-            Log.debug(this,"Successful SSO signon for "+user.toString());
+            SL.getLogger().info("Successful SSO signon for "+user.toString());
             Session session=Session.create(user);
             resp.setEntity(new StringEntity(""));
             resp.addHeader("Set-Cookie","coagulateslsessionid="+session.token()+"; HttpOnly; Path=/; Domain=coagulate.net; Secure;");
@@ -36,7 +37,7 @@ public class SSOExchange implements HttpRequestHandler {
             resp.setStatusCode(HttpStatus.SC_SEE_OTHER);
             return;
         } catch (Exception ex) {
-            Log.warn("StringHandler","Unexpected exception thrown in SSO page handler",ex);
+            SL.getLogger().log(SEVERE,"Unexpected exception thrown in SSO page handler",ex);
             resp.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
             resp.setEntity(new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>",ContentType.TEXT_HTML));
             return;

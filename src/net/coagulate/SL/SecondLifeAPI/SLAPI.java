@@ -1,6 +1,8 @@
 package net.coagulate.SL.SecondLifeAPI;
 
-import net.coagulate.SL.Log;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
+import net.coagulate.SL.SL;
 import net.coagulate.SL.Tools;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
@@ -29,21 +31,21 @@ public abstract class SLAPI implements HttpRequestHandler {
             }
             String digest=content.optString("digest");
             if (key==null) {
-                Log.error(this,"No object owner key provided to Second Life API");
+                SL.getLogger().log(SEVERE,"No object owner key provided to Second Life API");
                 resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return;
             }
             if (digest==null) {
-                Log.error(this,"No digest provided to Second Life API");
+                SL.getLogger().log(SEVERE,"No digest provided to Second Life API");
                 resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return;
             }
             String timestamp=content.optString("timestamp");
             if (timestamp==null) {
-                Log.error(this,"No timestamp provided to Second Life API");
+                SL.getLogger().log(SEVERE,"No timestamp provided to Second Life API");
                 resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return;
             }
             String targetdigest=Tools.SHA1(key+timestamp+"***REMOVED***");
             if (!targetdigest.equalsIgnoreCase(digest)) {
-                Log.error(this,"Incorrect digest provided to Second Life API");
+                SL.getLogger().log(SEVERE,"Incorrect digest provided to Second Life API");
                 resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return;                
             }
             
@@ -52,7 +54,7 @@ public abstract class SLAPI implements HttpRequestHandler {
             resp.setStatusCode(HttpStatus.SC_OK);
             return;
         } catch (Exception ex) {
-            net.coagulate.SL.Log.warn("StringHandler","Unexpected exception thrown in page handler",ex);
+            SL.getLogger().log(WARNING,"Unexpected exception thrown in page handler",ex);
             resp.setStatusCode(HttpStatus.SC_OK);
             JSONObject object=new JSONObject();
             object.put("error","Internal error: "+ex.toString());

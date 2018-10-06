@@ -2,8 +2,9 @@ package net.coagulate.SL.SecondLifeAPI;
 
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
+import net.coagulate.Core.ByteTools;
+import net.coagulate.Core.Crypto;
 import net.coagulate.SL.SL;
-import net.coagulate.SL.Tools;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -27,7 +28,7 @@ public abstract class SLAPI implements HttpRequestHandler {
             String key=req.getHeaders("X-SecondLife-Object-Key")[0].getValue();
             if (req instanceof HttpEntityEnclosingRequest) {
                 HttpEntityEnclosingRequest r=(HttpEntityEnclosingRequest) req;
-                content=new JSONObject(Tools.convertStreamToString(r.getEntity().getContent()));
+                content=new JSONObject(ByteTools.convertStreamToString(r.getEntity().getContent()));
             }
             String digest=content.optString("digest");
             if (key==null) {
@@ -43,7 +44,7 @@ public abstract class SLAPI implements HttpRequestHandler {
                 SL.getLogger().log(SEVERE,"No timestamp provided to Second Life API");
                 resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return;
             }
-            String targetdigest=Tools.SHA1(key+timestamp+"***REMOVED***");
+            String targetdigest=Crypto.SHA1(key+timestamp+"***REMOVED***");
             if (!targetdigest.equalsIgnoreCase(digest)) {
                 SL.getLogger().log(SEVERE,"Incorrect digest provided to Second Life API");
                 resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return;                

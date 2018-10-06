@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import net.coagulate.Core.Passwords;
+import net.coagulate.Core.Tokens;
+import net.coagulate.Core.UnixTime;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.Database.Database;
 import net.coagulate.SL.Database.Results;
@@ -13,7 +16,6 @@ import net.coagulate.SL.LockException;
 import net.coagulate.SL.Pricing;
 import net.coagulate.SL.SL;
 import net.coagulate.SL.SystemException;
-import net.coagulate.SL.Tools;
 import net.coagulate.SL.UserException;
 
 /**
@@ -97,15 +99,15 @@ public class User extends IdentifiableTable{
     
     
     public String generateSSO() {
-        String token=Tools.generateToken();
-        int expires=Tools.getUnixTime()+Config.SSOWINDOWSECONDS;
+        String token=Tokens.generateToken();
+        int expires=UnixTime.getUnixTime()+Config.SSOWINDOWSECONDS;
         Database.d("update users set ssotoken=?,ssoexpires=? where id=?",token,expires,id);
         return token;
     }
     
     public static User getSSO(String token) {
         // purge old tokens
-        Database.d("update users set ssotoken=null,ssoexpires=null where ssoexpires<?",Tools.getUnixTime());
+        Database.d("update users set ssotoken=null,ssoexpires=null where ssoexpires<?",UnixTime.getUnixTime());
         Integer match=Database.dqi(false,"select id from users where ssotoken=?",token);
         if (match==null) { return null; }
         Database.d("update users set ssotoken=null,ssoexpires=null where id=?",match);
@@ -114,13 +116,13 @@ public class User extends IdentifiableTable{
 
     public void setPassword(String password) {
         if (password.length()<6) { throw new UserException("Password not long enough"); }
-        Database.d("update users set password=? where id=?",Tools.createHash(password),id);
+        Database.d("update users set password=? where id=?",Passwords.createHash(password),id);
         SL.getLogger().info("User has set password from "+State.get().getClientIP());
     }
 
     public boolean checkPassword(String password) {
         String hash=Database.dqs(true,"select password from users where id=?",id);
-        return Tools.verifyPassword(password,hash);
+        return Passwords.verifyPassword(password,hash);
     }
 
     public int balance() {
@@ -134,14 +136,14 @@ public class User extends IdentifiableTable{
         try {
             int balance=balance();
             if (balance<ammount) { throw new UserException("Insufficient balance (L$"+balance+") to pay charge L$"+ammount); }
-            Database.d("insert into journal(tds,userid,ammount,description) values(?,?,?,?)",Tools.getUnixTime(),getId(),-ammount,description);
+            Database.d("insert into journal(tds,userid,ammount,description) values(?,?,?,?)",UnixTime.getUnixTime(),getId(),-ammount,description);
         }
         finally { unlock(serial); }
     }
 
     public Set<Subscription> getSubscriptions(Pricing.SERVICE service,boolean activeonly,boolean paidonly) {
         Results res;
-        int paiduntilfilter=Tools.getUnixTime();
+        int paiduntilfilter=UnixTime.getUnixTime();
         if (paidonly==false) { paiduntilfilter=0; }
         String activeonlysql;
         if (activeonly) { activeonlysql=" and active=1"; } else { activeonlysql=""; }

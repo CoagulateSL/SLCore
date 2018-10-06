@@ -1,5 +1,4 @@
 package net.coagulate.SL.HTTPPipelines;
-
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,13 +11,13 @@ import net.coagulate.SL.SL;
 import org.apache.http.HttpInetConnection;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.apache.http.protocol.ExecutionContext;
-import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.*;
 
 /**
  *
  * @author Iain Price
  */
+@SuppressWarnings("deprecation")
 public class State {
 
     // hmm
@@ -52,7 +51,6 @@ public class State {
     public static void destroy() { synchronized(threadstate) { threadstate.remove(Thread.currentThread()); } }
     Page.PAGETYPE pagetype=Page.PAGETYPE.NONE;
     boolean page_firstinput=true;
-    @SuppressWarnings("deprecation")
     public String getClientIP() {
         try { 
             HttpInetConnection connection = (HttpInetConnection) httpcontext.getAttribute(ExecutionContext.HTTP_CONNECTION);

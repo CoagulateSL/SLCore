@@ -8,6 +8,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import static java.util.logging.Level.CONFIG;
+import java.util.logging.Logger;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -28,6 +30,7 @@ public class CATruster implements X509TrustManager,HostnameVerifier {
         CATruster llcaTruster = new CATruster();
         HttpsURLConnection.setDefaultHostnameVerifier(llcaTruster);
         initialised=true;
+        Logger.getLogger(CATruster.class.getCanonicalName()).log(CONFIG,"Trusted CA roots implemented");
     }
 
     public CATruster() {

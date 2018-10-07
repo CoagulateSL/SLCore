@@ -2,6 +2,7 @@ package net.coagulate.SL;
 
 import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
+import net.coagulate.Core.ClassTools;
 import net.coagulate.Core.LogHandler;
 import net.coagulate.JSLBot.JSLBot;
 import net.coagulate.JSLBot.LLCATruster;
@@ -33,13 +34,14 @@ public class SL extends Thread {
     private static void startup() {
         loggingInitialise();
         log.config("SL Services starting up on "+Config.getNodeName()+" (#"+Config.getNode()+")");
+        ClassTools.getClasses();
         Pricing.initialise();
         LLCATruster.doNotUse();
         CATruster.initialise();
         Database.initialise();
         IPC.test();
         startBot(); 
-        HTTPSListener.initialise(); // last, as in, everything else starts and is started
+        HTTPSListener.initialise();
     }
 
     private static void _shutdown() {
@@ -58,6 +60,7 @@ public class SL extends Thread {
         bot.start();
         try { bot.waitConnection(30000); }  catch (IllegalStateException e) {}
         if (!bot.connected()) { bot.shutdown("Failed to connect"); shutdown=true; errored=true; throw new SystemException("Unable to connect to Second Life"); }
+        getLogger().config("Primary Second Life automated agent has started");
     }
     
     public static void watchdog() {

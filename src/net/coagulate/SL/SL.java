@@ -7,6 +7,7 @@ import net.coagulate.Core.Database.DB;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Database.MariaDBConnection;
 import net.coagulate.Core.LogHandler;
+import net.coagulate.Core.SystemException;
 import net.coagulate.JSLBot.JSLBot;
 import net.coagulate.JSLBot.LLCATruster;
 

@@ -4,13 +4,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import net.coagulate.Core.Database.Results;
+import net.coagulate.Core.Database.ResultsRow;
 import net.coagulate.Core.Passwords;
 import net.coagulate.Core.Tokens;
 import net.coagulate.Core.UnixTime;
 import net.coagulate.SL.Config;
-import net.coagulate.SL.Database.Database;
-import net.coagulate.SL.Database.Results;
-import net.coagulate.SL.Database.Row;
 import net.coagulate.SL.HTTPPipelines.State;
 import net.coagulate.SL.LockException;
 import net.coagulate.SL.Pricing;
@@ -22,19 +21,18 @@ import net.coagulate.SL.UserException;
  *
  * @author Iain Price
  */
-public class User extends IdentifiableTable{
+public class User extends LockableTable {
 
-    int id;
     String username;
 
     public String getUsername() { return username; }
     @Override
-    public int getId() { return id; }
-    @Override
     public String getTableName() { return "users"; }
     @Override
     public String toString() { return getUsername()+"#"+getId(); }
-    public boolean superuser() { return id==1 && username.equalsIgnoreCase("Iain Maltz"); }
+
+
+    public boolean superuser() { return getId()==1 && username.equalsIgnoreCase("Iain Maltz"); }
 
     private static final Map<Integer,User> users=new HashMap<>();
     
@@ -63,7 +61,7 @@ public class User extends IdentifiableTable{
         return output;
     }
     
-    private User(int id,String username) { this.id=id; this.username=username;}
+    private User(int id,String username) { super(id); this.username=username;}
     
     private static User factory(int id,String username) {
         synchronized(users) {
@@ -78,15 +76,15 @@ public class User extends IdentifiableTable{
         username=formatUsername(username);
         boolean mandatory=true;
         if (createifnecessary) { mandatory=false; }
-        Integer id=Database.dqi(mandatory,"select id from users where username=?",username);
+        Integer id=SL.getDB().dqi(mandatory,"select id from users where username=?",username);
         if (id!=null) { return factory(id,username); }
-        Database.d("insert into users(username) values(?)",username);
-        id=Database.dqi(false,"select id from users where username=?",username);
+        SL.getDB().d("insert into users(username) values(?)",username);
+        id=SL.getDB().dqi(false,"select id from users where username=?",username);
         if (id!=null) { return factory(id,username); }
         throw new SystemException("Created user for "+username+" and then couldn't find its id");
     }
     public static User get(int id) {
-        String username=Database.dqs(true,"select username from users where id=?",id);
+        String username=SL.getDB().dqs(true,"select username from users where id=?",id);
         return factory(id,username);
     }
     
@@ -101,32 +99,32 @@ public class User extends IdentifiableTable{
     public String generateSSO() {
         String token=Tokens.generateToken();
         int expires=UnixTime.getUnixTime()+Config.SSOWINDOWSECONDS;
-        Database.d("update users set ssotoken=?,ssoexpires=? where id=?",token,expires,id);
+        d("update users set ssotoken=?,ssoexpires=? where "+getIdColumn()+"=?",token,expires,getId());
         return token;
     }
     
     public static User getSSO(String token) {
         // purge old tokens
-        Database.d("update users set ssotoken=null,ssoexpires=null where ssoexpires<?",UnixTime.getUnixTime());
-        Integer match=Database.dqi(false,"select id from users where ssotoken=?",token);
+        SL.getDB().d("update users set ssotoken=null,ssoexpires=null where ssoexpires<?",UnixTime.getUnixTime());
+        Integer match=SL.getDB().dqi(false,"select id from users where ssotoken=?",token);
         if (match==null) { return null; }
-        Database.d("update users set ssotoken=null,ssoexpires=null where id=?",match);
+        SL.getDB().d("update users set ssotoken=null,ssoexpires=null where id=?",match);
         return get(match);
     }
 
     public void setPassword(String password) {
         if (password.length()<6) { throw new UserException("Password not long enough"); }
-        Database.d("update users set password=? where id=?",Passwords.createHash(password),id);
+        d("update users set password=? where id=?",Passwords.createHash(password),getId());
         SL.getLogger().info("User has set password from "+State.get().getClientIP());
     }
 
     public boolean checkPassword(String password) {
-        String hash=Database.dqs(true,"select password from users where id=?",id);
+        String hash=dqs(true,"select password from users where id=?",getId());
         return Passwords.verifyPassword(password,hash);
     }
 
     public int balance() {
-        Integer balance=Database.dqi(false, "select sum(ammount) from journal where userid=?",id);
+        Integer balance=dqi(false, "select sum(ammount) from journal where userid=?",getId());
         if (balance==null) { return 0; }
         return balance;
     }
@@ -136,7 +134,7 @@ public class User extends IdentifiableTable{
         try {
             int balance=balance();
             if (balance<ammount) { throw new UserException("Insufficient balance (L$"+balance+") to pay charge L$"+ammount); }
-            Database.d("insert into journal(tds,userid,ammount,description) values(?,?,?,?)",UnixTime.getUnixTime(),getId(),-ammount,description);
+            d("insert into journal(tds,userid,ammount,description) values(?,?,?,?)",UnixTime.getUnixTime(),getId(),-ammount,description);
         }
         finally { unlock(serial); }
     }
@@ -148,16 +146,17 @@ public class User extends IdentifiableTable{
         String activeonlysql;
         if (activeonly) { activeonlysql=" and active=1"; } else { activeonlysql=""; }
         if (service!=null) {
-            res=Database.dq("select id from subscriptions where ownerid=? and servicetype=? and paiduntil>?"+activeonlysql,getId(),service.getValue(),paiduntilfilter);
+            res=dq("select id from subscriptions where ownerid=? and servicetype=? and paiduntil>?"+activeonlysql,getId(),service.getValue(),paiduntilfilter);
         } else {
-            res=Database.dq("select id from subscriptions where ownerid=? and paiduntil>?"+activeonlysql,getId(),paiduntilfilter);
+            res=dq("select id from subscriptions where ownerid=? and paiduntil>?"+activeonlysql,getId(),paiduntilfilter);
         }
         Set<Subscription> subs=new HashSet<>();
-        for (Row r:res) {
+        for (ResultsRow r:res) {
             subs.add(new Subscription(r.getInt("id")));
         }
         return subs;
     }
+
 
    
     

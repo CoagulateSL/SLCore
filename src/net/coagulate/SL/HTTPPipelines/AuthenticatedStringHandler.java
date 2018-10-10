@@ -1,7 +1,7 @@
 package net.coagulate.SL.HTTPPipelines;
 
+import net.coagulate.Core.Database.NoDataException;
 import net.coagulate.SL.Data.User;
-import net.coagulate.SL.Database.NoDataException;
 import net.coagulate.SL.SL;
 
 /**

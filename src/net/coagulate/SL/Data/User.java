@@ -4,18 +4,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import net.coagulate.Core.Database.LockException;
 import net.coagulate.Core.Database.Results;
 import net.coagulate.Core.Database.ResultsRow;
 import net.coagulate.Core.Passwords;
+import net.coagulate.Core.SystemException;
 import net.coagulate.Core.Tokens;
 import net.coagulate.Core.UnixTime;
+import net.coagulate.Core.UserException;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.HTTPPipelines.State;
-import net.coagulate.SL.LockException;
 import net.coagulate.SL.Pricing;
 import net.coagulate.SL.SL;
-import net.coagulate.SL.SystemException;
-import net.coagulate.SL.UserException;
 
 /**
  *
@@ -112,7 +112,7 @@ public class User extends LockableTable {
         return get(match);
     }
 
-    public void setPassword(String password) {
+    public void setPassword(String password) throws UserException {
         if (password.length()<6) { throw new UserException("Password not long enough"); }
         d("update users set password=? where id=?",Passwords.createHash(password),getId());
         SL.getLogger().info("User has set password from "+State.get().getClientIP());
@@ -128,7 +128,7 @@ public class User extends LockableTable {
         if (balance==null) { return 0; }
         return balance;
     }
-    public void bill(int ammount,String description) {
+    public void bill(int ammount,String description) throws UserException {
         int serial;
         try {serial=lock();} catch (LockException e) { throw new UserException("Your balance is currently being updated elsewhere, please retry in a moment"); }
         try {

@@ -1,5 +1,6 @@
 package net.coagulate.SL.Pages;
 
+import net.coagulate.Core.UserException;
 import net.coagulate.SL.HTTPPipelines.Page;
 import net.coagulate.SL.HTTPPipelines.State;
 
@@ -21,8 +22,12 @@ public class SetPassword extends Page {
             if (password.length()<6) { error("Use a longer password"); }
             else {
                 para("Setting your password");            
-                state.user().setPassword(password);
-                para("Password is now set!");
+                try {
+                    state.user().setPassword(password);
+                    para("Password is now set!");
+                } catch (UserException e) {
+                    error("Failed to set password: "+e.getLocalizedMessage());
+                }
                 return;
             }
         }

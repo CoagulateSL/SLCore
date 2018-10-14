@@ -30,7 +30,7 @@ public class SL extends Thread {
     
     public static void main(String[] args) {
         try { startup(); }
-        catch (SystemException e) { log.log(SEVERE,"Startup failed: "+e.getLocalizedMessage(),e); shutdown=true; }
+        catch (SystemException e) { errored=true; log.log(SEVERE,"Startup failed: "+e.getLocalizedMessage(),e); shutdown=true; }
         Runtime.getRuntime().addShutdownHook(new SL());
         while (!shutdown) { watchdog(); }
         _shutdown();
@@ -46,7 +46,7 @@ public class SL extends Thread {
         db=new MariaDBConnection("SL",Config.getJdbc());
         IPC.test();
         startBot(); 
-        GPHUD.initialiseAsModule();
+        startGPHUD();
         HTTPSListener.initialise();
     }
 
@@ -67,6 +67,10 @@ public class SL extends Thread {
         try { bot.waitConnection(30000); }  catch (IllegalStateException e) {}
         if (!bot.connected()) { bot.shutdown("Failed to connect"); shutdown=true; errored=true; throw new SystemException("Unable to connect to Second Life"); }
         getLogger().config("Primary Second Life automated agent has started");
+    }
+    
+    public static void startGPHUD() {
+        GPHUD.initialiseAsModule(false,Config.getGPHUDJdbc());
     }
     
     public static void watchdog() {
@@ -92,4 +96,5 @@ public class SL extends Thread {
     private SL() {}
     @Override
     public void run() { if (!SL.shutdown) { log.severe("JVM Shutdown Hook invoked"); } SL.shutdown=true; }
+    
 }

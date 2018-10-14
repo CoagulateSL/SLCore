@@ -2,12 +2,13 @@ package net.coagulate.SL;
 
 import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
-import net.coagulate.Core.ClassTools;
 import net.coagulate.Core.Database.DB;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Database.MariaDBConnection;
-import net.coagulate.Core.LogHandler;
-import net.coagulate.Core.SystemException;
+import net.coagulate.Core.Tools.ClassTools;
+import net.coagulate.Core.Tools.LogHandler;
+import net.coagulate.Core.Tools.SystemException;
+import net.coagulate.GPHUD.GPHUD;
 import net.coagulate.JSLBot.JSLBot;
 import net.coagulate.JSLBot.LLCATruster;
 
@@ -45,6 +46,7 @@ public class SL extends Thread {
         db=new MariaDBConnection("SL",Config.getJdbc());
         IPC.test();
         startBot(); 
+        GPHUD.initialiseAsModule();
         HTTPSListener.initialise();
     }
 

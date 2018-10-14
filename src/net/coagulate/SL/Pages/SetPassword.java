@@ -1,6 +1,6 @@
 package net.coagulate.SL.Pages;
 
-import net.coagulate.Core.UserException;
+import net.coagulate.Core.Tools.UserException;
 import net.coagulate.SL.HTTPPipelines.Page;
 import net.coagulate.SL.HTTPPipelines.State;
 

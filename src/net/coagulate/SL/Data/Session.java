@@ -1,8 +1,8 @@
 package net.coagulate.SL.Data;
 
 import net.coagulate.Core.Database.ResultsRow;
-import net.coagulate.Core.Tokens;
-import net.coagulate.Core.UnixTime;
+import net.coagulate.Core.Tools.Tokens;
+import net.coagulate.Core.Tools.UnixTime;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.SL;
 

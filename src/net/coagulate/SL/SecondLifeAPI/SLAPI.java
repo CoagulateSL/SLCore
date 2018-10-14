@@ -2,8 +2,8 @@ package net.coagulate.SL.SecondLifeAPI;
 
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
-import net.coagulate.Core.ByteTools;
-import net.coagulate.Core.Crypto;
+import net.coagulate.Core.Tools.ByteTools;
+import net.coagulate.Core.Tools.Crypto;
 import net.coagulate.SL.SL;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;

@@ -50,14 +50,15 @@ public class SL extends Thread {
     private static void startup() {
         loggingInitialise();
         log.config("SL Services starting up on "+Config.getNodeName()+" (#"+Config.getNode()+")");
-        ClassTools.getClasses();
-        Pricing.initialise();
         LLCATruster.doNotUse();
-        CATruster.initialise();
+        ClassTools.getClasses();
         db=new MariaDBConnection("SL",Config.getJdbc());
-        IPC.test();
+        CATruster.initialise();
         startBot(); 
+        Pricing.initialise();
+        IPC.test();
         startGPHUD();
+        waitBot();
         HTTPSListener.initialise();
     }
 
@@ -75,6 +76,8 @@ public class SL extends Thread {
         bot=new JSLBot(Config.getBotConfig());
         bot.registershutdownhook=false;
         bot.start();
+    }
+    private static void waitBot() {
         try { bot.waitConnection(30000); }  catch (IllegalStateException e) {}
         if (!bot.connected()) { bot.shutdown("Failed to connect"); shutdown=true; errored=true; throw new SystemException("Unable to connect to Second Life"); }
         getLogger().config("Primary Second Life automated agent has started");

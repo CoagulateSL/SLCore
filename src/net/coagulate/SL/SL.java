@@ -29,11 +29,15 @@ public class SL extends Thread {
     public static void shutdown() { shutdown=true; }
     
     public static void main(String[] args) {
-        try { startup(); }
-        catch (SystemException e) { errored=true; log.log(SEVERE,"Startup failed: "+e.getLocalizedMessage(),e); shutdown=true; }
-        Runtime.getRuntime().addShutdownHook(new SL());
-        while (!shutdown) { watchdog(); }
-        _shutdown();
+        try {
+            try { startup(); }
+            catch (Throwable e) { errored=true; log.log(SEVERE,"Startup failed: "+e.getLocalizedMessage(),e); shutdown=true; }
+            Runtime.getRuntime().addShutdownHook(new SL());
+            while (!shutdown) { watchdog(); }
+        }
+        catch (Throwable t) { System.out.println("Main loop crashed: "+t); }
+        try { _shutdown(); }
+        catch (Throwable t) { System.out.println("Shutdown crashed: "+t); }
     }
 
     private static void startup() {

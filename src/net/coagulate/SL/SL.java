@@ -24,6 +24,7 @@ import net.coagulate.SL.Data.LockTest;
  * @author Iain Price
  */
 public class SL extends Thread {
+    public static final String VERSION="v0.00.00";
     private static Logger log;
     public static final Logger getLogger(String subspace) { return Logger.getLogger(log.getName()+"."+subspace); }
     public static final Logger getLogger() { return log; }
@@ -60,6 +61,7 @@ public class SL extends Thread {
         startGPHUD();
         waitBot();
         HTTPSListener.initialise();
+        log.info("=====[ Coagulate Second Life Services {JavaCore, JSLBot, GPHUD} version "+VERSION+", startup is fully complete ]=====");
     }
 
     private static void _shutdown() {

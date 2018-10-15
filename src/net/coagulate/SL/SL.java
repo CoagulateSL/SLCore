@@ -4,13 +4,20 @@ import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
 import net.coagulate.Core.Database.DB;
 import net.coagulate.Core.Database.DBConnection;
+import net.coagulate.Core.Database.LockException;
 import net.coagulate.Core.Database.MariaDBConnection;
 import net.coagulate.Core.Tools.ClassTools;
 import net.coagulate.Core.Tools.LogHandler;
 import net.coagulate.Core.Tools.SystemException;
 import net.coagulate.GPHUD.GPHUD;
+import net.coagulate.GPHUD.Maintenance;
+import static net.coagulate.GPHUD.Maintenance.UPDATEINTERVAL;
+import static net.coagulate.GPHUD.Maintenance.cycle;
+import net.coagulate.GPHUD.Modules.Experience.VisitXP;
 import net.coagulate.JSLBot.JSLBot;
 import net.coagulate.JSLBot.LLCATruster;
+import static net.coagulate.SL.Config.LOCK_NUMBER_GPHUD_MAINTENANCE;
+import net.coagulate.SL.Data.LockTest;
 
 /** Bootstrap class.
  *
@@ -75,8 +82,11 @@ public class SL extends Thread {
     
     public static void startGPHUD() {
         GPHUD.initialiseAsModule(false,Config.getGPHUDJdbc());
+        // make sure the lock is ok
+        new LockTest(LOCK_NUMBER_GPHUD_MAINTENANCE);
     }
     
+    private static int watchdogcycle=0;
     public static void watchdog() {
         try { Thread.sleep(1000); } catch (InterruptedException e) {}
         if (shutdown) return;
@@ -87,7 +97,40 @@ public class SL extends Thread {
         if (!bot.connected()) {
             log.log(SEVERE,"Main bot has become disconnected"); shutdown=true; errored=true;
         }
-        net.coagulate.SL.HTTPPipelines.State.cleanup();
+        watchdogcycle++;
+        if ((watchdogcycle % 10)==0) { net.coagulate.SL.HTTPPipelines.State.cleanup(); }
+
+        if ((watchdogcycle % 60)==0) { gphudMaintenance(); }
+    }
+    
+    private static void gphudMaintenance() {
+        try { Maintenance.refreshCharacterURLs(); }
+        catch (Exception e) { GPHUD.getLogger().log(SEVERE,"Maintenance refresh character URLs caught an exception",e); }
+        try { Maintenance.refreshRegionURLs(); }
+        catch (Exception e) { GPHUD.getLogger().log(SEVERE,"Maintenance refresh region URLs caught an exception",e); }
+
+        // this stuff all must run 'exclusively' across the cluster...
+        LockTest lock=new LockTest(LOCK_NUMBER_GPHUD_MAINTENANCE);
+        int lockserial;
+        try { lockserial=lock.lock(60); }
+        catch (LockException e) { GPHUD.getLogger().finer("Maintenance didn't aquire lock: "+e.getLocalizedMessage()); return; } // maintenance session already locked            
+            
+        try { Maintenance.startEvents(); }
+        catch (Exception e) { GPHUD.getLogger().log(SEVERE,"Maintenance start events caught an exception",e); }            
+        
+        lock.extendLock(lockserial, 60);
+        try { Maintenance.purgeOldCookies(); }
+        catch (Exception e) { GPHUD.getLogger().log(SEVERE,"Maintenance run purge cookies caught an exception",e); }
+        
+        lock.extendLock(lockserial, 60);
+        try { new VisitXP(-1).runAwards(); }
+        catch (Exception e) { GPHUD.getLogger().log(SEVERE,"Maintenance run awards run caught an exception",e); }
+        
+        lock.extendLock(lockserial, 60);
+        try { if ((cycle % UPDATEINTERVAL)==0) { Maintenance.updateInstances(); } }
+        catch (Exception e) { GPHUD.getLogger().log(SEVERE,"Maintenance update Instances caught an exception",e); }
+        
+        lock.unlock(lockserial);
     }
     
     private static void loggingInitialise() {

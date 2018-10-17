@@ -5,8 +5,11 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.coagulate.Core.Tools.ClassTools;
 import org.apache.http.HttpRequest;
@@ -51,7 +54,23 @@ public class PageMapper implements HttpRequestHandlerMapper {
         prefix("/GPHUD/",new net.coagulate.GPHUD.Interfaces.User.Interface());
         prefix("/GPHUD/hud/",new net.coagulate.GPHUD.Interfaces.HUD.Interface());
         // SL pages
-        ClassTools.getAnnotatedConstructors(Url.class);
+        for (Constructor c:ClassTools.getAnnotatedConstructors(Url.class)) {
+            String url=((Url)(c.getAnnotation(Url.class))).value();
+            try {
+                exact(url, (HttpRequestHandler) c.newInstance());
+            } catch (InstantiationException|IllegalAccessException|IllegalArgumentException|InvocationTargetException ex) {
+                logger.log(Level.SEVERE, "URL Annotated constructor in class "+c.getDeclaringClass().getCanonicalName()+" failed instansiation:"+ex.getLocalizedMessage(), ex);
+            }
+        }
+        for (Constructor c:ClassTools.getAnnotatedConstructors(Prefix.class)) {
+            String url=((Prefix)(c.getAnnotation(Prefix.class))).value();
+            try {
+                prefix(url, (HttpRequestHandler) c.newInstance());
+            } catch (InstantiationException|IllegalAccessException|IllegalArgumentException|InvocationTargetException ex) {
+                logger.log(Level.SEVERE, "Prefix URL Annotated constructor in class "+c.getDeclaringClass().getCanonicalName()+" failed instansiation:"+ex.getLocalizedMessage(), ex);
+            }
+        }
+        
     }
     
     
@@ -73,7 +92,11 @@ public class PageMapper implements HttpRequestHandlerMapper {
                 }
             }
         }
-        if (DEBUG) { System.out.println("Prefix match "+exact.get(line).getClass().getCanonicalName()); }
+        if (DEBUG) {
+            if (matchedhandler!=null) {System.out.println("Prefix match "+matchedhandler.getClass().getCanonicalName());}
+            else
+            {System.out.println("Prefix match returned null match, this is now a 404");}
+        }
         return matchedhandler;
     }
 

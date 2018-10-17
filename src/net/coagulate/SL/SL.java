@@ -6,6 +6,7 @@ import net.coagulate.Core.Database.DB;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Database.LockException;
 import net.coagulate.Core.Database.MariaDBConnection;
+import net.coagulate.Core.HTTP.HTTPSListener;
 import net.coagulate.Core.Tools.ClassTools;
 import net.coagulate.Core.Tools.LogHandler;
 import net.coagulate.Core.Tools.SystemException;
@@ -33,6 +34,7 @@ public class SL extends Thread {
     private static boolean shutdown=false;
     private static boolean errored=false;
     private static DBConnection db;
+    private static HTTPSListener listener;
     
     public static void shutdown() { shutdown=true; }
     
@@ -60,13 +62,13 @@ public class SL extends Thread {
         IPC.test();
         startGPHUD();
         waitBot();
-        HTTPSListener.initialise();
+        listener=new HTTPSListener(Config.getPort(),Config.getKeyMaterialFile());
         log.info("=====[ Coagulate Second Life Services {JavaCore, JSLBot, GPHUD} version "+VERSION+", startup is fully complete ]=====");
     }
 
     private static void _shutdown() {
         log.config("SL Services shutting down");
-        HTTPSListener.blockingShutdown();
+        listener.blockingShutdown();
         if (bot!=null) { bot.shutdown("SL System is shutting down"); }
         DB.shutdown();
         log.config("SL Services shutdown is complete, exiting.");
@@ -96,12 +98,12 @@ public class SL extends Thread {
         try { Thread.sleep(1000); } catch (InterruptedException e) {}
         if (shutdown) return;
         if (!DB.test()) {
-            log.log(SEVERE,"Database failed connectivity test, shutting down."); shutdown=true; errored=true;
+            log.log(SEVERE,"Database failed connectivity test, shutting down."); shutdown=true; errored=true; return;
         }
-        if (shutdown) return;
         if (!bot.connected()) {
-            log.log(SEVERE,"Main bot has become disconnected"); shutdown=true; errored=true;
+            log.log(SEVERE,"Main bot has become disconnected"); shutdown=true; errored=true; return;
         }
+        // hmm //if (!listener.isAlive()) { log.log(SEVERE,"Primary listener thread is not alive"); shutdown=true; errored=true; return; }
         watchdogcycle++;
         if ((watchdogcycle % 10)==0) { net.coagulate.SL.HTTPPipelines.State.cleanup(); }
 

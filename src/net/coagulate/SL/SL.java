@@ -19,6 +19,7 @@ import net.coagulate.JSLBot.JSLBot;
 import net.coagulate.JSLBot.LLCATruster;
 import static net.coagulate.SL.Config.LOCK_NUMBER_GPHUD_MAINTENANCE;
 import net.coagulate.SL.Data.LockTest;
+import net.coagulate.SL.HTTPPipelines.PageMapper;
 
 /** Bootstrap class.
  *
@@ -62,7 +63,7 @@ public class SL extends Thread {
         IPC.test();
         startGPHUD();
         waitBot();
-        listener=new HTTPSListener(Config.getPort(),Config.getKeyMaterialFile());
+        listener=new HTTPSListener(Config.getPort(),Config.getKeyMaterialFile(),new PageMapper());
         log.info("=====[ Coagulate Second Life Services {JavaCore, JSLBot, GPHUD} version "+VERSION+", startup is fully complete ]=====");
     }
 

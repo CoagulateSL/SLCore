@@ -1,5 +1,6 @@
 package net.coagulate.SL.Pages;
 
+import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
 import net.coagulate.SL.HTTPPipelines.State;
 import net.coagulate.SL.HTTPPipelines.StringHandler;
 
@@ -9,6 +10,8 @@ import net.coagulate.SL.HTTPPipelines.StringHandler;
  */
 public class Logout extends StringHandler {
 
+    @Url("/Logout")
+    public Logout(){super();}
     @Override
     protected String handleString() {
         State.get().logout();

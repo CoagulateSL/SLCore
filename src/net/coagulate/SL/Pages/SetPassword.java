@@ -2,6 +2,7 @@ package net.coagulate.SL.Pages;
 
 import net.coagulate.Core.Tools.UserException;
 import net.coagulate.SL.HTTPPipelines.Page;
+import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
 import net.coagulate.SL.HTTPPipelines.State;
 
 /**
@@ -10,6 +11,8 @@ import net.coagulate.SL.HTTPPipelines.State;
  */
 public class SetPassword extends Page {
 
+    @Url("/SetPassword")
+    public SetPassword(){super();}
     @Override
     public void content() {
         pageHeader("Set Password");

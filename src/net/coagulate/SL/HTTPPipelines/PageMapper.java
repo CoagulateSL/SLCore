@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.coagulate.Core.Tools.ClassTools;
+import net.coagulate.SL.Pages.FourZeroFour;
 import org.apache.http.HttpRequest;
 import org.apache.http.protocol.HttpRequestHandler;
 import org.apache.http.protocol.HttpRequestHandlerMapper;
@@ -97,6 +98,7 @@ public class PageMapper implements HttpRequestHandlerMapper {
             else
             {System.out.println("Prefix match returned null match, this is now a 404");}
         }
+        if (matchedhandler==null) { return new FourZeroFour(); }
         return matchedhandler;
     }
 

@@ -36,8 +36,20 @@ public class PageMapper implements HttpRequestHandlerMapper {
     
     @Override
     public HttpRequestHandler lookup(HttpRequest req) {
-        System.out.println("REQUEST:"+req.getRequestLine());
-        return null;
+        System.out.println("REQUEST:"+req.getRequestLine().getUri());
+        String line=req.getRequestLine().getUri().toLowerCase();
+        if (exact.containsKey(line)) { return exact.get(line); }
+        String matchedprefix="";
+        HttpRequestHandler matchedhandler=null;
+        for (String prefix:prefixes.keySet()) {
+            if (prefix.startsWith(line)) {
+                if (prefix.length()>matchedprefix.length()) {
+                    matchedprefix=prefix;
+                    matchedhandler=prefixes.get(prefix);
+                }
+            }
+        }
+        return matchedhandler;
     }
     
 }

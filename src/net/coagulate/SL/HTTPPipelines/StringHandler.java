@@ -55,7 +55,7 @@ public abstract class StringHandler implements HttpRequestHandler {
                     resp.addHeader("Set-Cookie","coagulateslsessionid="+state.sessionid+"; HttpOnly; Path=/; Domain=coagulate.net; Secure;");
                 }
             } else { resp.addHeader("Set-Cookie","coagulateslsessionid=none; HttpOnly; Path=/; Domain=coagulate.net; expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure;"); }
-            resp.setStatusCode(HttpStatus.SC_OK);
+            resp.setStatusCode(getReturnStatus());
             return;
         } catch (Exception ex) {
             SL.getLogger().log(SEVERE,"Unexpected exception thrown in page handler",ex);
@@ -64,6 +64,10 @@ public abstract class StringHandler implements HttpRequestHandler {
             return;
         }
     }    
+    
+    public int getReturnStatus() {
+        return HttpStatus.SC_OK;
+    }
 
     protected abstract String handleString();
     

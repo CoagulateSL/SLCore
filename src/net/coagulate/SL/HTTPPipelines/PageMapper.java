@@ -22,7 +22,7 @@ import org.apache.http.protocol.HttpRequestHandlerMapper;
  * @author Iain Price
  */
 public class PageMapper implements HttpRequestHandlerMapper {
-    private static final boolean DEBUG=true;
+    private static final boolean DEBUG=false;
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @Target(ElementType.CONSTRUCTOR)
@@ -98,7 +98,10 @@ public class PageMapper implements HttpRequestHandlerMapper {
             else
             {System.out.println("Prefix match returned null match, this is now a 404");}
         }
-        if (matchedhandler==null) { return new FourZeroFour(); }
+        if (matchedhandler==null) {
+            logger.fine("Requested URI '"+req.getRequestLine().getUri()+"' was not mapped to a page - returning 404.");
+            return new FourZeroFour();
+        }
         return matchedhandler;
     }
 

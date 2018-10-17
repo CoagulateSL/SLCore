@@ -42,7 +42,7 @@ public class PageMapper implements HttpRequestHandlerMapper {
         String matchedprefix="";
         HttpRequestHandler matchedhandler=null;
         for (String prefix:prefixes.keySet()) {
-            if (prefix.startsWith(line)) {
+            if (line.startsWith(prefix)) {
                 if (prefix.length()>matchedprefix.length()) {
                     matchedprefix=prefix;
                     matchedhandler=prefixes.get(prefix);

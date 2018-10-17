@@ -3,6 +3,7 @@ package net.coagulate.SL.HTTPPipelines;
 import static java.util.logging.Level.SEVERE;
 import net.coagulate.SL.Data.Session;
 import net.coagulate.SL.Data.User;
+import net.coagulate.SL.HTTPPipelines.PageMapper.Prefix;
 import net.coagulate.SL.SL;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -17,7 +18,9 @@ import org.apache.http.protocol.HttpRequestHandler;
  * @author Iain Price
  */
 public class SSOExchange implements HttpRequestHandler {
-   @Override
+    @Prefix("/SSO/")
+    public SSOExchange(){super();}
+    @Override
     public void handle(HttpRequest req, HttpResponse resp, HttpContext hc) {
         try {
             

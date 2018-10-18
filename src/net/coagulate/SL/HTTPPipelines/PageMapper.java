@@ -21,7 +21,7 @@ import org.apache.http.protocol.HttpRequestHandlerMapper;
  *
  * @author Iain Price
  */
-public class PageMapper implements HttpRequestHandlerMapper {
+public final class PageMapper implements HttpRequestHandlerMapper {
     private static final boolean DEBUG=false;
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
@@ -99,7 +99,7 @@ public class PageMapper implements HttpRequestHandlerMapper {
             {System.out.println("Prefix match returned null match, this is now a 404");}
         }
         if (matchedhandler==null) {
-            logger.fine("Requested URI '"+req.getRequestLine().getUri()+"' was not mapped to a page - returning 404.");
+            logger.log(Level.FINE, "Requested URI '{0}' was not mapped to a page - returning 404.", req.getRequestLine().getUri());
             return new FourZeroFour();
         }
         return matchedhandler;

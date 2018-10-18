@@ -38,4 +38,10 @@ public class Regions extends LockableTable {
         int time=UnixTime.getUnixTime();
         d("update regions set status=?, since=?, lastupdate=? where id=?",status,time,time,getId());
     }
+
+    public int getSince() {
+        Integer since=getInt("since");
+        if (since==null) { return UnixTime.getUnixTime(); }
+        return since;
+    }
 }

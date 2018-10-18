@@ -1,6 +1,7 @@
 package net.coagulate.SL.Data;
 
 import net.coagulate.Core.Tools.SystemException;
+import net.coagulate.Core.Tools.UnixTime;
 import net.coagulate.SL.SL;
 
 /**
@@ -29,5 +30,12 @@ public class Regions extends LockableTable {
         Integer lu=getInt("lastupdate");
         if (lu==null) { return 0; }
         return lu;
+    }
+
+    public void setLastUpdate() { set("lastupdate",UnixTime.getUnixTime()); }
+
+    public void setNewStatus(String status) {
+        int time=UnixTime.getUnixTime();
+        d("update regions set status=?, since=?, lastupdate=? where id=?",status,time,time,getId());
     }
 }

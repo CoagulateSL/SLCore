@@ -49,6 +49,7 @@ public class SL extends Thread {
         catch (Throwable t) { System.out.println("Main loop crashed: "+t); }
         try { _shutdown(); }
         catch (Throwable t) { System.out.println("Shutdown crashed: "+t); }
+        System.exit(0);
     }
 
     private static void startup() {

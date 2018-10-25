@@ -12,7 +12,7 @@ public class RegionLog extends Table {
     public String getTableName() { return "regionlog"; }
     
     public static void log(int region,String status,int from,int until) {
-        SL.getDB().d("insert into regionlog(regionid,status,from,until) values(?,?,?,?)",region,status,from,until);
+        SL.getDB().d("insert into regionlog(regionid,status,begin,end) values(?,?,?,?)",region,status,from,until);
     }
     
 }

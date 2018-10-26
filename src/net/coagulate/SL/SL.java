@@ -48,9 +48,9 @@ public class SL extends Thread {
             Runtime.getRuntime().addShutdownHook(new SL());
             while (!shutdown) { watchdog(); }
         }
-        catch (Throwable t) { System.out.println("Main loop crashed: "+t); }
+        catch (Throwable t) { System.out.println("Main loop crashed: "+t); t.printStackTrace(); }
         try { _shutdown(); }
-        catch (Throwable t) { System.out.println("Shutdown crashed: "+t); }
+        catch (Throwable t) { System.out.println("Shutdown crashed: "+t); t.printStackTrace(); }
         System.exit(0);
     }
 

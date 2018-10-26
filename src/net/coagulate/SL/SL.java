@@ -63,7 +63,7 @@ public class SL extends Thread {
         }
         LLCATruster.doNotUse();
         ClassTools.getClasses();
-        db=new MariaDBConnection("SL",Config.getJdbc());
+        db=new MariaDBConnection("SL"+(DEV?"DEV":""),Config.getJdbc());
         CATruster.initialise();
         startBot(); 
         Pricing.initialise();

@@ -26,6 +26,7 @@ import net.coagulate.SL.HTTPPipelines.PageMapper;
  * @author Iain Price
  */
 public class SL extends Thread {
+    public static boolean DEV=false;
     public static final String VERSION="v0.00.00";
     private static Logger log;
     public static final Logger getLogger(String subspace) { return Logger.getLogger(log.getName()+"."+subspace); }
@@ -40,6 +41,7 @@ public class SL extends Thread {
     public static void shutdown() { shutdown=true; }
     
     public static void main(String[] args) {
+        if (args.length>0 && args[0].equalsIgnoreCase("DEV")) { DEV=true; }
         try {
             try { startup(); }
             catch (Throwable e) { errored=true; log.log(SEVERE,"Startup failed: "+e.getLocalizedMessage(),e); shutdown=true; }
@@ -54,7 +56,11 @@ public class SL extends Thread {
 
     private static void startup() {
         loggingInitialise();
-        log.config("SL Services starting up on "+Config.getNodeName()+" (#"+Config.getNode()+")");
+        if (!DEV) {
+            log.config("SL Services starting up on "+Config.getNodeName()+" (#"+Config.getNode()+")");
+        } else {
+            log.config("SL DEVELOPMENT Services starting up on "+Config.getNodeName()+" (#"+Config.getNode()+")");
+        }
         LLCATruster.doNotUse();
         ClassTools.getClasses();
         db=new MariaDBConnection("SL",Config.getJdbc());
@@ -65,7 +71,7 @@ public class SL extends Thread {
         startGPHUD();
         waitBot();
         listener=new HTTPSListener(Config.getPort(),Config.getKeyMaterialFile(),new PageMapper());
-        log.info("=====[ Coagulate Second Life Services {JavaCore, JSLBot, GPHUD} version "+VERSION+", startup is fully complete ]=====");
+        log.info("=====[ Coagulate "+(DEV?"DEVELOPMENT ":"")+"Second Life Services {JavaCore, JSLBot, GPHUD} version "+VERSION+", startup is fully complete ]=====");
     }
 
     private static void _shutdown() {

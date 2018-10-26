@@ -95,6 +95,6 @@ public abstract class StringHandler implements HttpRequestHandler {
         return r;
     }
     protected String pageFooter() {
-        return "<div style='position:absolute;bottom:5;right:5;left:5;'><hr><span style='display:block;float:right;'>(C) Iain Maltz @ Second Life</span></div></body></html>";
+        return "<div style='position:absolute;bottom:5;right:5;left:5;'><hr>Test<span style='display:block;float:right;'>(C) Iain Maltz @ Second Life</span></div></body></html>";
     }
 }

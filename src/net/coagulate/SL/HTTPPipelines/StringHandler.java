@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import static java.util.logging.Level.SEVERE;
+import net.coagulate.SL.Config;
 import net.coagulate.SL.SL;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
@@ -95,6 +96,10 @@ public abstract class StringHandler implements HttpRequestHandler {
         return r;
     }
     protected String pageFooter() {
-        return "<div style='position:absolute;bottom:5;right:5;left:5;'><hr>Test<span style='display:block;float:right;'>(C) Iain Maltz @ Second Life</span></div></body></html>";
+        String ret="<div style='position:absolute;bottom:5;right:5;left:5;'><hr>";
+        ret+=(SL.DEV?"Production":"DEVELOPMENT");
+        ret+="// "+Config.getNodeName();
+        ret+="<span style='display:block;float:right;'>(C) Iain Maltz @ Second Life</span></div></body></html>";
+        return ret;
     }
 }

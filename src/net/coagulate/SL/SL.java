@@ -41,8 +41,7 @@ public class SL extends Thread {
     public static void shutdown() { shutdown=true; }
     
     public static void main(String[] args) {
-        System.out.println("Args length:"+args.length);
-        if (args.length>0 && args[0].equalsIgnoreCase("DEV")) { System.out.println("Arg 0:"+args[0]); DEV=true; }
+        if (args.length>0 && args[0].equalsIgnoreCase("DEV")) { DEV=true; }
         try {
             try { startup(); }
             catch (Throwable e) { errored=true; log.log(SEVERE,"Startup failed: "+e.getLocalizedMessage(),e); shutdown=true; }

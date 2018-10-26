@@ -97,7 +97,7 @@ public abstract class StringHandler implements HttpRequestHandler {
     }
     protected String pageFooter() {
         String ret="<div style='position:absolute;bottom:5;right:5;left:5;'><hr>";
-        ret+=(SL.DEV?"Production":"DEVELOPMENT");
+        ret+=(SL.DEV?"DEVELOPMENT":"Production");
         ret+=" // "+Config.getHostName();
         ret+="<span style='display:block;float:right;'>(C) Iain Maltz @ Second Life</span></div></body></html>";
         return ret;

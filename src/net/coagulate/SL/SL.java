@@ -76,7 +76,7 @@ public class SL extends Thread {
 
     private static void _shutdown() {
         log.config("SL Services shutting down");
-        listener.blockingShutdown();
+        if (listener!=null) { listener.blockingShutdown(); }
         if (bot!=null) { bot.shutdown("SL System is shutting down"); }
         DB.shutdown();
         log.config("SL Services shutdown is complete, exiting.");

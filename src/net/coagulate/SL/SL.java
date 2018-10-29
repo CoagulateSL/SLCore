@@ -96,7 +96,7 @@ public class SL extends Thread {
     }
     
     public static void startGPHUD() {
-        GPHUD.initialiseAsModule(SL.DEV,Config.getGPHUDJdbc(),Config.getHostName());
+        GPHUD.initialiseAsModule(SL.DEV,Config.getGPHUDJdbc(),Config.getHostName(),Config.getNode()+1);
         // make sure the lock is ok
         new LockTest(LOCK_NUMBER_GPHUD_MAINTENANCE);
     }

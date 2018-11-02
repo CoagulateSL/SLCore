@@ -41,11 +41,12 @@ public abstract class StringHandler implements HttpRequestHandler {
             state.httpcontext=hc;
             state.parameters=parameters;
             Map<String,String> cookiemap=new HashMap<>();
-            Header cookies = req.getFirstHeader("Cookie");
-            if (cookies!=null) {
-                for (HeaderElement cookieelement:cookies.getElements()) {
-                    cookiemap.put(cookieelement.getName(), cookieelement.getValue());
-                    System.out.println(cookieelement.getName()+"="+cookieelement.getValue());
+            for (Header cookies:req.getHeaders("Cookie")) {
+                if (cookies!=null) {
+                    for (HeaderElement cookieelement:cookies.getElements()) {
+                        cookiemap.put(cookieelement.getName(), cookieelement.getValue());
+                        System.out.println(cookieelement.getName()+"="+cookieelement.getValue());
+                    }
                 }
             }
             state.cookies=cookiemap;

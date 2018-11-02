@@ -12,6 +12,7 @@ import net.coagulate.Core.Tools.SystemException;
 import net.coagulate.Core.Tools.Tokens;
 import net.coagulate.Core.Tools.UnixTime;
 import net.coagulate.Core.Tools.UserException;
+import net.coagulate.GPHUD.GPHUD;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.HTTPPipelines.State;
 import net.coagulate.SL.Pricing;
@@ -22,6 +23,7 @@ import net.coagulate.SL.SL;
  * @author Iain Price
  */
 public class User extends LockableTable {
+
 
     String username;
 
@@ -71,7 +73,6 @@ public class User extends LockableTable {
             return u;
         }
     }
-
     public static User get(String username,boolean createifnecessary) {
         username=formatUsername(username);
         boolean mandatory=true;
@@ -90,8 +91,25 @@ public class User extends LockableTable {
     
     public static User get(String username) { return get(username,false); }
 
+    public static User getDeveloperKey(String key) { 
+        if (key==null || key.equals("")) {
+            return null;
+        }
+        Integer userid=SL.getDB().dqi(false,"select userid from users where developerkey=?",key);
+        if (userid==null) { return null; }
+        return get(userid);
+    }
+
+    public String getDeveloperKey() {
+        return dqs(true,"select developerkey from users where userid=?",getId());
+    }
     
-    
+    public boolean isSuperAdmin() {
+        Integer isadmin=dqi(true,"select superadmin from users where userid=?",getId());
+        return isadmin==1;
+    }
+
+
     
     
     
@@ -120,6 +138,7 @@ public class User extends LockableTable {
 
     public boolean checkPassword(String password) {
         String hash=dqs(true,"select password from users where id=?",getId());
+        if (hash==null || hash.isEmpty()) { GPHUD.getLogger().warning("Attempt to log in with a null or empty password hash for user "+getUsername()); return false; }        
         return Passwords.verifyPassword(password,hash);
     }
 

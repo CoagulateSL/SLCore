@@ -47,6 +47,7 @@ public abstract class StringHandler implements HttpRequestHandler {
                     if (kv.length!=2) {
                         SL.getLogger().log(Level.WARNING,"Unusual cookie element to parse in line "+header.getValue()+" piece "+component);
                     } else {
+                        System.out.println(kv[0]+"="+kv[1]);
                         cookiemap.put(kv[0],kv[1]);
                     }
                 }

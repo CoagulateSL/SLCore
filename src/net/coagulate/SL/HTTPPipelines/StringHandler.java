@@ -45,6 +45,7 @@ public abstract class StringHandler implements HttpRequestHandler {
             if (cookies!=null) {
                 for (HeaderElement cookieelement:cookies.getElements()) {
                     cookiemap.put(cookieelement.getName(), cookieelement.getValue());
+                    System.out.println(cookieelement.getName()+"="+cookieelement.getValue());
                 }
             }
             state.cookies=cookiemap;

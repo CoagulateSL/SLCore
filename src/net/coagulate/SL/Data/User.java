@@ -95,17 +95,17 @@ public class User extends LockableTable {
         if (key==null || key.equals("")) {
             return null;
         }
-        Integer userid=SL.getDB().dqi(false,"select userid from users where developerkey=?",key);
+        Integer userid=SL.getDB().dqi(false,"select id from users where developerkey=?",key);
         if (userid==null) { return null; }
         return get(userid);
     }
 
     public String getDeveloperKey() {
-        return dqs(true,"select developerkey from users where userid=?",getId());
+        return dqs(true,"select developerkey from users where id=?",getId());
     }
     
     public boolean isSuperAdmin() {
-        Integer isadmin=dqi(true,"select superadmin from users where userid=?",getId());
+        Integer isadmin=dqi(true,"select superadmin from users where id=?",getId());
         return isadmin==1;
     }
 

@@ -3,6 +3,7 @@ package net.coagulate.SL.HTTPPipelines;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.SL;
@@ -42,8 +43,12 @@ public abstract class StringHandler implements HttpRequestHandler {
             Map<String,String> cookiemap=new HashMap<>();
             for (Header header:req.getHeaders("Cookie")) {
                 for (String component:header.getValue().split(";")) {
-                    //cookiemap.put(cookieelement.getName(), cookieelement.getValue());
-                    System.out.println("'"+component+"'");
+                    String kv[]=component.split("=");
+                    if (kv.length!=2) {
+                        SL.getLogger().log(Level.WARNING,"Unusual cookie element to parse in line "+header.getValue()+" piece "+component);
+                    } else {
+                        cookiemap.put(kv[0],kv[1]);
+                    }
                 }
             }
             state.cookies=cookiemap;

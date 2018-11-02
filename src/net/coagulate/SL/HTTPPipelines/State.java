@@ -1,5 +1,4 @@
 package net.coagulate.SL.HTTPPipelines;
-import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -8,7 +7,7 @@ import static java.util.logging.Level.WARNING;
 import net.coagulate.SL.Data.Session;
 import net.coagulate.SL.Data.User;
 import net.coagulate.SL.SL;
-import org.apache.http.HttpInetConnection;
+import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.*;
@@ -52,12 +51,16 @@ public class State {
     Page.PAGETYPE pagetype=Page.PAGETYPE.NONE;
     boolean page_firstinput=true;
     public String getClientIP() {
-        try { 
-            HttpInetConnection connection = (HttpInetConnection) httpcontext.getAttribute(ExecutionContext.HTTP_CONNECTION);
-            InetAddress ia = connection.getRemoteAddress();        
-            return ia.getCanonicalHostName()+" / "+ia.getHostAddress();
-        } catch (Exception e) { SL.getLogger().log(WARNING,"Exception getting client address",e); }
-        return "UNKNOWN";
+        /*
+        try {
+        HttpInetConnection connection = (HttpInetConnection) httpcontext.getAttribute(ExecutionContext.HTTP_CONNECTION);
+        InetAddress ia = connection.getRemoteAddress();
+        return ia.getCanonicalHostName()+" / "+ia.getHostAddress();
+        } catch (Exception e) { SL.getLogger().log(WARNING,"Exception getting client address",e); }*/
+        Header[] headers = request.getHeaders("X-Forwarded-For");
+        if (headers.length==0) { SL.getLogger().log(WARNING,"Zero X-Forwarded-For headers"); return "UNKNOWN"; }
+        if (headers.length>1) { SL.getLogger().log(WARNING,"More than one X-Forwarded-For header?"); }
+        return headers[0].getValue();
     }
     HttpRequest request; //public HttpRequest request() {  return request; }
     HttpResponse response; 

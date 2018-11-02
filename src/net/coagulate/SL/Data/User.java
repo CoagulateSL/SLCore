@@ -133,7 +133,7 @@ public class User extends LockableTable {
     public void setPassword(String password) throws UserException {
         if (password.length()<6) { throw new UserException("Password not long enough"); }
         d("update users set password=? where id=?",Passwords.createHash(password),getId());
-        SL.getLogger().info("User has set password from "+State.get().getClientIP());
+        SL.getLogger().info("User "+this.getUsername()+" has set password from "+State.get().getClientIP());
     }
 
     public boolean checkPassword(String password) {

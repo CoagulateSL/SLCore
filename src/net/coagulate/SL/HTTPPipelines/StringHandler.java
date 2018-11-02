@@ -7,7 +7,6 @@ import static java.util.logging.Level.SEVERE;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.SL;
 import org.apache.http.Header;
-import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -41,15 +40,10 @@ public abstract class StringHandler implements HttpRequestHandler {
             state.httpcontext=hc;
             state.parameters=parameters;
             Map<String,String> cookiemap=new HashMap<>();
-            for (Header h:req.getAllHeaders()) {
-                System.out.println(h.getName()+"="+h.getValue());
-            }
-            for (Header cookies:req.getHeaders("Cookie")) {
-                if (cookies!=null) {
-                    for (HeaderElement cookieelement:cookies.getElements()) {
-                        cookiemap.put(cookieelement.getName(), cookieelement.getValue());
-                        System.out.println(cookieelement.getName()+"="+cookieelement.getValue());
-                    }
+            for (Header header:req.getHeaders("Cookie")) {
+                for (String component:header.getValue().split(";")) {
+                    //cookiemap.put(cookieelement.getName(), cookieelement.getValue());
+                    System.out.println("'"+component+"'");
                 }
             }
             state.cookies=cookiemap;

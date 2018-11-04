@@ -30,6 +30,10 @@ public class Index extends Page {
         p("This can be used to automate group invites, group ejects, and other features");
         closeServiceCell();
         raw("</ul></td></tr>");
+        raw("<tr width=100%><td width=100%><ul style=\"white-space: nowrap;\">");
+        openServiceCell("GPHUD","/GPHUD/");
+        p("GPHUD is the 2nd generation role-play HUD.");
+        p("This is used to implement various game modes at sims.");
         raw("</table>");
     }
 

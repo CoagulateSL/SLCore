@@ -115,9 +115,9 @@ public class SL extends Thread {
         watchdogcycle++;
         if ((watchdogcycle % 10)==0) { net.coagulate.SL.HTTPPipelines.State.cleanup(); }
 
-        if ((watchdogcycle % 60)==0) { gphudMaintenance(); }
+        if (((watchdogcycle+gphudoffset) % 60)==0) { gphudMaintenance(); }
     }
-    
+    private static int gphudoffset=0;
     private static void gphudMaintenance() {
         try { Maintenance.refreshCharacterURLs(); }
         catch (Exception e) { GPHUD.getLogger().log(SEVERE,"Maintenance refresh character URLs caught an exception",e); }
@@ -128,7 +128,7 @@ public class SL extends Thread {
         LockTest lock=new LockTest(LOCK_NUMBER_GPHUD_MAINTENANCE);
         int lockserial;
         try { lockserial=lock.lock(60); }
-        catch (LockException e) { GPHUD.getLogger().finer("Maintenance didn't aquire lock: "+e.getLocalizedMessage()); return; } // maintenance session already locked            
+        catch (LockException e) { gphudoffset=gphudoffset+((int)Math.random()*10); GPHUD.getLogger().finer("Maintenance didn't aquire lock: "+e.getLocalizedMessage()); return; } // maintenance session already locked            
             
         try { Maintenance.startEvents(); }
         catch (Exception e) { GPHUD.getLogger().log(SEVERE,"Maintenance start events caught an exception",e); }            

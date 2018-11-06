@@ -9,6 +9,7 @@ import net.coagulate.Core.Database.MariaDBConnection;
 import net.coagulate.Core.HTTP.HTTPSListener;
 import net.coagulate.Core.Tools.ClassTools;
 import net.coagulate.Core.Tools.LogHandler;
+import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.SystemException;
 import net.coagulate.GPHUD.GPHUD;
 import net.coagulate.GPHUD.Maintenance;
@@ -55,13 +56,14 @@ public class SL extends Thread {
     }
 
     private static void startup() {
+        configureMailTarget();
         loggingInitialise();
         if (!DEV) {
             log.config("SL Services starting up on "+Config.getNodeName()+" (#"+Config.getNode()+")");
         } else {
             log.config("SL DEVELOPMENT Services starting up on "+Config.getNodeName()+" (#"+Config.getNode()+")");
         }
-        LLCATruster.doNotUse();
+        LLCATruster.doNotUse(); // as in we use our own truster later on
         ClassTools.getClasses();
         db=new MariaDBConnection("SL"+(DEV?"DEV":""),Config.getJdbc());
         CATruster.initialise();
@@ -149,8 +151,17 @@ public class SL extends Thread {
     }
     
     private static void loggingInitialise() {
+        LogHandler.mailprefix="EXCEPTION: "+(DEV?"Dev/":"PRODUCTION/")+Config.getHostName();
         LogHandler.initialise();
         log=Logger.getLogger("net.coagulate.SL");        
+    }
+    
+    private static void configureMailTarget() {
+        MailTools.defaultfromaddress="sl-cluster-alerts@predestined.net";
+        MailTools.defaulttoaddress=MailTools.defaultfromaddress;
+        MailTools.defaulttoname="SL Developers";
+        MailTools.defaultfromname=(DEV?"Dev ":"")+Config.getHostName();
+        MailTools.defaultserver="127.0.0.1";
     }
 
     public static DBConnection getDB() { return db; }

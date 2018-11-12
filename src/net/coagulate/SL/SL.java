@@ -193,8 +193,10 @@ public class SL extends Thread {
             zabbix.getOutputStream().close();
             String output=ByteTools.convertStreamToString(zabbix.getInputStream());
             String error=ByteTools.convertStreamToString(zabbix.getErrorStream());
-            getLogger().fine("Zabbix output:"+output);
-            getLogger().fine("Zabbix stderr:"+error);
+            //getLogger().fine("Zabbix output:"+output);
+            //getLogger().fine("Zabbix stderr:"+error);
+            zabbix.getErrorStream().close();
+            zabbix.getOutputStream().close();
         } catch (IOException e) {
             getLogger().log(Level.WARNING,"Error while passing stats to zabbix",e);
         }

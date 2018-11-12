@@ -121,7 +121,7 @@ public class SL extends Thread {
 
         if (((watchdogcycle+gphudoffset) % 60)==0) { gphudMaintenance(); }
         
-        if (laststats>(new Date().getTime()+60000)) {
+        if ((laststats+60000)<new Date().getTime()) {
             dbStats();
             laststats=new Date().getTime();
         }

@@ -1,5 +1,6 @@
 package net.coagulate.SL;
 
+import java.util.Date;
 import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
 import net.coagulate.Core.Database.DB;
@@ -104,6 +105,7 @@ public class SL extends Thread {
     }
     
     private static int watchdogcycle=0;
+    private static long laststats=new Date().getTime();
     public static void watchdog() {
         try { Thread.sleep(1000); } catch (InterruptedException e) {}
         if (shutdown) return;
@@ -118,6 +120,11 @@ public class SL extends Thread {
         if ((watchdogcycle % 10)==0) { net.coagulate.SL.HTTPPipelines.State.cleanup(); }
 
         if (((watchdogcycle+gphudoffset) % 60)==0) { gphudMaintenance(); }
+        
+        if ((laststats+60000)>new Date().getTime()) {
+            dbStats();
+            laststats=new Date().getTime()+60000;
+        }
     }
     private static int gphudoffset=0;
     private static void gphudMaintenance() {
@@ -148,6 +155,13 @@ public class SL extends Thread {
         catch (Exception e) { GPHUD.getLogger().log(SEVERE,"Maintenance update Instances caught an exception",e); }
         
         lock.unlock(lockserial);
+    }
+    
+    private static void dbStats() {
+        for (DBConnection db:DB.get()) {
+            DBConnection.DBStats stats = db.getStats();
+            getLogger().fine("Stats: "+stats.queries+"q, avg "+stats.queryaverage+" worst "+stats.querymax+".  "+stats.updates+"u, avg "+stats.updateaverage+" worst "+stats.updatemax);
+        }
     }
     
     private static void loggingInitialise() {

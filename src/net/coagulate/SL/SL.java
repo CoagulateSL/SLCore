@@ -158,10 +158,23 @@ public class SL extends Thread {
     }
     
     private static void dbStats() {
+        int queries=0; int updates=0;
+        long querytime=0; long updatetime=0;
+        long querymax=0; long updatemax=0;
         for (DBConnection db:DB.get()) {
             DBConnection.DBStats stats = db.getStats();
-            getLogger().fine("Stats: "+stats.queries+"q, avg "+stats.queryaverage+" worst "+stats.querymax+".  "+stats.updates+"u, avg "+stats.updateaverage+" worst "+stats.updatemax);
+            queries=queries+stats.queries;
+            updates=updates+stats.updates;
+            querytime=querytime+stats.querytotal;
+            updatetime=updatetime+stats.updatetotal;
+            if (stats.querymax>querymax) { querymax=stats.querymax; }
+            if (stats.updatemax>updatemax) { updatemax=stats.updatemax; }
         }
+        float queryavg=0;
+        float updateavg=0;
+        if (queries>0) { queryavg=querytime/queries; }
+        if (updates>0) { updateavg=updatetime/updates; }
+        getLogger().fine("Stats: "+queries+"q, avg "+queryavg+" worst "+querymax+".  "+updates+"u, avg "+updateavg+" worst "+updatemax);
     }
     
     private static void loggingInitialise() {

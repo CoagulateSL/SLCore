@@ -1,6 +1,9 @@
 package net.coagulate.SL;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
 import net.coagulate.Core.Database.DB;
@@ -8,6 +11,7 @@ import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Database.LockException;
 import net.coagulate.Core.Database.MariaDBConnection;
 import net.coagulate.Core.HTTP.HTTPSListener;
+import net.coagulate.Core.Tools.ByteTools;
 import net.coagulate.Core.Tools.ClassTools;
 import net.coagulate.Core.Tools.LogHandler;
 import net.coagulate.Core.Tools.MailTools;
@@ -158,6 +162,7 @@ public class SL extends Thread {
     }
     
     private static void dbStats() {
+        if (DEV) {return;} // only log for production.
         int queries=0; int updates=0;
         long querytime=0; long updatetime=0;
         long querymax=0; long updatemax=0;
@@ -174,7 +179,25 @@ public class SL extends Thread {
         float updateavg=0;
         if (queries>0) { queryavg=querytime/queries; }
         if (updates>0) { updateavg=updatetime/updates; }
-        getLogger().fine("Stats: "+queries+"q, avg "+queryavg+" worst "+querymax+".  "+updates+"u, avg "+updateavg+" worst "+updatemax);
+        //getLogger().fine("Stats: "+queries+"q, avg "+queryavg+" worst "+querymax+".  "+updates+"u, avg "+updateavg+" worst "+updatemax);
+        String results="";
+        results+=Config.getHostName().toLowerCase()+" mariadb.cluster.queries "+queries+"\n";
+        results+=Config.getHostName().toLowerCase()+" mariadb.cluster.queryavg "+queryavg+"\n";
+        results+=Config.getHostName().toLowerCase()+" mariadb.cluster.querymax "+querymax+"\n";
+        results+=Config.getHostName().toLowerCase()+" mariadb.cluster.updates "+updates+"\n";
+        results+=Config.getHostName().toLowerCase()+" mariadb.cluster.updateavg "+updateavg+"\n";
+        results+=Config.getHostName().toLowerCase()+" mariadb.cluster.updatemax "+updatemax+"\n";
+        try {
+            Process zabbix=Runtime.getRuntime().exec(new String[]{"/usr/bin/zabbix_sender","-z","10.0.0.1","-i-"});
+            zabbix.getOutputStream().write(results.getBytes(StandardCharsets.UTF_8));
+            zabbix.getOutputStream().close();
+            String output=ByteTools.convertStreamToString(zabbix.getInputStream());
+            String error=ByteTools.convertStreamToString(zabbix.getErrorStream());
+            getLogger().fine("Zabbix output:"+output);
+            getLogger().fine("Zabbix stderr:"+error);
+        } catch (IOException e) {
+            getLogger().log(Level.WARNING,"Error while passing stats to zabbix",e);
+        }
     }
     
     private static void loggingInitialise() {

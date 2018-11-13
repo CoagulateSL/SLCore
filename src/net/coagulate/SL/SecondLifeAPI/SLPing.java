@@ -22,4 +22,6 @@ public class SLPing extends SLAPI {
         return object;
     }
     
+    @Override
+    protected boolean needsDigest() { return false; }
 }

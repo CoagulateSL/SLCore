@@ -30,26 +30,27 @@ public abstract class SLAPI implements HttpRequestHandler {
                 HttpEntityEnclosingRequest r=(HttpEntityEnclosingRequest) req;
                 content=new JSONObject(ByteTools.convertStreamToString(r.getEntity().getContent()));
             }
-            String digest=content.optString("digest");
-            if (key==null) {
-                SL.getLogger().log(SEVERE,"No object owner key provided to Second Life API");
-                resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return;
-            }
-            if (digest==null) {
-                SL.getLogger().log(SEVERE,"No digest provided to Second Life API");
-                resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return;
-            }
-            String timestamp=content.optString("timestamp");
-            if (timestamp==null) {
-                SL.getLogger().log(SEVERE,"No timestamp provided to Second Life API");
-                resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return;
-            }
-            String targetdigest=Crypto.SHA1(key+timestamp+"***REMOVED***");
-            if (!targetdigest.equalsIgnoreCase(digest)) {
-                SL.getLogger().log(SEVERE,"Incorrect digest provided to Second Life API");
-                resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return;                
-            }
-            
+            if (needsDigest()) {
+                String digest=content.optString("digest");
+                if (key==null) {
+                    SL.getLogger().log(SEVERE,"No object owner key provided to Second Life API");
+                    resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return;
+                }
+                if (digest==null) {
+                    SL.getLogger().log(SEVERE,"No digest provided to Second Life API");
+                    resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return;
+                }
+                String timestamp=content.optString("timestamp");
+                if (timestamp==null) {
+                    SL.getLogger().log(SEVERE,"No timestamp provided to Second Life API");
+                    resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return;
+                }
+                String targetdigest=Crypto.SHA1(key+timestamp+"***REMOVED***");
+                if (!targetdigest.equalsIgnoreCase(digest)) {
+                    SL.getLogger().log(SEVERE,"Incorrect digest provided to Second Life API");
+                    resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return;                
+                }
+            }   
             JSONObject response=handleJSON(content);
             resp.setEntity(new StringEntity(response.toString(),ContentType.APPLICATION_JSON));
             resp.setStatusCode(HttpStatus.SC_OK);
@@ -65,4 +66,5 @@ public abstract class SLAPI implements HttpRequestHandler {
     }     
 
     protected abstract JSONObject handleJSON(JSONObject object);
+    protected boolean needsDigest() { return true; }
 }

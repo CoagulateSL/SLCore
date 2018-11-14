@@ -10,7 +10,7 @@ import net.coagulate.Core.Database.DB;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Database.LockException;
 import net.coagulate.Core.Database.MariaDBConnection;
-import net.coagulate.Core.HTTP.HTTPSListener;
+import net.coagulate.Core.HTTP.HTTPListener;
 import net.coagulate.Core.Tools.ByteTools;
 import net.coagulate.Core.Tools.ClassTools;
 import net.coagulate.Core.Tools.LogHandler;
@@ -42,7 +42,7 @@ public class SL extends Thread {
     private static boolean shutdown=false;
     private static boolean errored=false;
     private static DBConnection db;
-    private static HTTPSListener listener;
+    private static HTTPListener listener;
     
     public static void shutdown() { shutdown=true; }
     
@@ -77,7 +77,7 @@ public class SL extends Thread {
         IPC.test();
         startGPHUD();
         waitBot();
-        listener=new HTTPSListener(Config.getPort(),Config.getKeyMaterialFile(),new PageMapper());
+        listener=new HTTPListener(Config.getPort(),Config.getKeyMaterialFile(),new PageMapper());
         log.info("=====[ Coagulate "+(DEV?"DEVELOPMENT ":"")+"Second Life Services {JavaCore, JSLBot, GPHUD} version "+VERSION+", startup is fully complete ]=====");
     }
 

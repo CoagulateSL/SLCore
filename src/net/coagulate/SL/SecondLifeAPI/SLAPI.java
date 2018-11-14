@@ -25,12 +25,12 @@ public abstract class SLAPI implements HttpRequestHandler {
     public void handle(HttpRequest req, HttpResponse resp, HttpContext hc) {
         try {
             JSONObject content=new JSONObject();
-            String key=req.getHeaders("X-SecondLife-Object-Key")[0].getValue();
             if (req instanceof HttpEntityEnclosingRequest) {
                 HttpEntityEnclosingRequest r=(HttpEntityEnclosingRequest) req;
                 content=new JSONObject(ByteTools.convertStreamToString(r.getEntity().getContent()));
             }
             if (needsDigest()) {
+                String key=req.getHeaders("X-SecondLife-Object-Key")[0].getValue();
                 String digest=content.optString("digest");
                 if (key==null) {
                     SL.getLogger().log(SEVERE,"No object owner key provided to Second Life API");

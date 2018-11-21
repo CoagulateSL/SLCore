@@ -2,6 +2,7 @@ package net.coagulate.SL;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;
@@ -23,6 +24,7 @@ import static net.coagulate.GPHUD.Maintenance.cycle;
 import net.coagulate.GPHUD.Modules.Experience.VisitXP;
 import net.coagulate.JSLBot.JSLBot;
 import net.coagulate.JSLBot.LLCATruster;
+import net.coagulate.LSLR.LSLR;
 import static net.coagulate.SL.Config.LOCK_NUMBER_GPHUD_MAINTENANCE;
 import net.coagulate.SL.Data.LockTest;
 import net.coagulate.SL.HTTPPipelines.PageMapper;
@@ -76,6 +78,7 @@ public class SL extends Thread {
         Pricing.initialise();
         IPC.test();
         startGPHUD();
+        startLSLR();
         waitBot();
         listener=new HTTPListener(Config.getPort(),Config.getKeyMaterialFile(),new PageMapper());
         log.info("=====[ Coagulate "+(DEV?"DEVELOPMENT ":"")+"Second Life Services {JavaCore, JSLBot, GPHUD, LSLR} version "+VERSION+", startup is fully complete ]=====");
@@ -95,6 +98,14 @@ public class SL extends Thread {
         bot=new JSLBot(Config.getBotConfig());
         bot.registershutdownhook=false;
         bot.start();
+    }
+    private static void startLSLR() {
+        if (DEV) { 
+            log.config("Starting LSLR submodule for Quiet Life Rentals services");
+            try { LSLR.initialise(); }
+            catch (SQLException e) { throw new SystemException("LSLR startup failed",e); }
+            log.config("Started LSLR submodule");
+        }
     }
     private static void waitBot() {
         try { bot.waitConnection(30000); }  catch (IllegalStateException e) {}

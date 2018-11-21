@@ -78,7 +78,7 @@ public class SL extends Thread {
         startGPHUD();
         waitBot();
         listener=new HTTPListener(Config.getPort(),Config.getKeyMaterialFile(),new PageMapper());
-        log.info("=====[ Coagulate "+(DEV?"DEVELOPMENT ":"")+"Second Life Services {JavaCore, JSLBot, GPHUD} version "+VERSION+", startup is fully complete ]=====");
+        log.info("=====[ Coagulate "+(DEV?"DEVELOPMENT ":"")+"Second Life Services {JavaCore, JSLBot, GPHUD, LSLR} version "+VERSION+", startup is fully complete ]=====");
     }
 
     private static void _shutdown() {

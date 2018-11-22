@@ -100,7 +100,7 @@ public class SL extends Thread {
         bot.start();
     }
     private static void startLSLR() {
-        if (DEV) { 
+        if (!DEV) { 
             log.config("Starting LSLR submodule for Quiet Life Rentals services");
             try { LSLR.initialise(); }
             catch (SQLException e) { throw new SystemException("LSLR startup failed",e); }

@@ -4,6 +4,7 @@ import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
 import net.coagulate.Core.Tools.ByteTools;
 import net.coagulate.Core.Tools.Crypto;
+import net.coagulate.Core.Tools.UnixTime;
 import net.coagulate.SL.SL;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
@@ -45,6 +46,10 @@ public abstract class SLAPI implements HttpRequestHandler {
                     SL.getLogger().log(SEVERE,"No timestamp provided to Second Life API");
                     resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return;
                 }
+                // not replay attack proof :(  still, the wires are /reasonably/ secure.  maybe later.  hmm
+                int timestampoffset=UnixTime.getUnixTime()-Integer.parseInt(timestamp);
+                if (timestampoffset<0) { timestampoffset=-timestampoffset; }
+                if (timestampoffset>300) { SL.getLogger().log(SEVERE,"Timestamp deviates by more than 300 seconds"); resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return; }
                 String targetdigest=Crypto.SHA1(key+timestamp+"***REMOVED***");
                 if (!targetdigest.equalsIgnoreCase(digest)) {
                     SL.getLogger().log(SEVERE,"Incorrect digest provided to Second Life API");

@@ -2,6 +2,7 @@ package net.coagulate.SL.SecondLifeAPI;
 
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
+import java.util.logging.Logger;
 import net.coagulate.Core.Tools.ByteTools;
 import net.coagulate.Core.Tools.Crypto;
 import net.coagulate.Core.Tools.UnixTime;
@@ -22,6 +23,10 @@ import org.json.JSONObject;
  */
 public abstract class SLAPI implements HttpRequestHandler {
 
+    public Logger getLogger() {
+        String classname=this.getClass().getSimpleName();
+        return SL.getLogger("SLAPI."+classname);
+    }
    @Override
     public void handle(HttpRequest req, HttpResponse resp, HttpContext hc) {
         try {

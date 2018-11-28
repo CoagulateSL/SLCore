@@ -21,6 +21,7 @@ public class CallBack extends SLAPI {
         object.put("node",Config.getNode()); // 0 1 2
         object.put("hostname",Config.getHostName()); // saturn mars neptune
         getLogger().fine("CallBack received for URL "+url);
+        new Transmit(object,url).run();
         return object;
     }
     

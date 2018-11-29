@@ -11,8 +11,8 @@ public class RegionLog extends Table {
     @Override
     public String getTableName() { return "regionlog"; }
     
-    public static void log(int region,String status,int from,int until) {
-        SL.getDB().d("insert into regionlog(regionid,status,begin,end) values(?,?,?,?)",region,status,from,until);
+    public static void log(int region,String changetype,String status,int from,int until) {
+        SL.getDB().d("insert into regionlog(regionid,changetype,status,begin,end) values(?,?,?,?)",region,changetype,status,from,until);
     }
     
 }

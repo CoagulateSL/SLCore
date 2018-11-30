@@ -41,7 +41,7 @@ public class Regions extends LockableTable {
 
     public int getSince() {
         Integer since=getInt("since");
-        if (since==null) { return UnixTime.getUnixTime(); }
+        if (since==null) { return 0; }
         return since;
     }
 }

@@ -28,6 +28,10 @@ public abstract class StringHandler implements HttpRequestHandler {
     public void handle(HttpRequest req, HttpResponse resp, HttpContext hc) {
         try {
             Map<String,String> parameters=new HashMap<>();
+            System.out.println(req.getRequestLine());
+
+            
+
             if (req instanceof HttpEntityEnclosingRequest) {
                 HttpEntityEnclosingRequest r=(HttpEntityEnclosingRequest) req;
                 List<NameValuePair> map = URLEncodedUtils.parse(r.getEntity());
@@ -35,7 +39,6 @@ public abstract class StringHandler implements HttpRequestHandler {
                     parameters.put(kv.getName(),kv.getValue());
                 }
             }
-            System.out.println(req.getRequestLine());
             State state=State.create();
             state.request=req;
             state.response=resp;

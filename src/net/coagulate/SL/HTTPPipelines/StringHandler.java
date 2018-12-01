@@ -35,6 +35,7 @@ public abstract class StringHandler implements HttpRequestHandler {
                     parameters.put(kv.getName(),kv.getValue());
                 }
             }
+            System.out.println(req.getRequestLine());
             State state=State.create();
             state.request=req;
             state.response=resp;

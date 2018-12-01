@@ -11,7 +11,7 @@ import net.coagulate.SL.SL;
 public class RegionLog extends Table {
 
     public static Results getLast(Regions region) {
-        return SL.getDB().dq("select tds,changetype,oldvalue,newvalue from regionlog where regionid=?",region.getId());
+        return SL.getDB().dq("select tds,changetype,oldvalue,newvalue from regionlog where regionid=? order by tds desc limit 0,100",region.getId());
     }
 
     @Override

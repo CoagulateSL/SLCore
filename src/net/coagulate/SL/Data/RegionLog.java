@@ -1,5 +1,6 @@
 package net.coagulate.SL.Data;
 
+import net.coagulate.Core.Database.Results;
 import net.coagulate.Core.Tools.UnixTime;
 import net.coagulate.SL.SL;
 
@@ -8,6 +9,10 @@ import net.coagulate.SL.SL;
  * @author Iain Price
  */
 public class RegionLog extends Table {
+
+    public static Results getLast(Regions region) {
+        return SL.getDB().dq("select tds,changetype,oldvalue,newvalue from regionlog where regionid=?",region.getId());
+    }
 
     @Override
     public String getTableName() { return "regionlog"; }

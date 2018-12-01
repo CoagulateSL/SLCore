@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
+import net.coagulate.Core.Tools.UserException;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.SL;
 import org.apache.http.Header;
@@ -65,7 +67,12 @@ public abstract class StringHandler implements HttpRequestHandler {
             }
             state.cookies=cookiemap;
             state.setSessionId(cookiemap.get("coagulateslsessionid"));
-            String content=handleString();
+            String content="<p><b>WEIRD INTERNAL LOGIC ERROR</b></p>";
+            try { content=handleString(); }
+            catch (UserException ue) {
+                SL.getLogger().log(WARNING,"User exception propagated to handler",ue);
+                content="<p>Exception: "+ue.getLocalizedMessage()+"</p>";
+            }
             resp.setEntity(new StringEntity(pageHeader()+content+pageFooter(),ContentType.TEXT_HTML));
             if (state.sessionid!=null) {
                 if (!state.sessionid.equals(cookiemap.get("coagulateslsessionid"))) {
@@ -74,7 +81,8 @@ public abstract class StringHandler implements HttpRequestHandler {
             } else { resp.addHeader("Set-Cookie","coagulateslsessionid=none; HttpOnly; Path=/; Domain=coagulate.net; expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure;"); }
             resp.setStatusCode(getReturnStatus());
             return;
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             SL.getLogger().log(SEVERE,"Unexpected exception thrown in page handler",ex);
             resp.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
             resp.setEntity(new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>",ContentType.TEXT_HTML));

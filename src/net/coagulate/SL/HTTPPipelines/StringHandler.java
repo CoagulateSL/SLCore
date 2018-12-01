@@ -1,5 +1,7 @@
 package net.coagulate.SL.HTTPPipelines;
 
+import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,12 +26,16 @@ import org.apache.http.protocol.HttpRequestHandler;
  * @author Iain Price
  */
 public abstract class StringHandler implements HttpRequestHandler {
+    private static final boolean DEBUG_PARAMS=true;
    @Override
     public void handle(HttpRequest req, HttpResponse resp, HttpContext hc) {
         try {
             Map<String,String> parameters=new HashMap<>();
-            System.out.println(req.getRequestLine());
-
+            List<NameValuePair> uriparams=URLEncodedUtils.parse(new URI(req.getRequestLine().getUri()),Charset.forName("UTF-8"));
+            for (NameValuePair up:uriparams) {
+                parameters.put(up.getName(),up.getValue());
+                if (DEBUG_PARAMS) { System.out.println("Imported URI parameter '"+up.getName()+"'='"+up.getValue()+"'"); }
+            }
             
 
             if (req instanceof HttpEntityEnclosingRequest) {
@@ -37,6 +43,7 @@ public abstract class StringHandler implements HttpRequestHandler {
                 List<NameValuePair> map = URLEncodedUtils.parse(r.getEntity());
                 for (NameValuePair kv:map) {
                     parameters.put(kv.getName(),kv.getValue());
+                    if (DEBUG_PARAMS) { System.out.println("Imported POST parameter '"+kv.getName()+"'='"+kv.getValue()+"'"); }
                 }
             }
             State state=State.create();

@@ -10,6 +10,7 @@ import net.coagulate.SL.Config;
 import net.coagulate.SL.HTTPPipelines.Page;
 import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
 import net.coagulate.SL.HTTPPipelines.State;
+import net.coagulate.SL.SL;
 
 /**
  *
@@ -37,8 +38,13 @@ public class ControlPanel extends Page {
             }
             para("Sent mail");
         }
+        if (state.get("Region Stats Archival").equals("Region Stats Archival")) {
+            para("Running Region State");
+            SL.regionStatsArchival();
+        }
         startForm();
         submit("Test Mail");
+        submit("Region Stats Archival");
         endForm();
     }
 

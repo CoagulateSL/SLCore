@@ -66,8 +66,8 @@ public class SL extends Thread {
     }
 
     private static void startup() {
-        configureMailTarget();
         loggingInitialise();
+        configureMailTarget(); // mails are gonna be messed up coming from logging init
         if (!DEV) {
             log.config("SL Services starting up on "+Config.getNodeName()+" (#"+Config.getNode()+")");
         } else {

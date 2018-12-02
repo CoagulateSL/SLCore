@@ -145,6 +145,7 @@ public class SL extends Thread {
         }
         if (nextarchival<new Date().getTime()) {
             regionStatsArchival();
+            nextarchival+=(1000*60*60);
         }
     }
     private static int gphudoffset=0;

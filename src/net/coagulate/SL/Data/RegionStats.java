@@ -38,7 +38,7 @@ public class RegionStats extends Table {
         
         // range is "from" to "to", subtract the from, divide by the total range, scale to size
         return d.dq("select "
-                    + "round(100*((timestamp-?)/?)) as x,"
+                    + "round(?*((timestamp-?)/?)) as x,"
                     + "timestamp,"
                     + "min(statmin) as plotmin,"
                     + "max(statmax) as plotmax,"
@@ -50,7 +50,7 @@ public class RegionStats extends Table {
                     + "and timestamp<=? "
                     + "and stattype=? "
                 + "group by x "
-                + "order by timestamp asc",from,timerange,from,to,stattype);
+                + "order by timestamp asc",xsize,from,timerange,from,to,stattype);
     }
     
     

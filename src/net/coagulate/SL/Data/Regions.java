@@ -44,4 +44,8 @@ public class Regions extends LockableTable {
         if (since==null) { return 0; }
         return since;
     }
+
+    public String getName() {
+        return getString("region");
+    }
 }

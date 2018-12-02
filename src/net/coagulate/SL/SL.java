@@ -54,7 +54,8 @@ public class SL extends Thread {
         if (args.length>0 && args[0].equalsIgnoreCase("DEV")) { DEV=true; }
         try {
             try { startup(); }
-            catch (Throwable e) { errored=true; log.log(SEVERE,"Startup failed: "+e.getLocalizedMessage(),e); shutdown=true; }
+            // print stack trace is discouraged, but the log handler may not be ready yet.
+            catch (Throwable e) { errored=true; e.printStackTrace(); log.log(SEVERE,"Startup failed: "+e.getLocalizedMessage(),e); shutdown=true; }
             Runtime.getRuntime().addShutdownHook(new SL());
             while (!shutdown) { watchdog(); }
         }

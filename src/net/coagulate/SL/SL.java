@@ -26,7 +26,9 @@ import net.coagulate.JSLBot.JSLBot;
 import net.coagulate.JSLBot.LLCATruster;
 import net.coagulate.LSLR.LSLR;
 import static net.coagulate.SL.Config.LOCK_NUMBER_GPHUD_MAINTENANCE;
+import static net.coagulate.SL.Config.LOCK_NUMBER_REGIONSTATS_ARCHIVAL;
 import net.coagulate.SL.Data.LockTest;
+import net.coagulate.SL.Data.RegionStats;
 import net.coagulate.SL.HTTPPipelines.PageMapper;
 
 /** Bootstrap class.
@@ -121,6 +123,7 @@ public class SL extends Thread {
     
     private static int watchdogcycle=0;
     private static long laststats=new Date().getTime();
+    private static long nextarchival=new Date().getTime()+((int)((Math.random()*60.0*45.0*1000.0)));
     public static void watchdog() {
         try { Thread.sleep(1000); } catch (InterruptedException e) {}
         if (shutdown) return;
@@ -139,6 +142,9 @@ public class SL extends Thread {
         if ((laststats+60000)<new Date().getTime()) {
             dbStats();
             laststats=new Date().getTime();
+        }
+        if (nextarchival>new Date().getTime()) {
+            regionStatsArchival();
         }
     }
     private static int gphudoffset=0;
@@ -225,6 +231,18 @@ public class SL extends Thread {
         MailTools.defaulttoname="SL Developers";
         MailTools.defaultfromname=(DEV?"Dev ":"")+Config.getHostName();
         MailTools.defaultserver="127.0.0.1";
+    }
+    
+    public static void regionStatsArchival() {
+        LockTest lock=new LockTest(LOCK_NUMBER_REGIONSTATS_ARCHIVAL);
+        int serial=0;
+        try { serial=lock.lock(300); }
+        catch (LockException e) { log.fine("Failed to get lock to run region stats archiver."); return; }
+        long start=new Date().getTime();
+        RegionStats.archiveOld();       
+        long end=new Date().getTime();
+        log.fine("Region stats archiver ran for "+((float)(end-start))/1000.0+" ms");
+        lock.unlock(serial);
     }
 
     public static DBConnection getDB() { return db; }

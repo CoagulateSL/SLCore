@@ -49,7 +49,7 @@ public final class PageMapper implements HttpRequestHandlerMapper {
         exact.put(url.toLowerCase(),handler);
     }
     public void prefix(String url,HttpRequestHandler handler) {
-        if (exact.containsKey(url.toLowerCase())) { throw new SystemException("Duplicate PREFIX URL registration for '"+url+"'"); }
+        if (prefixes.containsKey(url.toLowerCase())) { throw new SystemException("Duplicate PREFIX URL registration for '"+url+"'"); }
         prefixes.put(url.toLowerCase(),handler);
     }
             

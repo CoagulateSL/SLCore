@@ -28,7 +28,7 @@ import org.apache.http.protocol.HttpRequestHandler;
  * @author Iain Price
  */
 public abstract class StringHandler implements HttpRequestHandler {
-    private static final boolean DEBUG_PARAMS=true;
+    private static final boolean DEBUG_PARAMS=false;
    @Override
     public void handle(HttpRequest req, HttpResponse resp, HttpContext hc) {
         try {

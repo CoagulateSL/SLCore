@@ -48,7 +48,7 @@ public class RegionStats extends Table {
                 + "from regionstats "
                 + "where timestamp>=? "
                     + "and timestamp<=? "
-                    + "and stattype='?' "
+                    + "and stattype=? "
                 + "group by x "
                 + "order by timestamp asc",from,timerange,from,to,stattype);
     }

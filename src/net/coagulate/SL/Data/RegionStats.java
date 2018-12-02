@@ -1,5 +1,9 @@
 package net.coagulate.SL.Data;
 
+import java.util.logging.Logger;
+import net.coagulate.Core.Database.DBConnection;
+import net.coagulate.Core.Database.ResultsRow;
+import net.coagulate.Core.Tools.UnixTime;
 import net.coagulate.SL.SL;
 
 /**
@@ -19,4 +23,30 @@ public class RegionStats extends Table {
         log(region.getId(),timestamp,statstype,min,max,avg,sd);
     }
     
+    
+    public static void archiveOld() {
+        DBConnection d = SL.getDB();
+        Logger log = SL.getLogger("RegionPerformance.RegionStats");
+        int start=UnixTime.getUnixTime();
+        
+        for (ResultsRow r:d.dq("select floor(timestamp/(60*60)) as basetime,regionid,stattype,min(statmin) as newmin,max(statmax) as newmax,avg(statavg) as newavg,avg(statsd) as newsd from regionstats where timestamp<? and samplesize='SINGLE' group by basetime,regionid,stattype", start-(60*60*24))) {
+            if ((UnixTime.getUnixTime()-start)>30) {
+                log.fine("Stopping incomplete archival run due to runtime>30 seconds");
+                return;
+            }
+            int regionid=r.getInt("regionid");
+            int basetime=r.getInt("basetime");
+            String stattype=r.getString("stattype");
+            float min=r.getFloat("newmin");
+            float max=r.getFloat("newmax");
+            float avg=r.getFloat("newavg");
+            float sd=r.getFloat("newsd");
+            basetime=basetime*60*60; // we divided above, to split into hourly blocks, but we need a full time reference
+            basetime+=(30*60); // and push half an hour into the time period.
+            d.d("insert into regionstats(regionid,timestamp,stattype,statmin,statmax,statavg,statsd,samplesize) values(?,?,?,?,?,?,?,?)",regionid,basetime,stattype,min,max,avg,sd,"HOURLY");
+            log.finer("Rolling "+d.dqi(true,"select count(*) from regionstats where regionid=? and timestamp>=? and timestamp<? and stattype=? and samplesize='SINGLE'",regionid,basetime-(30*60),basetime+(30*60),stattype)+" records into one HOURLY record");
+            d.d("delete from regionstats where regionid=? and timestamp>=? and timestamp<? and stattype=? and samplesize='SINGLE'",regionid,basetime-(30*60),basetime+(30*60),stattype);
+            
+        }
+    }
 }

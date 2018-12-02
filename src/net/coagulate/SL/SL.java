@@ -143,7 +143,7 @@ public class SL extends Thread {
             dbStats();
             laststats=new Date().getTime();
         }
-        if (nextarchival>new Date().getTime()) {
+        if (nextarchival<new Date().getTime()) {
             regionStatsArchival();
         }
     }

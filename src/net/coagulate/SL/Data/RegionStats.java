@@ -19,6 +19,12 @@ public class RegionStats extends Table {
     public static Float getAverage(Regions reg, String stattype, int time) {
         return SL.getDB().dqf(false, "select avg(statavg) from regionstats where regionid=? and timestamp>? and stattype=?",reg.getId(),UnixTime.getUnixTime()-time,stattype);
     }
+    public static Float getMin(Regions reg, String stattype, int time) {
+        return SL.getDB().dqf(false, "select min(statavg) from regionstats where regionid=? and timestamp>? and stattype=?",reg.getId(),UnixTime.getUnixTime()-time,stattype);
+    }
+    public static Float getMax(Regions reg, String stattype, int time) {
+        return SL.getDB().dqf(false, "select max(statavg) from regionstats where regionid=? and timestamp>? and stattype=?",reg.getId(),UnixTime.getUnixTime()-time,stattype);
+    }
 
     @Override
     public String getTableName() { return "regionstats"; }

@@ -221,8 +221,8 @@ public class SL extends Thread {
     }
     
     private static void loggingInitialise() {
-        LogHandler.mailprefix="EXCEPTION: "+(DEV?"Dev/":"PRODUCTION/")+Config.getHostName();
         LogHandler.initialise();
+        LogHandler.mailprefix="EXCEPTION: "+(DEV?"Dev/":"PRODUCTION/")+Config.getHostName();
         log=Logger.getLogger("net.coagulate.SL");        
     }
     

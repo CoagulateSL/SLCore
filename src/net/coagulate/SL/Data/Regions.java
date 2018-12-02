@@ -27,7 +27,7 @@ public class Regions extends LockableTable {
     public String getStatus() { return getString("status"); }
     
     public int getLastUpdate() {
-        Integer lu=getInt("lastupdate");
+        Integer lu=getInt("lastperf");
         if (lu==null) { return 0; }
         return lu;
     }

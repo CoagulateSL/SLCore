@@ -6,6 +6,7 @@ import javax.mail.MessagingException;
 import net.coagulate.Core.Tools.ExceptionTools;
 import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.SystemException;
+import net.coagulate.Core.Tools.UserException;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.HTTPPipelines.Page;
 import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
@@ -38,6 +39,8 @@ public class ControlPanel extends Page {
             }
             para("Sent mail");
         }
+        if (state.get("UserException").equals("UserException")) { throw new UserException("Manually triggered user exception"); }
+        if (state.get("SystemException").equals("SystemException")) { throw new SystemException("Manually triggered system exception"); }
         if (state.get("Region Stats Archival").equals("Region Stats Archival")) {
             para("Running Region State");
             SL.regionStatsArchival();
@@ -45,6 +48,8 @@ public class ControlPanel extends Page {
         startForm();
         submit("Test Mail");
         submit("Region Stats Archival");
+        submit("UserException");
+        submit("SystemException");
         endForm();
     }
 

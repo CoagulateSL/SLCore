@@ -13,6 +13,12 @@ import net.coagulate.SL.SL;
  * @author Iain Price
  */
 public class RegionStats extends Table {
+    public static final int HOUR=60*60;
+    public static final int DAY=24*HOUR;
+
+    public static Float getAverage(Regions reg, String stattype, int time) {
+        return SL.getDB().dqf(false, "select avg(statavg) from regionstats where regionid=? and timestamp>? and stattype=?",reg.getId(),UnixTime.getUnixTime()-time,stattype);
+    }
 
     @Override
     public String getTableName() { return "regionstats"; }

@@ -61,8 +61,9 @@ public class RegionStats extends Table {
                 + "where timestamp>=? "
                     + "and timestamp<=? "
                     + "and stattype=? "
+                    + "and regionid=? "
                 + "group by x "
-                + "order by timestamp asc",xsize,from,timerange,from,to,stattype);
+                + "order by timestamp asc",xsize,from,timerange,from,to,stattype,r.getId());
     }
     
     

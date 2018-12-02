@@ -2,8 +2,10 @@ package net.coagulate.SL.Data;
 
 import java.util.logging.Logger;
 import net.coagulate.Core.Database.DBConnection;
+import net.coagulate.Core.Database.Results;
 import net.coagulate.Core.Database.ResultsRow;
 import net.coagulate.Core.Tools.UnixTime;
+import net.coagulate.Core.Tools.UserException;
 import net.coagulate.SL.SL;
 
 /**
@@ -21,6 +23,34 @@ public class RegionStats extends Table {
     }
     public static void log(Regions region,int timestamp,String statstype,float min,float max,float avg,float sd) {
         log(region.getId(),timestamp,statstype,min,max,avg,sd);
+    }
+    
+    public static Results graphableData(Regions r,String stattype,int from, int to, int x) {
+        DBConnection d = SL.getDB();
+        // 'x' defines how many 'slots' we have for data (horizontal pixels).  eventually borders and stuff so
+        int xsize=x;
+        int timerange=to-from;
+        if (timerange<0) { 
+            int swap=from; from=to; to=swap; timerange=to-from;
+        }
+        if (timerange==0) { throw new UserException("No time range covered?"); }
+        
+        
+        // range is "from" to "to", subtract the from, divide by the total range, scale to size
+        return d.dq("select "
+                    + "round(100*((timestamp-?)/?)) as x,"
+                    + "timestamp,"
+                    + "min(statmin) as plotmin,"
+                    + "max(statmax) as plotmax,"
+                    + "avg(statavg) as plotavg,"
+                    + "avg(statsd) as plotsd,"
+                    + "samplesize "
+                + "from regionstats "
+                + "where timestamp>=? "
+                    + "and timestamp<=? "
+                    + "and stattype='?' "
+                + "group by x "
+                + "order by timestamp asc",from,timerange,from,to,stattype);
     }
     
     

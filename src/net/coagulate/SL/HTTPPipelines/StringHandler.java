@@ -1,72 +1,26 @@
 package net.coagulate.SL.HTTPPipelines;
 
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
 import net.coagulate.Core.Tools.UserException;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.SL;
-import org.apache.http.Header;
-import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpRequestHandler;
 
 /** Process a page into a String input/output
  *
  * @author Iain Price
  */
-public abstract class StringHandler implements HttpRequestHandler {
+public abstract class StringHandler extends Handler {
     private static final boolean DEBUG_PARAMS=false;
    @Override
-    public void handle(HttpRequest req, HttpResponse resp, HttpContext hc) {
+    public void handleContent(HttpRequest req, HttpResponse resp, HttpContext hc,State state) {
         try {
-            Map<String,String> parameters=new HashMap<>();
-            List<NameValuePair> uriparams=URLEncodedUtils.parse(new URI(req.getRequestLine().getUri()),Charset.forName("UTF-8"));
-            for (NameValuePair up:uriparams) {
-                parameters.put(up.getName(),up.getValue());
-                if (DEBUG_PARAMS) { System.out.println("Imported URI parameter '"+up.getName()+"'='"+up.getValue()+"'"); }
-            }
-            
-
-            if (req instanceof HttpEntityEnclosingRequest) {
-                HttpEntityEnclosingRequest r=(HttpEntityEnclosingRequest) req;
-                List<NameValuePair> map = URLEncodedUtils.parse(r.getEntity());
-                for (NameValuePair kv:map) {
-                    parameters.put(kv.getName(),kv.getValue());
-                    if (DEBUG_PARAMS) { System.out.println("Imported POST parameter '"+kv.getName()+"'='"+kv.getValue()+"'"); }
-                }
-            }
-            State state=State.create();
-            state.request=req;
-            state.response=resp;
-            state.httpcontext=hc;
-            state.parameters=parameters;
-            Map<String,String> cookiemap=new HashMap<>();
-            for (Header header:req.getHeaders("Cookie")) {
-                for (String component:header.getValue().split(";")) {
-                    String kv[]=component.split("=");
-                    if (kv.length!=2) {
-                        SL.getLogger().log(Level.WARNING,"Unusual cookie element to parse in line "+header.getValue()+" piece "+component);
-                    } else {
-                        //System.out.println(kv[0]+"="+kv[1]);
-                        cookiemap.put(kv[0].trim(),kv[1].trim());
-                    }
-                }
-            }
-            state.cookies=cookiemap;
-            state.setSessionId(cookiemap.get("coagulateslsessionid"));
             String content="<p><b>WEIRD INTERNAL LOGIC ERROR</b></p>";
             try { content=handleString(); }
             catch (UserException ue) {
@@ -74,19 +28,11 @@ public abstract class StringHandler implements HttpRequestHandler {
                 content="<p>Exception: "+ue.getLocalizedMessage()+"</p>";
             }
             resp.setEntity(new StringEntity(pageHeader()+content+pageFooter(),ContentType.TEXT_HTML));
-            if (state.sessionid!=null) {
-                if (!state.sessionid.equals(cookiemap.get("coagulateslsessionid"))) {
-                    resp.addHeader("Set-Cookie","coagulateslsessionid="+state.sessionid+"; HttpOnly; Path=/; Domain=coagulate.net; Secure;");
-                }
-            } else { resp.addHeader("Set-Cookie","coagulateslsessionid=none; HttpOnly; Path=/; Domain=coagulate.net; expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure;"); }
-            resp.setStatusCode(getReturnStatus());
-            return;
         }
         catch (Exception ex) {
             SL.getLogger().log(SEVERE,"Unexpected exception thrown in page handler",ex);
             resp.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
             resp.setEntity(new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>",ContentType.TEXT_HTML));
-            return;
         }
     }    
     

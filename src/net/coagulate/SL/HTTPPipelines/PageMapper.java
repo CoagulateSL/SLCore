@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.coagulate.Core.Tools.ClassTools;
+import net.coagulate.Core.Tools.SystemException;
 import net.coagulate.SL.Pages.FourZeroFour;
 import org.apache.http.HttpRequest;
 import org.apache.http.protocol.HttpRequestHandler;
@@ -43,8 +44,14 @@ public final class PageMapper implements HttpRequestHandlerMapper {
     Map<String,HttpRequestHandler> prefixes=new HashMap<>();
     Map<String,HttpRequestHandler> exact=new HashMap<>();
             
-    public void exact(String url,HttpRequestHandler handler) { exact.put(url.toLowerCase(),handler); }
-    public void prefix(String url,HttpRequestHandler handler) { prefixes.put(url.toLowerCase(),handler); }
+    public void exact(String url,HttpRequestHandler handler) {
+        if (exact.containsKey(url.toLowerCase())) { throw new SystemException("Duplicate EXACT URL registration for '"+url+"'"); }
+        exact.put(url.toLowerCase(),handler);
+    }
+    public void prefix(String url,HttpRequestHandler handler) {
+        if (exact.containsKey(url.toLowerCase())) { throw new SystemException("Duplicate PREFIX URL registration for '"+url+"'"); }
+        prefixes.put(url.toLowerCase(),handler);
+    }
             
     public PageMapper() {
         logger=Logger.getLogger(PageMapper.class.getCanonicalName());

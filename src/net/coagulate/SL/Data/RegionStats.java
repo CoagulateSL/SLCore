@@ -1,5 +1,7 @@
 package net.coagulate.SL.Data;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Database.Results;
@@ -24,6 +26,14 @@ public class RegionStats extends Table {
     }
     public static Float getMax(Regions reg, String stattype, int time) {
         return SL.getDB().dqf(false, "select max(statavg) from regionstats where regionid=? and timestamp>? and stattype=?",reg.getId(),UnixTime.getUnixTime()-time,stattype);
+    }
+
+    public static Iterable<String> getStatTypes(Regions region, int time) {
+        Set<String> stattypes=new HashSet<>();
+        for (ResultsRow row:SL.getDB().dq("select distinct stattype from regionstats where regionid=? and timestamp>?",region.getId(),UnixTime.getUnixTime()-time)) {
+            stattypes.add(row.getString());
+        }
+        return stattypes;
     }
 
     @Override

@@ -72,7 +72,7 @@ public class RegionStats extends Table {
         Logger log = SL.getLogger("RegionPerformance.RegionStats");
         int start=UnixTime.getUnixTime();
         
-        for (ResultsRow r:d.dq("select floor(timestamp/(60*60)) as basetime,regionid,stattype,min(statmin) as newmin,max(statmax) as newmax,avg(statavg) as newavg,avg(statsd) as newsd from regionstats where timestamp<? and samplesize='SINGLE' group by basetime,regionid,stattype", start-(60*60*24))) {
+        for (ResultsRow r:d.dq("select floor(timestamp/(60*60)) as basetime,regionid,stattype,min(statmin) as newmin,max(statmax) as newmax,avg(statavg) as newavg,avg(statsd) as newsd from regionstats where timestamp<? and samplesize='SINGLE' group by basetime,regionid,stattype", start-(60*60*24*7))) {
             if ((UnixTime.getUnixTime()-start)>30) {
                 log.fine("Stopping incomplete archival run due to runtime>30 seconds");
                 return;

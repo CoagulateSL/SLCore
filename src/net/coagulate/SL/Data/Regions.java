@@ -1,5 +1,6 @@
 package net.coagulate.SL.Data;
 
+import net.coagulate.Core.Database.LockException;
 import net.coagulate.Core.Tools.SystemException;
 import net.coagulate.Core.Tools.UnixTime;
 import net.coagulate.SL.SL;
@@ -32,7 +33,11 @@ public class Regions extends LockableTable {
         return lu;
     }
 
-    public void setLastUpdate() { set("lastupdate",UnixTime.getUnixTime()); }
+    public void setLastUpdate() {
+        try {
+            set("lastupdate",UnixTime.getUnixTime());
+        } catch (LockException e) {} // not that important here, something else is updating it...
+    }
 
     public void setNewStatus(String status) {
         int time=UnixTime.getUnixTime();

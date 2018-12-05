@@ -66,6 +66,7 @@ public class State {
     HttpResponse response; 
     HttpContext httpcontext;
     Map<String, String> parameters; public String get(String parameter) { String v=parameters.get(parameter); if (v==null) { v=""; } return v; }
+    public void put(String parameter,String value) { parameters.put(parameter,value); }
     Map<String, String> cookies;
     String sessionid;
     String page;

@@ -50,7 +50,7 @@ public abstract class Handler implements HttpRequestHandler {
             state.request=req;
             state.response=resp;
             state.httpcontext=hc;
-            state.parameters=parameters;
+            state.put(parameters);
             Map<String,String> cookiemap=new HashMap<>();
             for (Header header:req.getHeaders("Cookie")) {
                 for (String component:header.getValue().split(";")) {

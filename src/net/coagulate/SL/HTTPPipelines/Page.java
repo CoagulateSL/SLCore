@@ -49,7 +49,7 @@ public abstract class Page extends AuthenticatedStringHandler {
     public Page br() { return linebreak(); }
     public Page submit(String label) { return raw("<button type=submit name=\""+label+"\" value=\""+label+"\">"+label+"</button>"); }
     public Page dumpParameters() {
-        Map<String, String> p = State.get().parameters;
+        Map<String, String> p = State.get().getParameters();
         for (String k:p.keySet()) { raw("<p>"+k+"="+p.get(k)+"</p>"); }
         return this;
     }

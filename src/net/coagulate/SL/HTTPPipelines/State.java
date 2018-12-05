@@ -65,7 +65,7 @@ public class State {
     HttpRequest request; //public HttpRequest request() {  return request; }
     HttpResponse response; 
     HttpContext httpcontext;
-    Map<String, String> parameters; public String get(String parameter) { String v=parameters.get(parameter); if (v==null) { v=""; } return v; }
+    private Map<String, String> parameters=new HashMap<>(); public String get(String parameter) { String v=parameters.get(parameter); if (v==null) { v=""; } return v; }
     public void put(String parameter,String value) { parameters.put(parameter,value); }
     Map<String, String> cookies;
     String sessionid;
@@ -94,6 +94,14 @@ public class State {
         if (sessionid!=null && sessionid.equalsIgnoreCase("none")) { sessionid=null; }
         this.sessionid=sessionid;
         loadSession();
+    }
+
+    void put(Map<String, String> passed) {
+        parameters.putAll(passed);
+    }
+
+    Map<String, String> getParameters() {
+        return parameters;
     }
 
 }

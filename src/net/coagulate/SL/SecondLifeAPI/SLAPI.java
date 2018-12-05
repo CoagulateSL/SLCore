@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import net.coagulate.Core.Tools.ByteTools;
 import net.coagulate.Core.Tools.Crypto;
 import net.coagulate.Core.Tools.UnixTime;
+import net.coagulate.SL.HTTPPipelines.State;
 import net.coagulate.SL.SL;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
@@ -23,15 +24,6 @@ import org.json.JSONObject;
  */
 public abstract class SLAPI implements HttpRequestHandler {
 
-    String objectkey=null;
-    String shard=null;
-    String region=null;
-    String ownername=null;
-    String ownerkey=null;
-    String objectname=null;
-    String objectvelocity=null;
-    String objectrotation=null;
-    String objectposition=null;
     public Logger getLogger() {
         String classname=this.getClass().getSimpleName();
         return SL.getLogger("SLAPI."+classname);
@@ -44,15 +36,18 @@ public abstract class SLAPI implements HttpRequestHandler {
                 HttpEntityEnclosingRequest r=(HttpEntityEnclosingRequest) req;
                 content=new JSONObject(ByteTools.convertStreamToString(r.getEntity().getContent()));
             }
-            shard=req.getHeaders("X-SecondLife-Shard")[0].getValue();
-            region=req.getHeaders("X-SecondLife-Region")[0].getValue();
-            ownername=req.getHeaders("X-SecondLife-Owner-Name")[0].getValue();
-            ownerkey=req.getHeaders("X-SecondLife-Owner-Key")[0].getValue();
-            objectname=req.getHeaders("X-SecondLife-Object-Name")[0].getValue();
-            objectkey=req.getHeaders("X-SecondLife-Object-Key")[0].getValue();
-            objectvelocity=req.getHeaders("X-SecondLife-Local-Velocity")[0].getValue();
-            objectrotation=req.getHeaders("X-SecondLife-Local-Rotation")[0].getValue();
-            objectposition=req.getHeaders("X-SecondLife-Local-Position")[0].getValue();
+            State st=State.get();
+            String shard=req.getHeaders("X-SecondLife-Shard")[0].getValue();
+            st.put("slapi_shard",shard);
+            st.put("slapi_region",req.getHeaders("X-SecondLife-Region")[0].getValue());
+            st.put("slapi_ownername",req.getHeaders("X-SecondLife-Owner-Name")[0].getValue());
+            st.put("slapi_ownerkey",req.getHeaders("X-SecondLife-Owner-Key")[0].getValue());
+            st.put("slapi_objectname",req.getHeaders("X-SecondLife-Object-Name")[0].getValue());
+            String objectkey=req.getHeaders("X-SecondLife-Object-Key")[0].getValue();
+            st.put("slapi_objectkey",objectkey);
+            st.put("slapi_objectvelocity",req.getHeaders("X-SecondLife-Local-Velocity")[0].getValue());
+            st.put("slapi_objectrotation",req.getHeaders("X-SecondLife-Local-Rotation")[0].getValue());
+            st.put("slapi_objectposition",req.getHeaders("X-SecondLife-Local-Position")[0].getValue());            
             if (!shard.equalsIgnoreCase("Production")) { 
                 SL.getLogger(this.getClass().getSimpleName()).severe("INCORRECT SHARD : "+objectDump());
                 resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return;
@@ -108,6 +103,7 @@ public abstract class SLAPI implements HttpRequestHandler {
     protected boolean needsDigest() { return true; }
 
     String objectDump() {
-        return "'"+objectname+"' ["+objectkey+"] owned by "+ownername+" ["+ownerkey+"] at "+region+" "+objectposition;
+        State st=State.get();
+        return "'"+st.get("slapi_objectname")+"' ["+st.get("slapi_objectkey")+"] owned by "+st.get("slapi_ownername")+" ["+st.get("slapi_ownerkey")+"] at "+st.get("slapi_region")+" "+st.get("slapi_objectposition");
     }
 }

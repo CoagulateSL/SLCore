@@ -92,10 +92,12 @@ public abstract class SLAPI implements HttpRequestHandler {
     }     
 
     protected void checkVersion(JSONObject object, String match) {
+        String version="NULL";
         if (object.has("version")) {
-            if (match.equals(object.getString("version"))) { return; }
+            version=object.getString("version");
+            if (match.equals(version)) { return; }
         }
-        SL.getLogger(this.getClass().getSimpleName()).fine("Version mismatch : "+objectDump());
+        SL.getLogger(this.getClass().getSimpleName()).fine("Version mismatch : "+match+">"+version+" : "+objectDump());
     }
     
 

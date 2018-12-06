@@ -100,6 +100,7 @@ public class SL extends Thread {
     private static void startBot() {
         bot=new JSLBot(Config.getBotConfig());
         bot.registershutdownhook=false;
+        bot.ALWAYS_RECONNECT=true;
         bot.start();
     }
     private static void startLSLR() {
@@ -130,9 +131,6 @@ public class SL extends Thread {
         if (shutdown) return;
         if (!DB.test()) {
             log.log(SEVERE,"Database failed connectivity test, shutting down."); shutdown=true; errored=true; return;
-        }
-        if (!bot.connected()) {
-            log.log(SEVERE,"Main bot has become disconnected"); shutdown=true; errored=true; return;
         }
         // hmm //if (!listener.isAlive()) { log.log(SEVERE,"Primary listener thread is not alive"); shutdown=true; errored=true; return; }
         watchdogcycle++;

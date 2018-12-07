@@ -59,7 +59,7 @@ public class RegionStats extends Table {
         
         
         // range is "from" to "to", subtract the from, divide by the total range, scale to size
-        return d.dq("select "
+        return d.dqSlow("select "
                     + "round(?*((timestamp-?)/?)) as x,"
                     + "timestamp,"
                     + "min(statmin) as plotmin,"

@@ -241,7 +241,7 @@ public class SL extends Thread {
         long start=new Date().getTime();
         RegionStats.archiveOld();       
         long end=new Date().getTime();
-        log.fine("Region stats archiver ran for "+((float)(end-start))/1000.0+" ms");
+        log.fine("Region stats archiver ran for "+((float)(end-start))/1000.0+" sec");
         lock.unlock(serial);
     }
 

@@ -81,7 +81,7 @@ public class RegionStats extends Table {
         DBConnection d = SL.getDB();
         Logger log = SL.getLogger("RegionPerformance.RegionStats");
         int start=UnixTime.getUnixTime();
-        
+        int rollups=0; int records=0;
         for (ResultsRow r:d.dq("select floor(timestamp/(60*60)) as basetime,regionid,stattype,min(statmin) as newmin,max(statmax) as newmax,avg(statavg) as newavg,avg(statsd) as newsd from regionstats where timestamp<? and samplesize='SINGLE' group by basetime,regionid,stattype", start-(60*60*24*3))) {
             if ((UnixTime.getUnixTime()-start)>30) {
                 log.fine("Stopping incomplete archival run due to runtime>30 seconds");
@@ -97,9 +97,11 @@ public class RegionStats extends Table {
             basetime=basetime*60*60; // we divided above, to split into hourly blocks, but we need a full time reference
             basetime+=(30*60); // and push half an hour into the time period.
             d.d("insert into regionstats(regionid,timestamp,stattype,statmin,statmax,statavg,statsd,samplesize) values(?,?,?,?,?,?,?,?)",regionid,basetime,stattype,min,max,avg,sd,"HOURLY");
-            log.finer("Rolling "+d.dqi(true,"select count(*) from regionstats where regionid=? and timestamp>=? and timestamp<? and stattype=? and samplesize='SINGLE'",regionid,basetime-(30*60),basetime+(30*60),stattype)+" records into one HOURLY record");
+            rollups++;
+            //log.finer("Rolling "+d.dqi(true,"select count(*) from regionstats where regionid=? and timestamp>=? and timestamp<? and stattype=? and samplesize='SINGLE'",regionid,basetime-(30*60),basetime+(30*60),stattype)+" records into one HOURLY record");
             d.d("delete from regionstats where regionid=? and timestamp>=? and timestamp<? and stattype=? and samplesize='SINGLE'",regionid,basetime-(30*60),basetime+(30*60),stattype);
             
         }
+        if (rollups>0) { log.fine("Completed region stats archiving, batched into "+rollups+" HOURLY samples"); }
     }
 }

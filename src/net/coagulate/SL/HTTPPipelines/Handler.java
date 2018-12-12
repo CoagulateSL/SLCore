@@ -1,12 +1,14 @@
 package net.coagulate.SL.HTTPPipelines;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.SL;
 import org.apache.http.Header;
@@ -75,6 +77,12 @@ public abstract class Handler implements HttpRequestHandler {
             resp.setStatusCode(getReturnStatus());
 
             return;
+        }
+        catch (URISyntaxException use) { // dont log the exception because we don't want the mail.  this is probably a script kiddie hack attempt that doesn't work
+            SL.getLogger().log(WARNING,"Unexpected exception thrown in page handler");
+            resp.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+            resp.setEntity(new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Whatever you're trying to do is illegal.</p></body></html>",ContentType.TEXT_HTML));
+            return;            
         }
         catch (Exception ex) {
             SL.getLogger().log(SEVERE,"Unexpected exception thrown in page handler",ex);

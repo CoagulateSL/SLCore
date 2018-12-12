@@ -56,7 +56,7 @@ public abstract class StringHandler extends Handler {
         if (state.user()!=null) {
             r+="<a href=\"/Billing\">[&nbsp;Billing&nbsp;(L$"+state.user().balance()+")&nbsp;]</a>"
                     + "&nbsp;&nbsp;&nbsp;"
-                    + "<a href=\"/SetPassword\">[&nbsp;Set&nbsp;Password&nbsp;]</a>"
+                    + "<a href=\"/Account\">[&nbsp;Account&nbsp;]</a>"
                     + "&nbsp;&nbsp;&nbsp;"
                     + "<a href=\"/Logout\">[&nbsp;Logout&nbsp;]</a>"
                     + "&nbsp;&nbsp;&nbsp;"

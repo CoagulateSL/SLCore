@@ -175,8 +175,32 @@ public class User extends LockableTable {
         }
         return subs;
     }
+    
+    public String getEmail() { return getString("email"); }
+    public String getNewEmail() { return getString("newemail"); }
+    /** Sets the new email address, returning the token that must be used to validate it.
+     * 
+     * @param newmail New email address
+     * @return String token used to validate the email address
+     */
+    public String setNewEmail(String newemail) {
+        int expires=UnixTime.getUnixTime()+Config.NEWEMAIL_TOKEN_LIFESPAN;
+        String token=Tokens.generateToken();
+        d("update users set newemail=?,newemailtoken=?,newemailexpires=? where id=?",newemail,token,expires,getId());
+        return token;
+    }
 
-
-   
+   public void confirmNewEmail(String token) {
+        ResultsRow r = dqone(true, "select newemail,newemailtoken,newemailexpires from users where id=?",getId());
+        String newemail=r.getString("newemail");
+        String newtoken=r.getString("newemailtoken");
+        int expires=r.getInt("newemailexpires");
+        if (token==null || token.isEmpty()) { throw new UserException("No token passed"); }
+        if (!token.equals(newtoken)) { throw new UserException("Email token does not match"); }
+        if (expires<UnixTime.getUnixTime()) { throw new UserException("Email token has expired, please register new email address again"); }
+        // token matches, not expired, promote the address
+        d("update users set newemail=null, newemailtoken=null, newemailexpires=0, email=? where id=?",newemail,getId());
+        
+   }
     
 }

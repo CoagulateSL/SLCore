@@ -65,23 +65,26 @@ public final class PageMapper implements HttpRequestHandlerMapper {
         prefix("/rentals-scijp2",new net.coagulate.LSLR.HttpReceiver());
         prefix("/rentalavailability-scijp2",new net.coagulate.LSLR.HttpReceiver());
         // SL pages
+        int count=0;
         for (Constructor c:ClassTools.getAnnotatedConstructors(Url.class)) {
-            String url=((Url)(c.getAnnotation(Url.class))).value();
+            String url=((Url)(c.getAnnotation(Url.class))).value(); count++;
             try {
                 exact(url, (HttpRequestHandler) c.newInstance());
             } catch (InstantiationException|IllegalAccessException|IllegalArgumentException|InvocationTargetException ex) {
                 logger.log(Level.SEVERE, "URL Annotated constructor in class "+c.getDeclaringClass().getCanonicalName()+" failed instansiation:"+ex.getLocalizedMessage(), ex);
             }
         }
+        logger.log(Level.FINE,"Loaded "+count+" exact URI handlers");
+        count=0;
         for (Constructor c:ClassTools.getAnnotatedConstructors(Prefix.class)) {
-            String url=((Prefix)(c.getAnnotation(Prefix.class))).value();
+            String url=((Prefix)(c.getAnnotation(Prefix.class))).value(); count++;
             try {
                 prefix(url, (HttpRequestHandler) c.newInstance());
             } catch (InstantiationException|IllegalAccessException|IllegalArgumentException|InvocationTargetException ex) {
                 logger.log(Level.SEVERE, "Prefix URL Annotated constructor in class "+c.getDeclaringClass().getCanonicalName()+" failed instansiation:"+ex.getLocalizedMessage(), ex);
             }
         }
-        
+        logger.log(Level.FINE,"Loaded "+count+" prefix URI handlers");
     }
     
     

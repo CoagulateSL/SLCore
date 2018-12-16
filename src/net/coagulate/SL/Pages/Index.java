@@ -19,11 +19,11 @@ public class Index extends Page {
         raw("<tr width=100%><td width=100%><ul style=\"white-space: nowrap;\">");
         openServiceCell("Region Monitoring","/RegionMonitor");
         p("Region Monitoring monitors the status of specified regions, polling every minute and logging the data.");
-        p("This data can be reviewed on the website, or linked to in-world objects to provide region status updates.");
+        p("Can also use scripted or bot services to collect performance metrics.");
         closeServiceCell();
-        openServiceCell("Region Performance","/RegionPerformance");
-        p("Region Statistics monitors various aspects of region performance such as FPS, script info, etc");
-        p("This information is presented through the website and is graphable");
+        openServiceCell("Web Chat","/WebChat");
+        p("[Placeholder note to self] Web Chat provides a simple interface to Second Life chat over a web page.");
+        p("Perfect for use on a simple browser or low power consumption device.  Can use hosted or home-run bot connections.");
         closeServiceCell();
         openServiceCell("Bot Agents","/Bot");
         p("This allows you to operate an automated agent in Second Life (a 'bot').");

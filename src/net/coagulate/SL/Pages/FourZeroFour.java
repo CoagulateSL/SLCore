@@ -8,10 +8,12 @@ import org.apache.http.HttpStatus;
  * @author Iain Price
  */
 public class FourZeroFour extends StringHandler {
-
+    private static String uri;
+    
+    public FourZeroFour(String uri) { this.uri=uri; }
     @Override
     protected String handleString() {
-        return "<h1 align=center>Four Hundred and Four</h1><br><br><p align=center>As in, 404, Page Not Found</p><br><br><br><br><p align=center>The requested URI was not mapped to a page handler.</p>";
+        return "<h1 align=center>Four Hundred and Four</h1><br><br><p align=center>As in, 404, Page Not Found</p><br><br><br><br><p align=center>The requested URI ("+uri+") was not mapped to a page handler.</p>";
     }
  
     public int getReturnStatus() {

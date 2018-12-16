@@ -110,7 +110,7 @@ public final class PageMapper implements HttpRequestHandlerMapper {
         }
         if (matchedhandler==null) {
             logger.log(Level.FINE, "Requested URI '{0}' was not mapped to a page - returning 404.", req.getRequestLine().getUri());
-            return new FourZeroFour();
+            return new FourZeroFour(req.getRequestLine().getUri());
         }
         return matchedhandler;
     }

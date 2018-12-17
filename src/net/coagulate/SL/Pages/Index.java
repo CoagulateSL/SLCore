@@ -1,7 +1,6 @@
 package net.coagulate.SL.Pages;
 
 import net.coagulate.SL.HTTPPipelines.Page;
-import net.coagulate.SL.HTTPPipelines.PageMapper.Prefix;
 import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
 
 /**
@@ -11,8 +10,7 @@ import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
 public class Index extends Page {
 
     @Url("/")
-    @Prefix("/asda")
-    public Index(){super();}
+    public Index(){}
     @Override
     public void content() {
         centralisePage();

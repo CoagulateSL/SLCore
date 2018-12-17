@@ -23,7 +23,7 @@ import org.apache.http.protocol.HttpRequestHandlerMapper;
  * @author Iain Price
  */
 public final class PageMapper implements HttpRequestHandlerMapper {
-    private static final boolean DEBUG=true;
+    private static final boolean DEBUG=false;
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @Target(ElementType.CONSTRUCTOR)

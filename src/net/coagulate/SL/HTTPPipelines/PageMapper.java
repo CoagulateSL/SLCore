@@ -98,6 +98,9 @@ public final class PageMapper implements HttpRequestHandlerMapper {
         } else { 
             if (DEBUG) { System.out.println("Exact match against "+exact.size()+" elements returned nothing"); }
         }
+        for (String s:exact.keySet()) {
+            if (DEBUG) { System.out.println(s); }
+        }
         String matchedprefix="";
         HttpRequestHandler matchedhandler=null;
         for (String prefix:prefixes.keySet()) {

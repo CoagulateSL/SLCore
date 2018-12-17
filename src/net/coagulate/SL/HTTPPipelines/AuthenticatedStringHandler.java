@@ -31,11 +31,11 @@ public abstract class AuthenticatedStringHandler extends StringHandler {
             SL.getLogger().warning("Attempt to authenticate with incorrect password as '"+username+"' from "+state.getClientIP());
             return failPage();
         }
-        return loginpage1+loginpage2;
+        return loginpage1+loginpageprebot+botLine()+loginpagepostbot;
     }
     
     private static final String loginpage1="<form method=post><p align=center><table><tr><td colspan=2>&nbsp;</td></tr><tr><td></td><td colspan=2 align=center><font size=5><u>Login</u></font></td></tr><tr><th>Username:</th><td><input autofocus type=text size=20 name=login_username></td></tr>";
-    private static final String loginpage2=""
+    private static final String loginpageprebot=""
             + "<tr><th>Password:</th><td><input type=password size=20 name=login_password></td></tr>"
             + "<tr><th></th><td><i><b>NOT</b> your SL password</i></td></tr>"
             + "<tr><td colspan=2>&nbsp;</td></tr>"
@@ -44,12 +44,15 @@ public abstract class AuthenticatedStringHandler extends StringHandler {
             + "<br><br><br><br><br>"
             + "<table border=1 width=\"600px\">"
             + "<tr><td align=center>Registering</td></tr>"
-            + "<tr><td><p>If you do not have a password, you must log in through Second Life<br>"
-            + "===> Click <a href=\"secondlife:///app/agent/"+SL.bot.getUUID().toUUIDString()+"/im\">to instant message the bot "+SL.bot.getUsername()+"</a><br>"
+            + "<tr><td><p>If you do not have a password, you must log in through Second Life<br>";
+    private static final String loginpagepostbot=""
             + "Send the message 'login', and the bot will reply with a URL that will log you in.</p>"
             + "<p>If you wish to avoid the Second Life step in future, and use a password, follow the above to get logged in, and then click 'Account' on the top right of the web pages</p></td></tr>"
             + "</table></p></form>";
             
-    private String failPage() { return loginpage1+"<tr><td colspan=2><font color=red><b>Invalid Login</b></font></td></tr>"+loginpage2; }
+    private String failPage() { return loginpage1+"<tr><td colspan=2><font color=red><b>Invalid Login</b></font></td></tr>"+loginpageprebot+botLine()+loginpagepostbot; }
     public abstract String handleAuthenticated();
+    private String botLine() {
+        return "===> Click <a href=\"secondlife:///app/agent/"+SL.bot.getUUID().toUUIDString()+"/im\">to instant message the bot "+SL.bot.getUsername()+"</a><br>";
+    }
 }

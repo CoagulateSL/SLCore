@@ -45,10 +45,12 @@ public final class PageMapper implements HttpRequestHandlerMapper {
     Map<String,HttpRequestHandler> exact=new HashMap<>();
             
     public void exact(String url,HttpRequestHandler handler) {
+        if (DEBUG) { System.out.println("Registering exact '"+url+"'"); }
         if (exact.containsKey(url.toLowerCase())) { throw new SystemException("Duplicate EXACT URL registration for '"+url+"'"); }
         exact.put(url.toLowerCase(),handler);
     }
     public void prefix(String url,HttpRequestHandler handler) {
+        if (DEBUG) { System.out.println("Registering prefix '"+url+"'"); }
         if (prefixes.containsKey(url.toLowerCase())) { throw new SystemException("Duplicate PREFIX URL registration for '"+url+"'"); }
         prefixes.put(url.toLowerCase(),handler);
     }

@@ -112,8 +112,8 @@ public final class PageMapper implements HttpRequestHandlerMapper {
             {System.out.println("Prefix match returned null match, this is now a 404");}
         }
         if (matchedhandler==null) {
-            logger.log(Level.FINE, "Requested URI '{0}' was not mapped to a page - returning 404.", req.getRequestLine().getUri());
-            return new FourZeroFour(req.getRequestLine().getUri());
+            logger.log(Level.FINE, "Requested URI '{0}' was not mapped to a page - returning 404.", line);
+            return new FourZeroFour(line);
         }
         return matchedhandler;
     }

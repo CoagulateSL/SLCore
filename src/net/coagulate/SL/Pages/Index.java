@@ -14,13 +14,13 @@ public class Index extends Page {
     @Override
     public void content() {
         centralisePage();
-        para("Welcome to Coagulate Second Life services, select a service for more information.");
+        raw("<p align=center>Welcome to Coagulate Second Life services, select a service for more information.</p>");
         raw("<table style=\"max-width: 900px;\" align=center>");
         raw("<tr width=100%><td width=100%><ul style=\"white-space: nowrap;\">");
         openServiceCell("Region Monitoring","/RegionMonitor");
         p("Region Monitoring monitors the status of specified regions, polling every minute and logging the data.");
         p("Can also use scripted or bot services to collect performance metrics.");
-        closeServiceCell();
+        closeServiceCell();/*
         openServiceCell("Web Chat","/WebChat");
         p("[Placeholder note to self] Web Chat provides a simple interface to Second Life chat over a web page.");
         p("Perfect for use on a simple browser or low power consumption device.  Can use hosted or home-run bot connections.");
@@ -30,7 +30,7 @@ public class Index extends Page {
         p("This can be used to automate group invites, group ejects, and other features");
         closeServiceCell();
         raw("</ul></td></tr>");
-        raw("<tr width=100%><td width=100%><ul style=\"white-space: nowrap;\">");
+        raw("<tr width=100%><td width=100%><ul style=\"white-space: nowrap;\">");*/
         openServiceCell("GPHUD","/GPHUD/");
         p("GPHUD is the 2nd generation role-play HUD.");
         p("This is used to implement various game modes at sims.");

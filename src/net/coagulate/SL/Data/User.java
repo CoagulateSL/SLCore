@@ -250,7 +250,7 @@ public class User extends LockableTable {
                 SL.getLogger("User").log(SEVERE,"Exception creating avatar "+name,ex);
                 throw ex;
             }
-            userid=SL.getDB().dqi(false,"select id from users where avatarkey=?)",key);
+            userid=SL.getDB().dqi(false,"select id from users where avatarkey=?",key);
         }
         if (userid==null) {
             SL.getLogger("User").severe("Failed to find avatar '"+name+"' after creating it");

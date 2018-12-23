@@ -1,5 +1,6 @@
 package net.coagulate.SL.Data;
 
+import java.util.logging.Logger;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Database.StandardLockableTableRow;
 import net.coagulate.SL.Config;
@@ -19,4 +20,5 @@ public abstract class LockableTable extends StandardLockableTableRow {
     @Override
     public final DBConnection getDatabase() { return SL.getDB(); }
     
+    public Logger logger() { return SL.getLogger(this.getClass().getSimpleName()); }
 }

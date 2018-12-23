@@ -4,15 +4,22 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import static java.util.logging.Level.SEVERE;
+import net.coagulate.Core.Database.DBException;
 import net.coagulate.Core.Database.LockException;
+import net.coagulate.Core.Database.NoDataException;
 import net.coagulate.Core.Database.Results;
 import net.coagulate.Core.Database.ResultsRow;
 import net.coagulate.Core.Tools.Passwords;
 import net.coagulate.Core.Tools.SystemException;
 import net.coagulate.Core.Tools.Tokens;
 import net.coagulate.Core.Tools.UnixTime;
+import static net.coagulate.Core.Tools.UnixTime.getUnixTime;
 import net.coagulate.Core.Tools.UserException;
-import net.coagulate.GPHUD.GPHUD;
+import net.coagulate.GPHUD.Data.Instance;
+import net.coagulate.GPHUD.Data.TableRow;
+import net.coagulate.GPHUD.Interfaces.Outputs.Link;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.HTTPPipelines.State;
 import net.coagulate.SL.Pricing;
@@ -24,10 +31,24 @@ import net.coagulate.SL.SL;
  */
 public class User extends LockableTable {
 
+    /** Obtain a reference to the SYSTEM avatar, for auditing system functions.
+     * 
+     * @param st State
+     * @return Reference to the SYSTEM avatar
+     */
+    public static User getSystem() {
+        return findOrCreateAvatar("SYSTEM", "DEADBEEF");
+    }
+
+    public static String getGPHUDLink(String name,int id) {
+        return new Link(name,"/GPHUD/avatars/view/"+id).asHtml(null, true);
+    }
+    public String getGPHUDLink() { return getGPHUDLink(getUsername(),getId()); }
 
     String username;
 
     public String getUsername() { return username; }
+    public String getName() { return getUsername(); }
     @Override
     public String getTableName() { return "users"; }
     @Override
@@ -91,13 +112,22 @@ public class User extends LockableTable {
     
     public static User get(String username) { return get(username,false); }
 
-    public static User getDeveloperKey(String key) { 
+    public static User resolveDeveloperKey(String key) { 
         if (key==null || key.equals("")) {
             return null;
         }
         Integer userid=SL.getDB().dqi(false,"select id from users where developerkey=?",key);
         if (userid==null) { return null; }
         return get(userid);
+    }
+    
+    public boolean hasDeveloperKey() {
+        try {
+            String s=getDeveloperKey();
+            if (s==null || s.isEmpty()) { return false; }
+            return true;
+        }
+        catch (NoDataException e) { return false; }
     }
 
     public String getDeveloperKey() {
@@ -138,7 +168,7 @@ public class User extends LockableTable {
 
     public boolean checkPassword(String password) {
         String hash=dqs(true,"select password from users where id=?",getId());
-        if (hash==null || hash.isEmpty()) { GPHUD.getLogger().warning("Attempt to log in with a null or empty password hash for user "+getUsername()); return false; }        
+        if (hash==null || hash.isEmpty()) { SL.getLogger().warning("Attempt to log in with a null or empty password hash for user "+getUsername()); return false; }        
         return Passwords.verifyPassword(password,hash);
     }
 
@@ -202,5 +232,89 @@ public class User extends LockableTable {
         d("update users set newemail=null, newemailtoken=null, newemailexpires=0, email=? where id=?",newemail,getId());
         
    }
+    
+    public static User findOrCreateAvatar(String name,String key) throws SystemException {
+        if (name==null || name.equals("")) { name=""; }
+        Integer userid=SL.getDB().dqi(false,"select id from users where (username=? or avatarkey=?)",name,key);
+        if (userid==null) {
+            if (name.isEmpty()) { throw new SystemException("Empty avatar name blocks creation"); }
+            if (key.isEmpty()) { throw new SystemException("Empty avatar key blocks creation"); }
+            if (name.contains("Loading...")) { throw new SystemException("No avatar name was sent with the key, can not create new avatar record"); }
+            try {
+                // special key used by the SYSTEM avatar
+                if (!key.equals("DEADBEEF")) {
+                    SL.getLogger("User").info("Creating new avatar entry for '"+name+"'");
+                }
+                SL.getDB().d("insert into users(username,lastactive,avatarkey) values(?,?,?)",name,getUnixTime(),key);
+            } catch (DBException ex) {
+                SL.getLogger("User").log(SEVERE,"Exception creating avatar "+name,ex);
+                throw ex;
+            }
+            userid=SL.getDB().dqi(false,"select id from users where avatarkey=?)",key);
+        }
+        if (userid==null) {
+            SL.getLogger("User").severe("Failed to find avatar '"+name+"' after creating it");
+            throw new NoDataException("Failed to find avatar object for name '"+name+"' after we created it!");
+        }
+        return get(userid); 
+    }   
+    
+    // GPHUD legacy
+    public static Map<Integer,String> loadMap() {
+        Map<Integer,String> results=new TreeMap<>();
+        Results rows=SL.getDB().dq("select id,username from users");
+        for (ResultsRow r:rows) {
+            results.put(r.getInt("id"),TableRow.getLink(r.getString("username"), "users", r.getInt("id")));
+        }
+        return results;
+    }
+     /** Find avatar in database, by name or key.
+     * 
+     * @param name Name or UUID of avatar
+     * @return Avatar object
+     */
+    public static User find(String nameorkey) {
+        if (nameorkey==null || nameorkey.equals("")) { throw new UserException("Avatar name/key not supplied"); }
+        Integer userid=SL.getDB().dqi(false,"select id from users where username=? or avatarkey=?",nameorkey,nameorkey);
+        if (userid==null) {
+            throw new UserException("Failed to find avatar object for name or key '"+nameorkey+"'");
+        }
+        return get(userid); 
+    }    
+
+    /** Return the avatar's UUID.
+     * 
+     * @return UUID (Avatar Key)
+     */
+    public String getUUID() {
+        return getString("avatarkey");
+    }
+ 
+    
+    public String getTimeZone() {
+        String s=getString("timezone");
+        if (s==null) { return "America/Los_Angeles"; }
+        if (s.equals("SLT")) { return "America/Los_Angeles"; }
+        return s;
+    }
+    
+    /** Sets the last used instance for the avatar - used for logging in to the web portal.
+     * 
+     * @param i  Instance to set to
+     */
+    public void setLastInstance(Instance i) {
+        d("update users set lastgphudinstance=? where id=?",i.getId(),getId());
+    }
+
+    /** Gets the avatar's last active timestamp.
+     * 
+     * @return The last active time for an avatar, possibly null.
+     */
+    public Integer getLastActive() {
+        return dqi(true,"select lastactive from users where id=?",getId());
+    }
+
+    public void setTimeZone(String timezone) { set("timezone",timezone); }
+
     
 }

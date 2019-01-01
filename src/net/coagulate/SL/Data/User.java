@@ -268,17 +268,22 @@ public class User extends LockableTable {
         }
         return results;
     }
+    public static User findMandatory(String nameorkey) {
+        User user=findOptional(nameorkey);
+        if (user==null) {
+            throw new UserException("Failed to find avatar object for name or key '"+nameorkey+"'");
+        }
+        return user;
+    }
      /** Find avatar in database, by name or key.
      * 
      * @param name Name or UUID of avatar
      * @return Avatar object
      */
-    public static User find(String nameorkey) {
+    public static User findOptional(String nameorkey) {
         if (nameorkey==null || nameorkey.equals("")) { throw new UserException("Avatar name/key not supplied"); }
         Integer userid=SL.getDB().dqi(false,"select id from users where username=? or avatarkey=?",nameorkey,nameorkey);
-        if (userid==null) {
-            throw new UserException("Failed to find avatar object for name or key '"+nameorkey+"'");
-        }
+        if (userid==null) { return null; }
         return get(userid); 
     }    
 

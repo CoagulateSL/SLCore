@@ -1,34 +1,24 @@
 package net.coagulate.SL;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
 import net.coagulate.Core.Database.DB;
 import net.coagulate.Core.Database.DBConnection;
-import net.coagulate.Core.Database.LockException;
 import net.coagulate.Core.Database.MariaDBConnection;
 import net.coagulate.Core.HTTP.HTTPListener;
-import net.coagulate.Core.Tools.ByteTools;
 import net.coagulate.Core.Tools.ClassTools;
 import net.coagulate.Core.Tools.LogHandler;
 import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.SystemException;
 import net.coagulate.GPHUD.GPHUD;
 import net.coagulate.GPHUD.Maintenance;
-import static net.coagulate.GPHUD.Maintenance.UPDATEINTERVAL;
-import static net.coagulate.GPHUD.Maintenance.cycle;
-import net.coagulate.GPHUD.Modules.Experience.VisitXP;
 import net.coagulate.JSLBot.JSLBot;
 import net.coagulate.JSLBot.LLCATruster;
 import net.coagulate.LSLR.LSLR;
 import static net.coagulate.SL.Config.LOCK_NUMBER_GPHUD_MAINTENANCE;
-import static net.coagulate.SL.Config.LOCK_NUMBER_REGIONSTATS_ARCHIVAL;
 import net.coagulate.SL.Data.LockTest;
-import net.coagulate.SL.Data.RegionStats;
 import net.coagulate.SL.HTTPPipelines.PageMapper;
 
 /** Bootstrap class.
@@ -57,7 +47,10 @@ public class SL extends Thread {
             // print stack trace is discouraged, but the log handler may not be ready yet.
             catch (Throwable e) { errored=true; e.printStackTrace(); log.log(SEVERE,"Startup failed: "+e.getLocalizedMessage(),e); shutdown=true; }
             Runtime.getRuntime().addShutdownHook(new SL());
-            while (!shutdown) { watchdog(); }
+            while (!shutdown) {
+                watchdog();
+                if (!shutdown) { Maintenance.maintenance(); }
+            }
         }
         catch (Throwable t) { System.out.println("Main loop crashed: "+t); t.printStackTrace(); }
         try { _shutdown(); }
@@ -133,91 +126,9 @@ public class SL extends Thread {
             log.log(SEVERE,"Database failed connectivity test, shutting down."); shutdown=true; errored=true; return;
         }
         // hmm //if (!listener.isAlive()) { log.log(SEVERE,"Primary listener thread is not alive"); shutdown=true; errored=true; return; }
-        watchdogcycle++;
-        if ((watchdogcycle % 10)==0) { net.coagulate.SL.HTTPPipelines.State.cleanup(); }
-
-        if (((watchdogcycle+gphudoffset) % 60)==0) { gphudMaintenance(); }
-        
-        if ((laststats+60000)<new Date().getTime()) {
-            dbStats();
-            laststats=new Date().getTime();
-        }
-        if (nextarchival<new Date().getTime()) {
-            regionStatsArchival();
-            nextarchival+=(1000*60*60);
-        }
     }
     private static int gphudoffset=0;
-    private static void gphudMaintenance() {
-        try { Maintenance.refreshCharacterURLs(); }
-        catch (Exception e) { GPHUD.getLogger().log(SEVERE,"Maintenance refresh character URLs caught an exception",e); }
-        try { Maintenance.refreshRegionURLs(); }
-        catch (Exception e) { GPHUD.getLogger().log(SEVERE,"Maintenance refresh region URLs caught an exception",e); }
 
-        // this stuff all must run 'exclusively' across the cluster...
-        LockTest lock=new LockTest(LOCK_NUMBER_GPHUD_MAINTENANCE);
-        int lockserial;
-        try { lockserial=lock.lock(60); }
-        catch (LockException e) { gphudoffset=gphudoffset+((int)Math.random()*10); GPHUD.getLogger().finer("Maintenance didn't aquire lock: "+e.getLocalizedMessage()); return; } // maintenance session already locked            
-            
-        try { Maintenance.startEvents(); }
-        catch (Exception e) { GPHUD.getLogger().log(SEVERE,"Maintenance start events caught an exception",e); }            
-        
-        lock.extendLock(lockserial, 60);
-        try { Maintenance.purgeOldCookies(); }
-        catch (Exception e) { GPHUD.getLogger().log(SEVERE,"Maintenance run purge cookies caught an exception",e); }
-        
-        lock.extendLock(lockserial, 60);
-        try { new VisitXP(-1).runAwards(); }
-        catch (Exception e) { GPHUD.getLogger().log(SEVERE,"Maintenance run awards run caught an exception",e); }
-        
-        lock.extendLock(lockserial, 60);
-        try { if ((cycle % UPDATEINTERVAL)==0) { Maintenance.updateInstances(); } }
-        catch (Exception e) { GPHUD.getLogger().log(SEVERE,"Maintenance update Instances caught an exception",e); }
-        
-        lock.unlock(lockserial);
-    }
-    
-    private static void dbStats() {
-        if (DEV) {return;} // only log for production.
-        int queries=0; int updates=0;
-        long querytime=0; long updatetime=0;
-        long querymax=0; long updatemax=0;
-        for (DBConnection db:DB.get()) {
-            DBConnection.DBStats stats = db.getStats();
-            queries=queries+stats.queries;
-            updates=updates+stats.updates;
-            querytime=querytime+stats.querytotal;
-            updatetime=updatetime+stats.updatetotal;
-            if (stats.querymax>querymax) { querymax=stats.querymax; }
-            if (stats.updatemax>updatemax) { updatemax=stats.updatemax; }
-        }
-        float queryavg=0;
-        float updateavg=0;
-        if (queries>0) { queryavg=querytime/queries; }
-        if (updates>0) { updateavg=updatetime/updates; }
-        //getLogger().fine("Stats: "+queries+"q, avg "+queryavg+" worst "+querymax+".  "+updates+"u, avg "+updateavg+" worst "+updatemax);
-        String results="";
-        results+=Config.getHostName().toLowerCase()+" mariadb.cluster.queries "+queries+"\n";
-        results+=Config.getHostName().toLowerCase()+" mariadb.cluster.queryavg "+queryavg+"\n";
-        results+=Config.getHostName().toLowerCase()+" mariadb.cluster.querymax "+querymax+"\n";
-        results+=Config.getHostName().toLowerCase()+" mariadb.cluster.updates "+updates+"\n";
-        results+=Config.getHostName().toLowerCase()+" mariadb.cluster.updateavg "+updateavg+"\n";
-        results+=Config.getHostName().toLowerCase()+" mariadb.cluster.updatemax "+updatemax+"\n";
-        try {
-            Process zabbix=Runtime.getRuntime().exec(new String[]{"/usr/bin/zabbix_sender","-z","10.0.0.1","-i-"});
-            zabbix.getOutputStream().write(results.getBytes(StandardCharsets.UTF_8));
-            zabbix.getOutputStream().close();
-            String output=ByteTools.convertStreamToString(zabbix.getInputStream());
-            String error=ByteTools.convertStreamToString(zabbix.getErrorStream());
-            //getLogger().fine("Zabbix output:"+output);
-            //getLogger().fine("Zabbix stderr:"+error);
-            zabbix.getErrorStream().close();
-            zabbix.getOutputStream().close();
-        } catch (IOException e) {
-            getLogger().log(Level.WARNING,"Error while passing stats to zabbix",e);
-        }
-    }
     
     private static void loggingInitialise() {
         LogHandler.initialise();
@@ -231,18 +142,6 @@ public class SL extends Thread {
         MailTools.defaulttoname="SL Developers";
         MailTools.defaultfromname=(DEV?"Dev ":"")+Config.getHostName();
         MailTools.defaultserver="127.0.0.1";
-    }
-    
-    public static void regionStatsArchival() {
-        LockTest lock=new LockTest(LOCK_NUMBER_REGIONSTATS_ARCHIVAL);
-        int serial=0;
-        try { serial=lock.lock(300); }
-        catch (LockException e) { log.fine("Failed to get lock to run region stats archiver."); return; }
-        long start=new Date().getTime();
-        RegionStats.archiveOld();       
-        long end=new Date().getTime();
-        log.fine("Region stats archiver ran for "+((float)(end-start))/1000.0+" sec");
-        lock.unlock(serial);
     }
 
     public static DBConnection getDB() { return db; }

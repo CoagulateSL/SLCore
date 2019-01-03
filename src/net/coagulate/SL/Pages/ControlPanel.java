@@ -11,7 +11,7 @@ import net.coagulate.SL.Config;
 import net.coagulate.SL.HTTPPipelines.Page;
 import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
 import net.coagulate.SL.HTTPPipelines.State;
-import net.coagulate.SL.SL;
+import net.coagulate.SL.Maintenance;
 
 /**
  *
@@ -43,7 +43,7 @@ public class ControlPanel extends Page {
         if (state.get("SystemException").equals("SystemException")) { throw new SystemException("Manually triggered system exception"); }
         if (state.get("Region Stats Archival").equals("Region Stats Archival")) {
             para("Running Region State");
-            SL.regionStatsArchival();
+            Maintenance.regionStatsArchival();
         }
         startForm();
         submit("Test Mail");

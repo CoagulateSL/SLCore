@@ -13,7 +13,6 @@ import net.coagulate.Core.Tools.LogHandler;
 import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.SystemException;
 import net.coagulate.GPHUD.GPHUD;
-import net.coagulate.GPHUD.Maintenance;
 import net.coagulate.JSLBot.JSLBot;
 import net.coagulate.JSLBot.LLCATruster;
 import net.coagulate.LSLR.LSLR;

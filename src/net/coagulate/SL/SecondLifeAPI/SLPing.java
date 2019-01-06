@@ -2,6 +2,7 @@ package net.coagulate.SL.SecondLifeAPI;
 
 import net.coagulate.SL.Config;
 import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
+import net.coagulate.SL.HTTPPipelines.State;
 import org.json.JSONObject;
 
 /**
@@ -15,7 +16,7 @@ public class SLPing extends SLAPI {
     @Override
     public String toString() { return "SLPing"; }
     @Override
-    protected JSONObject handleJSON(JSONObject object) {
+    protected JSONObject handleJSON(JSONObject object,State st) {
         object.put("nodename",Config.getNodeName()); // sl1 sl2 sl3
         object.put("node",Config.getNode()); // 0 1 2
         object.put("hostname",Config.getHostName()); // saturn mars neptune

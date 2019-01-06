@@ -36,7 +36,7 @@ public abstract class SLAPI implements HttpRequestHandler {
                 HttpEntityEnclosingRequest r=(HttpEntityEnclosingRequest) req;
                 content=new JSONObject(ByteTools.convertStreamToString(r.getEntity().getContent()));
             }
-            State st=State.get();
+            State st=new State();
             String shard=req.getHeaders("X-SecondLife-Shard")[0].getValue();
             st.put("slapi_shard",shard);
             st.put("slapi_region",req.getHeaders("X-SecondLife-Region")[0].getValue());
@@ -49,7 +49,7 @@ public abstract class SLAPI implements HttpRequestHandler {
             st.put("slapi_objectrotation",req.getHeaders("X-SecondLife-Local-Rotation")[0].getValue());
             st.put("slapi_objectposition",req.getHeaders("X-SecondLife-Local-Position")[0].getValue());            
             if (!shard.equalsIgnoreCase("Production")) { 
-                SL.getLogger(this.getClass().getSimpleName()).severe("INCORRECT SHARD : "+objectDump());
+                SL.getLogger(this.getClass().getSimpleName()).severe("INCORRECT SHARD : "+objectDump(st));
                 resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return;
             }
             if (needsDigest()) {
@@ -77,7 +77,7 @@ public abstract class SLAPI implements HttpRequestHandler {
                     resp.setStatusCode(HttpStatus.SC_FORBIDDEN); return;                
                 }
             }   
-            JSONObject response=handleJSON(content);
+            JSONObject response=handleJSON(content,st);
             resp.setEntity(new StringEntity(response.toString(),ContentType.APPLICATION_JSON));
             resp.setStatusCode(HttpStatus.SC_OK);
             return;
@@ -91,21 +91,20 @@ public abstract class SLAPI implements HttpRequestHandler {
         }
     }     
 
-    protected void checkVersion(JSONObject object, String match) {
+    protected void checkVersion(JSONObject object, String match,State st) {
         String version="NULL";
         if (object.has("version")) {
             version=object.getString("version");
             if (match.equals(version)) { return; }
         }
-        SL.getLogger(this.getClass().getSimpleName()).fine("Version mismatch : "+match+">"+version+" : "+objectDump());
+        SL.getLogger(this.getClass().getSimpleName()).fine("Version mismatch : "+match+">"+version+" : "+objectDump(st));
     }
     
 
-    protected abstract JSONObject handleJSON(JSONObject object);
+    protected abstract JSONObject handleJSON(JSONObject object,State st);
     protected boolean needsDigest() { return true; }
 
-    String objectDump() {
-        State st=State.get();
+    String objectDump(State st) {
         return "'"+st.get("slapi_objectname")+"' ["+st.get("slapi_objectkey")+"] owned by "+st.get("slapi_ownername")+" ["+st.get("slapi_ownerkey")+"] at "+st.get("slapi_region")+" "+st.get("slapi_objectposition");
     }
 }

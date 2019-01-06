@@ -9,9 +9,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
-import net.coagulate.SL.Config;
 import net.coagulate.SL.SL;
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -48,7 +48,7 @@ public abstract class Handler implements HttpRequestHandler {
                     if (DEBUG_PARAMS) { System.out.println("Imported POST parameter '"+kv.getName()+"'='"+kv.getValue()+"'"); }
                 }
             }
-            State state=State.create();
+            State state=new State();
             state.request=req;
             state.response=resp;
             state.httpcontext=hc;
@@ -67,14 +67,15 @@ public abstract class Handler implements HttpRequestHandler {
             }
             state.cookies=cookiemap;
             state.setSessionId(cookiemap.get("coagulateslsessionid"));
-            handleContent(req,resp,hc,state);
+
+            resp.setEntity(handleContent(state));
             
             if (state.sessionid!=null) {
                 if (!state.sessionid.equals(cookiemap.get("coagulateslsessionid"))) {
                     resp.addHeader("Set-Cookie","coagulateslsessionid="+state.sessionid+"; HttpOnly; Path=/; Domain=coagulate.net; Secure;");
                 }
             } else { resp.addHeader("Set-Cookie","coagulateslsessionid=none; HttpOnly; Path=/; Domain=coagulate.net; expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure;"); }
-            resp.setStatusCode(getReturnStatus());
+            resp.setStatusCode(state.returnstatus);
 
             return;
         }
@@ -90,43 +91,7 @@ public abstract class Handler implements HttpRequestHandler {
             resp.setEntity(new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>",ContentType.TEXT_HTML));
             return;
         }
-    }    
-    
-    public int getReturnStatus() {
-        return HttpStatus.SC_OK;
-    }
-    
-    protected String pageHeader() {
-        State state=State.get();
-        String r="<html><head><title>Coagulate SL Services</title></head><body>"
-                + "<h1 align=center>Coagulate SL Services</h1><p><hr>";
-        r+="<table width=100%><tr width=100%><td align=left width=400px>"
-                + "Greetings";
-        if (state.user()!=null) { r+=",&nbsp;"+state.user().getUsername().replaceAll(" ", "&nbsp;"); }        
-        r+="</td><td align=center>";
-        r+= "<a href=\"/\">[&nbsp;Home&nbsp;]</a>";
-        r+="</td><td align=right width=400px>";
-        r+="<a href=\"/Info\">[Info]</a>"+"&nbsp;&nbsp;&nbsp;";
-        if (state.user()!=null) {
-            r+="<a href=\"/Billing\">[&nbsp;Billing&nbsp;(L$"+state.user().balance()+")&nbsp;]</a>"
-                    + "&nbsp;&nbsp;&nbsp;"
-                    + "<a href=\"/SetPassword\">[&nbsp;Set&nbsp;Password&nbsp;]</a>"
-                    + "&nbsp;&nbsp;&nbsp;"
-                    + "<a href=\"/Logout\">[&nbsp;Logout&nbsp;]</a>"
-                    + "&nbsp;&nbsp;&nbsp;"
-                    + "</span>";
-        }
-        r+="</td></tr></table>";
-        r+= "<hr></p>";
-        return r;
-    }
-    protected String pageFooter() {
-        String ret="<div style='position:absolute;bottom:5;right:5;left:5;'><hr>";
-        ret+=(SL.DEV?"DEVELOPMENT":"Production");
-        ret+=" // "+Config.getHostName();
-        ret+="<span style='display:block;float:right;'>(C) Iain Maltz @ Second Life</span></div></body></html>";
-        return ret;
-    }
+    }      
 
-    protected abstract void handleContent(HttpRequest req, HttpResponse resp, HttpContext hc,State state);
+    protected abstract HttpEntity handleContent(State state);
 }

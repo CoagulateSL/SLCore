@@ -1,37 +1,66 @@
 package net.coagulate.SL.HTTPPipelines;
 
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
 import net.coagulate.Core.Database.NoDataException;
+import net.coagulate.Core.Tools.UserException;
 import net.coagulate.SL.Data.User;
 import net.coagulate.SL.SL;
+import org.apache.http.HttpStatus;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 
 /**
  *
  * @author Iain Price
  */
-public abstract class AuthenticatedStringHandler extends StringHandler {
+public abstract class AuthenticatedStringHandler extends Handler {
 
-    @Override
-    protected String handleString() {
-        State state=State.get();
-        if (state.user()!=null) { return handleAuthenticated(); }
+   @Override
+    public StringEntity handleContent(State state) {
+        try {
+            String content="<p><b>WEIRD INTERNAL LOGIC ERROR</b></p>";
+            String username=state.get("login_username");
+            if (!checkAuth(state)) {
+                if (username==null || username.isEmpty()) {
+                    return new StringEntity(failPage());
+                }
+            }
+            try { content=handleString(state); }
+            catch (UserException ue) {
+                SL.getLogger().log(WARNING,"User exception propagated to handler",ue);
+                content="<p>Exception: "+ue.getLocalizedMessage()+"</p>";
+            }
+            return new StringEntity(StringHandler.pageHeader(state)+content+StringHandler.pageFooter(state),ContentType.TEXT_HTML);
+        }
+        catch (Exception ex) {
+            SL.getLogger().log(SEVERE,"Unexpected exception thrown in page handler",ex);
+            state.returnstatus=HttpStatus.SC_INTERNAL_SERVER_ERROR;
+            return new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>",ContentType.TEXT_HTML);
+        }
+    }        
+    
+    protected boolean checkAuth(State state) {
+        if (state.user()!=null) { return true; }
         // not (yet?) logged in
         String username=state.get("login_username");
         String password=state.get("login_password");
+        state.put("login_username","OBSCURED FROM DEEPER CODE");
+        state.put("login_password","OBSCURED FROM DEEPER CODE");
         if (state.get("Login").equals("Login") && !username.isEmpty() && !password.isEmpty()) {
             User u=null;
             try { u=User.get(username, false); } catch (NoDataException ignore) {}
             if (u==null) {
                 SL.getLogger().warning("Attempt to authenticate as invalid user '"+username+"' from "+state.getClientIP());
-                return failPage();
+                return false;
             }
             if (u.checkPassword(password)) {
                 state.user(u);
-                return handleAuthenticated();
+                return true;
             }
             SL.getLogger().warning("Attempt to authenticate with incorrect password as '"+username+"' from "+state.getClientIP());
-            return failPage();
         }
-        return loginpage1+loginpageprebot+botLine()+loginpagepostbot;
+        return false;
     }
     
     private static final String loginpage1="<form method=post><p align=center><table><tr><td colspan=2>&nbsp;</td></tr><tr><td></td><td colspan=2 align=center><font size=5><u>Login</u></font></td></tr><tr><th>Username:</th><td><input autofocus type=text size=20 name=login_username></td></tr>";
@@ -51,8 +80,9 @@ public abstract class AuthenticatedStringHandler extends StringHandler {
             + "</table></p></form>";
             
     private String failPage() { return loginpage1+"<tr><td colspan=2><font color=red><b>Invalid Login</b></font></td></tr>"+loginpageprebot+botLine()+loginpagepostbot; }
-    public abstract String handleAuthenticated();
+    public abstract String handleString(State state);
     private String botLine() {
         return "===> Click <a href=\"secondlife:///app/agent/"+SL.bot.getUUID().toUUIDString()+"/im\">to instant message the bot "+SL.bot.getUsername()+"</a><br>";
     }
+
 }

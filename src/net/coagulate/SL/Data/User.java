@@ -21,7 +21,6 @@ import net.coagulate.GPHUD.Data.Instance;
 import net.coagulate.GPHUD.Data.TableRow;
 import net.coagulate.GPHUD.Interfaces.Outputs.Link;
 import net.coagulate.SL.Config;
-import net.coagulate.SL.HTTPPipelines.State;
 import net.coagulate.SL.Pricing;
 import net.coagulate.SL.SL;
 
@@ -160,10 +159,10 @@ public class User extends LockableTable {
         return get(match);
     }
 
-    public void setPassword(String password) throws UserException {
+    public void setPassword(String password,String clientip) throws UserException {
         if (password.length()<6) { throw new UserException("Password not long enough"); }
         d("update users set password=? where id=?",Passwords.createHash(password),getId());
-        SL.getLogger().info("User "+this.getUsername()+" has set password from "+State.get().getClientIP());
+        SL.getLogger().info("User "+this.getUsername()+" has set password from "+clientip);
     }
 
     public boolean checkPassword(String password) {

@@ -1,14 +1,41 @@
 package net.coagulate.SL.HTTPPipelines;
 
-import java.util.Map;
+import net.coagulate.Core.HTML.Container;
+import net.coagulate.Core.HTML.Form;
+import net.coagulate.Core.HTML.Header1;
+import net.coagulate.Core.HTML.Paragraph;
+import net.coagulate.Core.Tools.SystemException;
+import net.coagulate.SL.Pages.HTML.ServiceCell;
 
 /**
  *
  * @author Iain Price
  */
-public abstract class Page extends AuthenticatedStringHandler {
+public class Page extends Container {
 
-    // NEVER USE CLASS LOCAL STATE, there is only one instance for all users, at the same time :/
+    public enum PAGELAYOUT {NONE,CENTERCOLUMN};
+    private PAGELAYOUT layout=PAGELAYOUT.NONE;
+    public void layout(PAGELAYOUT layout) { this.layout=layout; }
+
+    public String preLayout() {
+        if (layout==PAGELAYOUT.NONE) { return ""; }
+        if (layout==PAGELAYOUT.CENTERCOLUMN) { return "<p align=center><table><tr><td style=\"max-width: 800px;\">"; }
+        throw new SystemException("Unhandled pre-layout "+layout);
+    }
+    public String postLayout() {
+        if (layout==PAGELAYOUT.NONE) { return ""; }
+        if (layout==PAGELAYOUT.CENTERCOLUMN) { return "</td></td></table></p>"; }
+        throw new SystemException("Unhandled post-layout "+layout);
+    }
+
+    public Header1 header(String header) { Header1 h=new Header1(header); add(h); return h; }
+    public Paragraph paragraph() { Paragraph p=new Paragraph(); add(p); return p; }
+    public Paragraph paragraph(String s) { Paragraph p=new Paragraph(s); add(p); return p; }
+    public Form form() { Form f=new Form(); add(f); return f; }
+    public ServiceCell serviceCell(String title, String targeturl) { ServiceCell sc=new ServiceCell(title,targeturl); add(sc); return sc; }
+
+    
+    /*
     @Override
     public String handleAuthenticated() {
         State.get().page="";
@@ -56,4 +83,5 @@ public abstract class Page extends AuthenticatedStringHandler {
     public Page error(String errormessage) { return raw("<font color=red><b>"+errormessage+"</b></font>"); }
     public Page buttonGET(String buttonlabel,String url) { return raw("<a href=\""+url+"\"><button type=submit>"+buttonlabel+"</button></a>"); }
     public Page errorBlock(String error) { return raw("<br><span style=\"margin: 10px; padding:5px; border-style: solid; border-width: 2; border-color: red;\">"+error+"</span><br><br>"); }
+*/
 }

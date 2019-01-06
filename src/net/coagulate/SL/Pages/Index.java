@@ -1,26 +1,29 @@
 package net.coagulate.SL.Pages;
 
+import net.coagulate.Core.HTML.Paragraph;
+import net.coagulate.SL.HTTPPipelines.AuthenticatedContainerHandler;
 import net.coagulate.SL.HTTPPipelines.Page;
 import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
+import net.coagulate.SL.HTTPPipelines.State;
 
 /**
  *
  * @author Iain Price
  */
-public class Index extends Page {
+public class Index extends AuthenticatedContainerHandler {
 
     @Url("/")
     public Index(){}
     @Override
-    public void content() {
-        centralisePage();
-        raw("<p align=center>Welcome to Coagulate Second Life services, select a service for more information.</p>");
-        raw("<table style=\"max-width: 900px;\" align=center>");
-        raw("<tr width=100%><td width=100%><ul style=\"white-space: nowrap;\">");
-        openServiceCell("Region Monitoring","/RegionMonitor");
-        p("Region Monitoring monitors the status of specified regions, polling every minute and logging the data.");
-        p("Can also use scripted or bot services to collect performance metrics.");
-        closeServiceCell();/*
+    protected void run(State state, Page page) {
+        page.layout(Page.PAGELAYOUT.CENTERCOLUMN);
+        page.paragraph("Welcome to Coagulate Second Life services, select a service for more information.").align(Paragraph.ALIGNMENT.CENTER);
+        //raw("<table style=\"max-width: 900px;\" align=center>");
+        //raw("<tr width=100%><td width=100%><ul style=\"white-space: nowrap;\">");
+        page.serviceCell("Region Monitoring","/RegionMonitor").
+                add(new Paragraph("Region Monitoring monitors the status of specified regions, polling every minute and logging the data.")).
+                add(new Paragraph("Can also use scripted or bot services to collect performance metrics."));
+        /*
         openServiceCell("Web Chat","/WebChat");
         p("[Placeholder note to self] Web Chat provides a simple interface to Second Life chat over a web page.");
         p("Perfect for use on a simple browser or low power consumption device.  Can use hosted or home-run bot connections.");
@@ -30,17 +33,11 @@ public class Index extends Page {
         p("This can be used to automate group invites, group ejects, and other features");
         closeServiceCell();
         raw("</ul></td></tr>");
-        raw("<tr width=100%><td width=100%><ul style=\"white-space: nowrap;\">");*/
-        openServiceCell("GPHUD","/GPHUD/");
-        p("GPHUD is the 2nd generation role-play HUD.");
-        p("This is used to implement various game modes at sims.");
-        raw("</table>");
+        raw("<tr width=100%><td width=100%><ul style=\"white-space: nowrap;\">");
+        */
+        page.serviceCell("GPHUD","/GPHUD/").
+                add(new Paragraph("GPHUD is the 2nd generation role-play HUD.")).
+                add(new Paragraph("This is used to implement various game modes at sims."));
     }
 
-    private void openServiceCell(String title,String target) {
-        raw("<a href=\""+target+"\">");
-        raw("<li style=\"vertical-align: top; white-space: normal; color:black; border-style: solid; border-width: 5px; height: 250px; width: 200px; text-align: center; margin: 0px; list-style-type: none; display: inline-block;\">");
-        raw("<h3 align=center>"+title+"</h3>");        
-    }
-    private void closeServiceCell() { raw("</li></a>"); }
 }

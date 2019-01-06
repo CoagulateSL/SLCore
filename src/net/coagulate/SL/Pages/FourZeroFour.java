@@ -1,5 +1,6 @@
 package net.coagulate.SL.Pages;
 
+import net.coagulate.SL.HTTPPipelines.State;
 import net.coagulate.SL.HTTPPipelines.StringHandler;
 import org.apache.http.HttpStatus;
 
@@ -12,11 +13,8 @@ public class FourZeroFour extends StringHandler {
     
     public FourZeroFour(String uri) { this.uri=uri; }
     @Override
-    protected String handleString() {
+    protected String handleString(State state) {
+        state.setStatus(HttpStatus.SC_NOT_FOUND);
         return "<h1 align=center>Four Hundred and Four</h1><br><br><p align=center>As in, 404, Page Not Found</p><br><br><br><br><p align=center>The requested URI ("+uri+") was not mapped to a page handler.</p>";
-    }
- 
-    public int getReturnStatus() {
-        return HttpStatus.SC_NOT_FOUND;
     }
 }

@@ -8,7 +8,7 @@ import net.coagulate.Core.Tools.UnixTime;
  */
 public class TimeStampOrDuration extends TimeStamp {
     public String render(State st,String strvalue) {
-        if (value==null || value.isEmpty() || Integer.parseInt(value)==0) { return "-"; }
+        if (strvalue==null || strvalue.isEmpty() || Integer.parseInt(strvalue)==0) { return "-"; }
         int value=Integer.parseInt(strvalue);
         int now=UnixTime.getUnixTime();
         int diff=now-value;

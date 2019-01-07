@@ -12,7 +12,7 @@ public abstract class ContainerHandler extends StringHandler {
     protected String handleString(State state) {
         Page container=new Page();
         run(state,container);
-        return pageHeader(state)+container.toHtml(state)+pageFooter(state);
+        return container.toHtml(state);
     }
     
     protected abstract void run(State state,Page page);

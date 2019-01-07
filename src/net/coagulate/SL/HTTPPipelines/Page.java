@@ -1,12 +1,14 @@
 package net.coagulate.SL.HTTPPipelines;
 
 import net.coagulate.Core.Tools.SystemException;
+import net.coagulate.SL.Config;
 import net.coagulate.SL.Pages.HTML.Container;
 import net.coagulate.SL.Pages.HTML.Form;
 import net.coagulate.SL.Pages.HTML.Header1;
 import net.coagulate.SL.Pages.HTML.Paragraph;
 import net.coagulate.SL.Pages.HTML.ServiceCell;
 import net.coagulate.SL.Pages.HTML.State;
+import net.coagulate.SL.SL;
 
 /**
  *
@@ -36,7 +38,10 @@ public class Page extends Container {
     public ServiceCell serviceCell(String title, String targeturl) { ServiceCell sc=new ServiceCell(title,targeturl); add(sc); return sc; }
 
     public String toHtml(State st) {
-        return super.toHtml(st);
+        return 
+                pageHeader(st)+
+                super.toHtml(st)+
+                pageFooter(st);
     }
     
     /*
@@ -88,4 +93,35 @@ public class Page extends Container {
     public Page buttonGET(String buttonlabel,String url) { return raw("<a href=\""+url+"\"><button type=submit>"+buttonlabel+"</button></a>"); }
     public Page errorBlock(String error) { return raw("<br><span style=\"margin: 10px; padding:5px; border-style: solid; border-width: 2; border-color: red;\">"+error+"</span><br><br>"); }
 */
+    
+    public static String pageHeader(State state) {
+        String r="<html><head><title>Coagulate SL Services</title></head><body>"
+                + "<h1 align=center>Coagulate SL Services</h1><p><hr>";
+        r+="<table width=100%><tr width=100%><td align=left width=400px>"
+                + "Greetings";
+        if (state.user()!=null) { r+=",&nbsp;"+state.user().getUsername().replaceAll(" ", "&nbsp;"); }        
+        r+="</td><td align=center>";
+        r+= "<a href=\"/\">[&nbsp;Home&nbsp;]</a>";
+        r+="</td><td align=right width=400px>";
+        r+="<a href=\"/Info\">[Info]</a>"+"&nbsp;&nbsp;&nbsp;";
+        if (state.user()!=null) {
+            r+="<a href=\"/Billing\">[&nbsp;Billing&nbsp;(L$"+state.user().balance()+")&nbsp;]</a>"
+                    + "&nbsp;&nbsp;&nbsp;"
+                    + "<a href=\"/Account\">[&nbsp;Account&nbsp;]</a>"
+                    + "&nbsp;&nbsp;&nbsp;"
+                    + "<a href=\"/Logout\">[&nbsp;Logout&nbsp;]</a>"
+                    + "&nbsp;&nbsp;&nbsp;"
+                    + "</span>";
+        }
+        r+="</td></tr></table>";
+        r+= "<hr></p>";
+        return r;
+    }
+    public static String pageFooter(State state) {
+        String ret="<div style='position:absolute;bottom:5;right:5;left:5;'><hr>";
+        ret+=(SL.DEV?"DEVELOPMENT":"Production");
+        ret+=" // "+Config.getHostName();
+        ret+="<span style='display:block;float:right;'>(C) Iain Maltz @ Second Life</span></div></body></html>";
+        return ret;
+    }    
 }

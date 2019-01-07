@@ -5,6 +5,7 @@ import static java.util.logging.Level.WARNING;
 import net.coagulate.Core.Database.NoDataException;
 import net.coagulate.Core.Tools.UserException;
 import net.coagulate.SL.Data.User;
+import net.coagulate.SL.Pages.HTML.Raw;
 import net.coagulate.SL.Pages.HTML.State;
 import net.coagulate.SL.SL;
 import org.apache.http.HttpStatus;
@@ -24,9 +25,9 @@ public abstract class AuthenticatedStringHandler extends Handler {
             String username=state.get("login_username");
             if (!checkAuth(state)) {
                 if (username==null || username.isEmpty()) {
-                    return new StringEntity(StringHandler.pageHeader(state)+loginPage()+StringHandler.pageFooter(state),ContentType.TEXT_HTML);
+                    return new StringEntity(new Page().add(new Raw(loginPage())).toHtml(state),ContentType.TEXT_HTML);
                 } else {
-                    return new StringEntity(StringHandler.pageHeader(state)+failPage()+StringHandler.pageFooter(state),ContentType.TEXT_HTML);
+                    return new StringEntity(new Page().add(new Raw(failPage())).toHtml(state),ContentType.TEXT_HTML);
                 }
             }
             try { content=handleString(state); }
@@ -34,7 +35,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
                 SL.getLogger().log(WARNING,"User exception propagated to handler",ue);
                 content="<p>Exception: "+ue.getLocalizedMessage()+"</p>";
             }
-            return new StringEntity(StringHandler.pageHeader(state)+content+StringHandler.pageFooter(state),ContentType.TEXT_HTML);
+            return new StringEntity(content,ContentType.TEXT_HTML);
         }
         catch (Exception ex) {
             SL.getLogger().log(SEVERE,"Unexpected exception thrown in page handler",ex);

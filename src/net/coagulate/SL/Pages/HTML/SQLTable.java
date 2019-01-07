@@ -27,7 +27,7 @@ public class SQLTable extends Table {
         header(header);
         return this;
     }
-    public String contentRows() {
+    public String contentRows(State st) {
         Results results = db.dq(sql,params);
         String r="";
         for (ResultsRow row:results) {

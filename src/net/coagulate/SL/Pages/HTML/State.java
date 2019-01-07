@@ -51,7 +51,7 @@ public class State {
     // WELL KNOWN MAPS
     // parameters - get/post data
     // cookies - header cookie data
-    // parameters is assumed to be default :P
+    // parameters is assumed to be default :P legacy behaviour, kinda
     public String get(String key) { return get("parameters",key,""); }
     public void put(String key,String value) { put("parameters",key,value); }
     

@@ -1,8 +1,8 @@
 package net.coagulate.SL.Pages;
 
 import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
-import net.coagulate.SL.HTTPPipelines.State;
 import net.coagulate.SL.HTTPPipelines.StringHandler;
+import net.coagulate.SL.Pages.HTML.State;
 
 /**
  *

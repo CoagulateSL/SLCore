@@ -1,10 +1,10 @@
 package net.coagulate.SL.Pages;
 
-import net.coagulate.Core.HTML.Paragraph;
 import net.coagulate.SL.HTTPPipelines.AuthenticatedContainerHandler;
 import net.coagulate.SL.HTTPPipelines.Page;
 import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
-import net.coagulate.SL.HTTPPipelines.State;
+import net.coagulate.SL.Pages.HTML.Paragraph;
+import net.coagulate.SL.Pages.HTML.State;
 
 /**
  *

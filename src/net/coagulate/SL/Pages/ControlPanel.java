@@ -3,7 +3,6 @@ package net.coagulate.SL.Pages;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.MessagingException;
-import net.coagulate.Core.HTML.Raw;
 import net.coagulate.Core.Tools.ExceptionTools;
 import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.SystemException;
@@ -12,8 +11,9 @@ import net.coagulate.SL.Config;
 import net.coagulate.SL.HTTPPipelines.AuthenticatedContainerHandler;
 import net.coagulate.SL.HTTPPipelines.Page;
 import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
-import net.coagulate.SL.HTTPPipelines.State;
 import net.coagulate.SL.Maintenance;
+import net.coagulate.SL.Pages.HTML.Raw;
+import net.coagulate.SL.Pages.HTML.State;
 
 /**
  *

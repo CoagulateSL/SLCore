@@ -3,7 +3,7 @@ package net.coagulate.SL.Pages;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.HTTPPipelines.Handler;
 import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
-import net.coagulate.SL.HTTPPipelines.State;
+import net.coagulate.SL.Pages.HTML.State;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;

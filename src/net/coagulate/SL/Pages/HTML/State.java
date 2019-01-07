@@ -26,7 +26,7 @@ public class State {
     private final HttpContext httpcontext; public HttpContext context() { return httpcontext; }
     private int returnstatus=HttpStatus.SC_OK; public void status(int httpstatus) { returnstatus=httpstatus; } public int status() { return returnstatus; }
     private String sessionid=null;
-    public void sessionId(String set) { sessionid=set; }
+    public void sessionId(String set) { sessionid=set; loadSession(); }
     public String sessionId() { return sessionid; }
     
     // We love general purpose KV maps.  more than one of them.
@@ -79,39 +79,12 @@ public class State {
         user=null;
     }
 
+    private Session session=null;
     
-    /*
-    private Map<String, String> parameters=new HashMap<>(); public String get(String parameter) { String v=parameters.get(parameter); if (v==null) { v=""; } return v; }
-    public void put(String parameter,String value) { parameters.put(parameter,value); }
-    Map<String, String> cookies;
-    String sessionid;
-    String page;
-
     void loadSession() {
-        session=null;
+        session = null;
+        if (sessionid==null || sessionid.isEmpty() || sessionid.equalsIgnoreCase("none")) { return; }
         if (sessionid!=null) { session=Session.get(sessionid); } 
         if (session!=null) { user=session.user(); } else { sessionid=null; }
     }
-    Session session=null;
-    private User user=null; public User user() { return user; }
-    public void user(User user) { session=Session.create(user); this.sessionid=session.token(); this.user=user; }
-
-
-    void setSessionId(String sessionid) {
-        if (sessionid!=null && sessionid.isEmpty()) { sessionid=null; }
-        if (sessionid!=null && sessionid.equalsIgnoreCase("none")) { sessionid=null; }
-        this.sessionid=sessionid;
-        loadSession();
-    }
-
-    void put(Map<String, String> passed) {
-        parameters.putAll(passed);
-    }
-
-    Map<String, String> getParameters() {
-        return parameters;
-    }
-    */
-
-
 }

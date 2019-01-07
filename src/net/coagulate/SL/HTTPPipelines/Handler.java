@@ -68,7 +68,7 @@ public abstract class Handler implements HttpRequestHandler {
 
             resp.setEntity(handleContent(state));
             
-            if (state.sessionId()!=null) {
+            if (state.sessionId()!=null && !state.sessionId().isEmpty() && !state.sessionId().equalsIgnoreCase("none")) {
                 if (!state.sessionId().equals(cookiemap.get("coagulateslsessionid"))) {
                     resp.addHeader("Set-Cookie","coagulateslsessionid="+state.sessionId()+"; HttpOnly; Path=/; Domain=sl"+(SL.DEV?"dev":"")+".coagulate.net; Secure;");
                 }

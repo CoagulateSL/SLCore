@@ -7,7 +7,7 @@ import java.util.Map;
  * @author Iain Price
  */
 public abstract class Renderer implements Element {
-
+    // note no valued constructor as many places (table...) run in-line as render() instead
     protected String value=null;
     public void set(String value) { this.value=value; }
     public String get() { return value; }

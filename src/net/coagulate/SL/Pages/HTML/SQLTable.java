@@ -24,9 +24,11 @@ public class SQLTable extends Table {
         this.params=params;
         columns=new ArrayList<>();
     }
-    public SQLTable column(String header,String columnname) { return column(header,columnname,null); }
-    public SQLTable column(String header,String columnname,Renderer renderer) {
-        columns.add(new Column(header,columnname,renderer));
+    public SQLTable column(String header,String columnname) { return column(header,columnname,null,Alignment.NONE); }
+    public SQLTable column(String header,String columnname,Renderer renderer) { return column(header,columnname,renderer,Alignment.NONE); }
+    public SQLTable column(String header,String columnname,Alignment alignment) { return column(header,columnname,null,alignment); }
+    public SQLTable column(String header,String columnname,Renderer renderer,Alignment alignment) {
+        columns.add(new Column(header,columnname,renderer,alignment));
         header(header);
         return this;
     }
@@ -40,7 +42,7 @@ public class SQLTable extends Table {
             for (Column column:columns) {
                 //System.out.println("On column "+column.columnname);
                 //for (String s:row.keySet()) { System.out.println("Exists:"+s); }
-                r+="<td>";
+                r+=openCell(column);
                 r+=column.render(st,row.getString(column.columnname));
                 r+="</td>";
             }
@@ -50,16 +52,23 @@ public class SQLTable extends Table {
     }
 
     public SQLTable rowGenerator(TRGenerator generator) { super.rowGenerator(generator); return this; }
-    
+    private String openCell(Column column) {
+        if (column.alignment==Alignment.LEFT) { return "<td align=left>"; }
+        if (column.alignment==Alignment.CENTER) { return "<td align=center>"; }
+        if (column.alignment==Alignment.RIGHT) { return "<td align=right>"; }
+        return "<td>";
+    }
     class Column {
 
         final String columnname;
         final String header;
         final Renderer renderer;
-        Column(String header,String columnname,Renderer renderer) {
+        final Alignment alignment;
+        Column(String header,String columnname,Renderer renderer,Alignment alignment) {
             this.header=header;
             this.columnname=columnname;
             this.renderer=renderer;
+            this.alignment=alignment;
         }
         
         public String render(State state,String value) {

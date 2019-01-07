@@ -13,6 +13,7 @@ public abstract class Renderer implements Element {
     public String get() { return value; }
     @Override
     public String toHtml(State st) { return render(st,value); }
+    public String toString(State st) { return value; }
     @Override
     public void load(Map<String, String> map) {}
     public abstract String render(State st,String value);

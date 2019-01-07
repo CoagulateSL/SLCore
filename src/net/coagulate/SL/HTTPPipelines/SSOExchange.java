@@ -35,7 +35,7 @@ public class SSOExchange implements HttpRequestHandler {
             SL.getLogger().info("Successful SSO signon for "+user.toString());
             Session session=Session.create(user);
             resp.setEntity(new StringEntity(""));
-            resp.addHeader("Set-Cookie","coagulateslsessionid="+session.token()+"; HttpOnly; Path=/; Domain=coagulate.net; Secure;");
+            resp.addHeader("Set-Cookie","coagulateslsessionid="+session.token()+"; HttpOnly; Path=/; Domain=sl"+(SL.DEV?"dev":"")+".coagulate.net; Secure;");
             resp.addHeader("Location","/");
             resp.setStatusCode(HttpStatus.SC_SEE_OTHER);
             return;

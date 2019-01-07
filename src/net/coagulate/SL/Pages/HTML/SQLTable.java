@@ -33,6 +33,7 @@ public class SQLTable extends Table {
         for (ResultsRow row:results) {
             r+="<tr>";
             for (Column column:columns) {
+                System.out.println("On column "+column.columnname);
                 r+="<td>";
                 r+=row.getString(column.columnname);
                 r+="</td>";

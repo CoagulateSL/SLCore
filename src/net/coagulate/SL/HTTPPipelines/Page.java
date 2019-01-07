@@ -36,9 +36,7 @@ public class Page extends Container {
     public ServiceCell serviceCell(String title, String targeturl) { ServiceCell sc=new ServiceCell(title,targeturl); add(sc); return sc; }
 
     public String toHtml(State st) {
-        return StringHandler.pageHeader(st)
-                +super.toHtml(st)
-                +StringHandler.pageFooter(st);
+        return super.toHtml(st);
     }
     
     /*

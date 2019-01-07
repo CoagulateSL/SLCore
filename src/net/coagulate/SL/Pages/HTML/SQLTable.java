@@ -1,7 +1,9 @@
 package net.coagulate.SL.Pages.HTML;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Database.Results;
 import net.coagulate.Core.Database.ResultsRow;
@@ -32,7 +34,9 @@ public class SQLTable extends Table {
         Results results = db.dq(sql,params);
         String r="";
         for (ResultsRow row:results) {
-            r+=openRow();
+            Map<String,String> rowstr=new HashMap<>();
+            for (Column column:columns) { rowstr.put(column.columnname,row.getString(column.columnname)); }
+            r+=openRow(st,rowstr);
             for (Column column:columns) {
                 //System.out.println("On column "+column.columnname);
                 //for (String s:row.keySet()) { System.out.println("Exists:"+s); }

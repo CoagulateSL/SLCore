@@ -72,7 +72,7 @@ public class SQLTable extends Table {
         }
         
         public String render(State state,String value) {
-            if (renderer==null) { return value; }
+            if (renderer==null) { if (value==null) { return ""; } return value; }
             return renderer.render(state,value);
         }
     }

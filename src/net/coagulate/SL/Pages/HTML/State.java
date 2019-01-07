@@ -52,7 +52,7 @@ public class State {
     // parameters - get/post data
     // cookies - header cookie data
     // parameters is assumed to be default :P
-    public String get(String key) { return get("parameters",key); }
+    public String get(String key) { return get("parameters",key,""); }
     public void put(String key,String value) { put("parameters",key,value); }
     
     // hmm, getting a bit complex here

@@ -10,6 +10,7 @@ public class SignificantFigures extends Renderer {
     public SignificantFigures(int sf) { this.sf=sf; }
     @Override
     public String render(State st, String value) {
+        if (value==null || value.isEmpty()) { return ""; }
         if (value.length()<=(sf)) { return value; }
         if (value.indexOf(".")==-1) { return value; }
         return value.substring(0, sf+1);

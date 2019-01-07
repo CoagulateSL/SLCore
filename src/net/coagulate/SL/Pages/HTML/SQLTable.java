@@ -22,8 +22,9 @@ public class SQLTable extends Table {
         this.params=params;
         columns=new ArrayList<>();
     }
-    public SQLTable column(String header,String columnname) {
-        columns.add(new Column(header,columnname));
+    public SQLTable column(String header,String columnname) { return column(header,columnname,null); }
+    public SQLTable column(String header,String columnname,Renderer renderer) {
+        columns.add(new Column(header,columnname,renderer));
         header(header);
         return this;
     }
@@ -36,7 +37,7 @@ public class SQLTable extends Table {
                 System.out.println("On column "+column.columnname);
                 for (String s:row.keySet()) { System.out.println("Exists:"+s); }
                 r+="<td>";
-                r+=row.getString(column.columnname);
+                r+=column.render(st,row.getString(column.columnname));
                 r+="</td>";
             }
             r+="</tr>";
@@ -48,9 +49,16 @@ public class SQLTable extends Table {
 
         final String columnname;
         final String header;
-        Column(String header,String columnname) {
+        final Renderer renderer;
+        Column(String header,String columnname,Renderer renderer) {
             this.header=header;
             this.columnname=columnname;
+            this.renderer=renderer;
+        }
+        
+        public String render(State state,String value) {
+            if (renderer==null) { return value; }
+            return renderer.render(state,value);
         }
     }
     

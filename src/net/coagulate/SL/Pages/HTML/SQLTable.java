@@ -32,7 +32,7 @@ public class SQLTable extends Table {
         Results results = db.dq(sql,params);
         String r="";
         for (ResultsRow row:results) {
-            r+="<tr>";
+            r+=openRow();
             for (Column column:columns) {
                 //System.out.println("On column "+column.columnname);
                 //for (String s:row.keySet()) { System.out.println("Exists:"+s); }
@@ -44,6 +44,8 @@ public class SQLTable extends Table {
         }
         return r;
     }
+
+    public SQLTable rowGenerator(TRGenerator generator) { super.rowGenerator(generator); return this; }
     
     class Column {
 

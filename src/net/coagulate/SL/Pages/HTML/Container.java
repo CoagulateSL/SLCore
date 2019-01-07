@@ -19,6 +19,11 @@ public class Container implements Element {
         return ret;
     }
 
+    public String toString(State st) {
+        String ret="";
+        for (Element e:content) { ret+=e.toString(st)+"\n"; }
+        return ret;
+    }
     @Override
     public void load(Map<String, String> map) {
         for (Element e:content) { e.load(map); }

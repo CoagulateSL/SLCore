@@ -17,5 +17,7 @@ public class TimeStamp extends Renderer {
         }
         return UnixTime.fromUnixTime(Integer.parseInt(value), timezone);
     }
-    
+    public String toString(State st) {
+        return value;
+    }
 }

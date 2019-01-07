@@ -1,6 +1,7 @@
 package net.coagulate.SL.Pages.HTML;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,7 +58,14 @@ public class Table extends Container {
     protected String contentRows(State st) {
         String r="";
         for (List<Element> row:table) {
-            r+="<tr>";
+            Map<String,String> stringrow=new HashMap<>();
+            for (Element cell:row) {
+                int pos=row.indexOf(cell);
+                if (pos<headers.size()) {
+                    stringrow.put(headers.get(pos).toString(st), cell.toString(st));
+                }
+            }
+            r+=openRow(st,stringrow);
             for (Element cell:row) {
                 r+="<td>";
                 r+=cell.toHtml(st);
@@ -67,5 +75,11 @@ public class Table extends Container {
         }
         return r;
     }
+    protected TRGenerator trgen=null;
+    protected String openRow(State st,Map<String,String> row) {
+        if (trgen==null) { return "<tr>"; }
+        return trgen.render(st, row);
+    }
+    public Table rowGenerator(TRGenerator generator) { trgen=generator; return this; }
     
 }

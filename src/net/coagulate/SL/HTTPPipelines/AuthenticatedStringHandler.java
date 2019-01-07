@@ -24,7 +24,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
             String username=state.get("login_username");
             if (!checkAuth(state)) {
                 if (username==null || username.isEmpty()) {
-                    return new StringEntity(loginpage1+loginpageprebot+botLine()+loginpagepostbot,ContentType.TEXT_HTML);
+                    return new StringEntity(StringHandler.pageHeader(state)+loginPage()+StringHandler.pageFooter(state),ContentType.TEXT_HTML);
                 } else {
                     return new StringEntity(StringHandler.pageHeader(state)+failPage()+StringHandler.pageFooter(state),ContentType.TEXT_HTML);
                 }
@@ -83,6 +83,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
             + "</table></p></form>";
             
     private String failPage() { return loginpage1+"<tr><td colspan=2><font color=red><b>Invalid Login</b></font></td></tr>"+loginpageprebot+botLine()+loginpagepostbot; }
+    private String loginPage() { return loginpage1+loginpageprebot+botLine()+loginpagepostbot; }
     public abstract String handleString(State state);
     private String botLine() {
         return "===> Click <a href=\"secondlife:///app/agent/"+SL.bot.getUUID().toUUIDString()+"/im\">to instant message the bot "+SL.bot.getUsername()+"</a><br>";

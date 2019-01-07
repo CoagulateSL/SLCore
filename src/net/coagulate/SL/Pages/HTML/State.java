@@ -58,7 +58,14 @@ public class State {
     // hmm, getting a bit complex here
     private User user=null;
     public User user() { return user; }
-    public void user(User user) { this.user=user; }
+    public void user(User user) {
+        // got a session?
+        if (session==null) {
+            session=Session.create(user);
+            sessionid=session.token();
+        } else { session.setUser(user); }
+        this.user=user;
+    }
 
     public String getClientIP() {
         //try {

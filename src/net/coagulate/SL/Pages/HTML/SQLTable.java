@@ -34,8 +34,8 @@ public class SQLTable extends Table {
         for (ResultsRow row:results) {
             r+="<tr>";
             for (Column column:columns) {
-                System.out.println("On column "+column.columnname);
-                for (String s:row.keySet()) { System.out.println("Exists:"+s); }
+                //System.out.println("On column "+column.columnname);
+                //for (String s:row.keySet()) { System.out.println("Exists:"+s); }
                 r+="<td>";
                 r+=column.render(st,row.getString(column.columnname));
                 r+="</td>";

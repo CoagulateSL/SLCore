@@ -12,7 +12,7 @@ public class TimeStampOrDuration extends TimeStamp {
         int value=Integer.parseInt(strvalue);
         int now=UnixTime.getUnixTime();
         int diff=now-value;
-        if (diff<(-4*UnixTime.WEEK) || diff>(4*UnixTime.WEEK)) {
+        if (diff>(-4*UnixTime.WEEK) && diff<(4*UnixTime.WEEK)) {
             return UnixTime.durationRelativeToNow(value);
         }
         return super.render(st,strvalue);

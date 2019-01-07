@@ -24,7 +24,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
             String username=state.get("login_username");
             if (!checkAuth(state)) {
                 if (username==null || username.isEmpty()) {
-                    return new StringEntity(StringHandler.pageHeader(state)+failPage()+StringHandler.pageFooter(state));
+                    return new StringEntity(StringHandler.pageHeader(state)+failPage()+StringHandler.pageFooter(state),ContentType.TEXT_HTML);
                 }
             }
             try { content=handleString(state); }

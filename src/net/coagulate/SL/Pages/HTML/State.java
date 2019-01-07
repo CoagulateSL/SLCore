@@ -92,7 +92,7 @@ public class State {
         session = null;
         if (sessionid==null || sessionid.isEmpty() || sessionid.equalsIgnoreCase("none")) { return; }
         session=Session.get(sessionid);
-        System.out.println("Loaded session id "+sessionid+" and got "+session);
+        //System.out.println("Loaded session id "+sessionid+" and got "+session);
         if (session!=null) { user=session.user(); } else { sessionid=null; }
     }
 }

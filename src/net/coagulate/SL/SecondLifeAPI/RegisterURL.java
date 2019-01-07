@@ -1,7 +1,7 @@
 package net.coagulate.SL.SecondLifeAPI;
 
 import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
-import net.coagulate.SL.HTTPPipelines.State;
+import net.coagulate.SL.Pages.HTML.State;
 import org.json.JSONObject;
 
 /**

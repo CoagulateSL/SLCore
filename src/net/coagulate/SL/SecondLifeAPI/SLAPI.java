@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import net.coagulate.Core.Tools.ByteTools;
 import net.coagulate.Core.Tools.Crypto;
 import net.coagulate.Core.Tools.UnixTime;
-import net.coagulate.SL.HTTPPipelines.State;
+import net.coagulate.SL.Pages.HTML.State;
 import net.coagulate.SL.SL;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
@@ -36,7 +36,7 @@ public abstract class SLAPI implements HttpRequestHandler {
                 HttpEntityEnclosingRequest r=(HttpEntityEnclosingRequest) req;
                 content=new JSONObject(ByteTools.convertStreamToString(r.getEntity().getContent()));
             }
-            State st=new State();
+            State st=new State(req,resp,hc);
             String shard=req.getHeaders("X-SecondLife-Shard")[0].getValue();
             st.put("slapi_shard",shard);
             st.put("slapi_region",req.getHeaders("X-SecondLife-Region")[0].getValue());

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
+import net.coagulate.SL.Pages.HTML.State;
 import net.coagulate.SL.SL;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -48,11 +49,8 @@ public abstract class Handler implements HttpRequestHandler {
                     if (DEBUG_PARAMS) { System.out.println("Imported POST parameter '"+kv.getName()+"'='"+kv.getValue()+"'"); }
                 }
             }
-            State state=new State();
-            state.request=req;
-            state.response=resp;
-            state.httpcontext=hc;
-            state.put(parameters);
+            State state=new State(req,resp,hc);
+            state.putMap("parameters",parameters);
             Map<String,String> cookiemap=new HashMap<>();
             for (Header header:req.getHeaders("Cookie")) {
                 for (String component:header.getValue().split(";")) {
@@ -65,17 +63,17 @@ public abstract class Handler implements HttpRequestHandler {
                     }
                 }
             }
-            state.cookies=cookiemap;
-            state.setSessionId(cookiemap.get("coagulateslsessionid"));
+            state.putMap("cookies",cookiemap);
+            state.sessionId(cookiemap.get("coagulateslsessionid"));
 
             resp.setEntity(handleContent(state));
             
-            if (state.sessionid!=null) {
-                if (!state.sessionid.equals(cookiemap.get("coagulateslsessionid"))) {
-                    resp.addHeader("Set-Cookie","coagulateslsessionid="+state.sessionid+"; HttpOnly; Path=/; Domain=coagulate.net; Secure;");
+            if (state.sessionId()!=null) {
+                if (!state.sessionId().equals(cookiemap.get("coagulateslsessionid"))) {
+                    resp.addHeader("Set-Cookie","coagulateslsessionid="+state.sessionId()+"; HttpOnly; Path=/; Domain=coagulate.net; Secure;");
                 }
             } else { resp.addHeader("Set-Cookie","coagulateslsessionid=none; HttpOnly; Path=/; Domain=coagulate.net; expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure;"); }
-            resp.setStatusCode(state.returnstatus);
+            resp.setStatusCode(state.status());
 
             return;
         }

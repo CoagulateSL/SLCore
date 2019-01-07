@@ -5,6 +5,7 @@ import static java.util.logging.Level.WARNING;
 import net.coagulate.Core.Database.NoDataException;
 import net.coagulate.Core.Tools.UserException;
 import net.coagulate.SL.Data.User;
+import net.coagulate.SL.Pages.HTML.State;
 import net.coagulate.SL.SL;
 import org.apache.http.HttpStatus;
 import org.apache.http.entity.ContentType;
@@ -35,7 +36,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
         }
         catch (Exception ex) {
             SL.getLogger().log(SEVERE,"Unexpected exception thrown in page handler",ex);
-            state.returnstatus=HttpStatus.SC_INTERNAL_SERVER_ERROR;
+            state.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
             return new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>",ContentType.TEXT_HTML);
         }
     }        
@@ -45,8 +46,8 @@ public abstract class AuthenticatedStringHandler extends Handler {
         // not (yet?) logged in
         String username=state.get("login_username");
         String password=state.get("login_password");
-        state.put("login_username","OBSCURED FROM DEEPER CODE");
-        state.put("login_password","OBSCURED FROM DEEPER CODE");
+        state.put("parameters","login_username","OBSCURED FROM DEEPER CODE");
+        state.put("parameters","login_password","OBSCURED FROM DEEPER CODE");
         if (state.get("Login").equals("Login") && !username.isEmpty() && !password.isEmpty()) {
             User u=null;
             try { u=User.get(username, false); } catch (NoDataException ignore) {}

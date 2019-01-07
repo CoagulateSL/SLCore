@@ -4,6 +4,7 @@ import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
 import net.coagulate.Core.Tools.UserException;
 import net.coagulate.SL.Config;
+import net.coagulate.SL.Pages.HTML.State;
 import net.coagulate.SL.SL;
 import org.apache.http.HttpStatus;
 import org.apache.http.entity.ContentType;
@@ -28,7 +29,7 @@ public abstract class StringHandler extends Handler {
         }
         catch (Exception ex) {
             SL.getLogger().log(SEVERE,"Unexpected exception thrown in page handler",ex);
-            state.returnstatus=HttpStatus.SC_INTERNAL_SERVER_ERROR;
+            state.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
             return new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>",ContentType.TEXT_HTML);
         }
     }    

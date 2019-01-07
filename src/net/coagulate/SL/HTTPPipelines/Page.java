@@ -1,11 +1,12 @@
 package net.coagulate.SL.HTTPPipelines;
 
-import net.coagulate.Core.HTML.Container;
-import net.coagulate.Core.HTML.Form;
-import net.coagulate.Core.HTML.Header1;
-import net.coagulate.Core.HTML.Paragraph;
 import net.coagulate.Core.Tools.SystemException;
+import net.coagulate.SL.Pages.HTML.Container;
+import net.coagulate.SL.Pages.HTML.Form;
+import net.coagulate.SL.Pages.HTML.Header1;
+import net.coagulate.SL.Pages.HTML.Paragraph;
 import net.coagulate.SL.Pages.HTML.ServiceCell;
+import net.coagulate.SL.Pages.HTML.State;
 
 /**
  *
@@ -34,6 +35,11 @@ public class Page extends Container {
     public Form form() { Form f=new Form(); add(f); return f; }
     public ServiceCell serviceCell(String title, String targeturl) { ServiceCell sc=new ServiceCell(title,targeturl); add(sc); return sc; }
 
+    public String toHtml(State st) {
+        return StringHandler.pageHeader(st)
+                +super.toHtml(st)
+                +StringHandler.pageFooter(st);
+    }
     
     /*
     @Override

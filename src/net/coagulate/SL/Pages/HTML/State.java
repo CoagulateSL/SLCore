@@ -84,7 +84,8 @@ public class State {
     void loadSession() {
         session = null;
         if (sessionid==null || sessionid.isEmpty() || sessionid.equalsIgnoreCase("none")) { return; }
-        if (sessionid!=null) { session=Session.get(sessionid); } 
+        session=Session.get(sessionid);
+        System.out.println("Loaded session id "+sessionid+" and got "+session);
         if (session!=null) { user=session.user(); } else { sessionid=null; }
     }
 }

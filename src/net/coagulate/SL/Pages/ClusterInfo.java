@@ -18,7 +18,7 @@ public class ClusterInfo extends ContainerHandler {
     protected void run(State state, Page page) {
         page.layout(Page.PAGELAYOUT.CENTERCOLUMN);
         page.header("Architecture Generations");
-        page.paragraph().add("For the latest generation, please see ").add(new Anchor("generation3","Generation Three")).add("The rest of this document is purely historical record, and mostly tracks the evolution of a Rental Box piece of software.");
+        page.paragraph().add("For the latest generation, please see ").add(new Anchor("generation3","Generation Three")).add(" The rest of this document is purely historical record, and mostly tracks the evolution of a Rental Box piece of software.");
         page.header("Generation Zero").name("generation0");
         page.paragraph("The retroactively named Generation Zero comprises the original Second Life solutions, before any internet resources were involved");
         page.paragraph("That is, these solutions are stand alone Second Life constructions that only interact within Second Life, the most traditional solution");

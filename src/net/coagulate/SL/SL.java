@@ -73,8 +73,8 @@ public class SL extends Thread {
         Pricing.initialise();
         IPC.test();
         startGPHUD();
-        if (!DEV) { startLSLR(); }
-        waitBot();
+        if (!DEV) { startLSLR(); } // never in dev
+        if (!DEV) { waitBot(); } // makes dev restart faster to ignore this
         listener=new HTTPListener(Config.getPort(),Config.getKeyMaterialFile(),new PageMapper());
         log.info("=====[ Coagulate "+(DEV?"DEVELOPMENT ":"")+"Second Life Services {JavaCore, JSLBot, GPHUD, LSLR} version "+VERSION+", startup is fully complete ]=====");
     }

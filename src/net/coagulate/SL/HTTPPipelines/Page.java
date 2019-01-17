@@ -40,7 +40,9 @@ public class Page extends Container {
     public String toHtml(State st) {
         return 
                 pageHeader(st)+
+                preLayout()+
                 super.toHtml(st)+
+                postLayout()+
                 pageFooter(st);
     }
     
@@ -95,6 +97,7 @@ public class Page extends Container {
 */
     
     public static String pageHeader(State state) {
+        //new Exception().printStackTrace();
         String r="<html><head><title>Coagulate SL Services</title></head><body>"
                 + "<h1 align=center>Coagulate SL Services</h1><p><hr>";
         r+="<table width=100%><tr width=100%><td align=left width=400px>"

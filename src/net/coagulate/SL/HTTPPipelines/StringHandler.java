@@ -3,7 +3,6 @@ package net.coagulate.SL.HTTPPipelines;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
 import net.coagulate.Core.Tools.UserException;
-import net.coagulate.SL.Pages.HTML.Raw;
 import net.coagulate.SL.Pages.HTML.State;
 import net.coagulate.SL.SL;
 import org.apache.http.HttpStatus;
@@ -25,7 +24,7 @@ public abstract class StringHandler extends Handler {
                 SL.getLogger().log(WARNING,"User exception propagated to handler",ue);
                 content="<p>Exception: "+ue.getLocalizedMessage()+"</p>";
             }
-            return new StringEntity(new Page().add(new Raw(content)).toHtml(state),ContentType.TEXT_HTML);
+            return new StringEntity(content,ContentType.TEXT_HTML);
         }
         catch (Exception ex) {
             SL.getLogger().log(SEVERE,"Unexpected exception thrown in page handler",ex);

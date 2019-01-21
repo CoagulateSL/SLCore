@@ -98,7 +98,9 @@ public abstract class Handler implements HttpRequestHandler {
     
     protected String pageHeader() {
         State state=State.get();
-        String r="<html><head><title>Coagulate SL Services</title></head><body>"
+        String r="<html><head><title>Coagulate SL Services</title>"
+                + "<link rel=\"shortcut icon\" href=\"/resources/icon-cluster.png\">"
+                + "</head><body>"
                 + "<h1 align=center>Coagulate SL Services</h1><p><hr>";
         r+="<table width=100%><tr width=100%><td align=left width=400px>"
                 + "Greetings";

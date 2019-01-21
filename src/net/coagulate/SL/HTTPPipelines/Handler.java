@@ -95,7 +95,7 @@ public abstract class Handler implements HttpRequestHandler {
     public int getReturnStatus() {
         return HttpStatus.SC_OK;
     }
-    
+    /*
     protected String pageHeader() {
         State state=State.get();
         String r="<html><head><title>Coagulate SL Services</title>"
@@ -121,7 +121,7 @@ public abstract class Handler implements HttpRequestHandler {
         r+="</td></tr></table>";
         r+= "<hr></p>";
         return r;
-    }
+    }*/
     protected String pageFooter() {
         String ret="<div style='position:absolute;bottom:5;right:5;left:5;'><hr>";
         ret+=(SL.DEV?"DEVELOPMENT":"Production");

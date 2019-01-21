@@ -98,7 +98,9 @@ public class Page extends Container {
     
     public static String pageHeader(State state) {
         //new Exception().printStackTrace();
-        String r="<html><head><title>Coagulate SL Services</title></head><body>"
+        String r="<html><head><title>Coagulate SL Services</title>"
+                + "<link rel=\"shortcut icon\" href=\"/resources/icon-cluster"+(SL.DEV?"-dev":"")+".png\">"
+                + "</head><body>"
                 + "<h1 align=center>Coagulate SL Services</h1><p><hr>";
         r+="<table width=100%><tr width=100%><td align=left width=400px>"
                 + "Greetings";

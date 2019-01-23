@@ -4,6 +4,7 @@ import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
 import net.coagulate.Core.Database.NoDataException;
 import net.coagulate.Core.Tools.UserException;
+import net.coagulate.JSLBot.Packets.Types.LLUUID;
 import net.coagulate.SL.Data.User;
 import net.coagulate.SL.Pages.HTML.Raw;
 import net.coagulate.SL.Pages.HTML.State;
@@ -23,10 +24,27 @@ public abstract class AuthenticatedStringHandler extends Handler {
         try {
             String content="<p><b>WEIRD INTERNAL LOGIC ERROR</b></p>";
             String username=state.get("login_username");
+            String password=state.get("login_password");
             if (!checkAuth(state)) {
                 if (username==null || username.isEmpty()) {
                     return new StringEntity(new Page().add(new Raw(loginPage())).toHtml(state),ContentType.TEXT_HTML);
                 } else {
+                    if (state.get("Login").equals("Login") && !username.isEmpty() && password.isEmpty()) {
+                        User target=User.findOptional(username);
+                        if (target!=null) {
+                            String token=target.generateSSO();
+                            String message;
+                            if (SL.DEV) {
+                                message="\n\n===== DEVELOPMENT SSO ENTRY POINT =====\n\n\n[https://sldev.coagulate.net/SSO/"+token+" Log in to Coagulate SL DEVELOPMENT ENVIRONMENT]\n\n";
+                            }
+                            else {
+                                message="\n\nPlease click the link below to log in to Coagulate SL Services\n\nThis link will be valid for 5 minutes only, and one use.\nIf you wish to log in through the web page rather than via the bot, please 'Set Password' under 'Account' on the top right of the web page after following the link below.\n\n[https://sl.coagulate.net/SSO/"+token+" Log in to Coagulate SL]\n\n";
+                            }
+                            
+                            SL.bot.im(new LLUUID(target.getUUID()),message);
+                            return new StringEntity(new Page().add(new Raw(ssoSentPage())).toHtml(state),ContentType.TEXT_HTML);
+                        }
+                    }
                     return new StringEntity(new Page().add(new Raw(failPage())).toHtml(state),ContentType.TEXT_HTML);
                 }
             }
@@ -67,27 +85,20 @@ public abstract class AuthenticatedStringHandler extends Handler {
         return false;
     }
     
-    private static final String loginpage1="<form method=post><p align=center><table><tr><td colspan=2>&nbsp;</td></tr><tr><td></td><td colspan=2 align=center><font size=5><u>Login</u></font></td></tr><tr><th>Username:</th><td><input autofocus type=text size=20 name=login_username></td></tr>";
+    private static final String loginpage1="<form method=post><p align=center><table><tr><td colspan=2>&nbsp;</td></tr><tr><td></td><td colspan=2 align=center><font size=5><u>Login</u></font></td></tr><tr><th>Avatar Name:</th><td><input autofocus type=text size=20 name=login_username></td></tr>";
     private static final String loginpageprebot=""
-            + "<tr><th>Password:</th><td><input type=password size=20 name=login_password></td></tr>"
-            + "<tr><th></th><td><i><b>NOT</b> your SL password</i></td></tr>"
+            + "<tr><td></td><td><i>OPTIONAL: If you do not<br>enter a password,<br>your avatar will be sent a<br>login URL in Second Life</i></td></tr>"
+            + "<tr><th>Coagulate SL Password:</th><td><input type=password size=20 name=login_password></td></tr>"
             + "<tr><td colspan=2>&nbsp;</td></tr>"
             + "<tr><td></td><td><button type=submit name=Login value=Login style='width:100%;'>Login</button></td></tr>"
-            + "</table>"
-            + "<br><br><br><br><br>"
-            + "<table border=1 width=\"600px\">"
-            + "<tr><td align=center>Registering</td></tr>"
-            + "<tr><td><p>If you do not have a password, you must log in through Second Life<br>";
-    private static final String loginpagepostbot=""
-            + "Send the message 'login', and the bot will reply with a URL that will log you in.</p>"
-            + "<p>If you wish to avoid the Second Life step in future, and use a password, follow the above to get logged in, and then click 'Account' on the top right of the web pages</p></td></tr>"
-            + "</table></p></form>";
+            + "</table>";
+    private static final String loginpagepostbot="</p></form>";
             
     private String failPage() { return loginpage1+"<tr><td colspan=2><font color=red><b>Invalid Login</b></font></td></tr>"+loginpageprebot+botLine()+loginpagepostbot; }
+    private String ssoSentPage() { return loginpage1+"<tr><td colspan=2><font color=blue><b>Login sent via IM in Second Life</b></font></td></tr>"+loginpageprebot+botLine()+loginpagepostbot; }
     private String loginPage() { return loginpage1+loginpageprebot+botLine()+loginpagepostbot; }
     public abstract String handleString(State state);
-    private String botLine() {
-        return "===> Click <a href=\"secondlife:///app/agent/"+SL.bot.getUUID().toUUIDString()+"/im\">to instant message the bot "+SL.bot.getUsername()+"</a><br>";
-    }
+    private String botLine() { return ""; }
+        //return "===> Click <a href=\"secondlife:///app/agent/"+SL.bot.getUUID().toUUIDString()+"/im\">to instant message the bot "+SL.bot.getUsername()+"</a><br>";
 
 }

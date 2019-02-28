@@ -8,6 +8,7 @@ import net.coagulate.SL.Pages.HTML.Header1;
 import net.coagulate.SL.Pages.HTML.Paragraph;
 import net.coagulate.SL.Pages.HTML.ServiceCell;
 import net.coagulate.SL.Pages.HTML.State;
+import net.coagulate.SL.Pages.HTML.URLButton;
 import net.coagulate.SL.SL;
 
 /**
@@ -36,6 +37,7 @@ public class Page extends Container {
     public Paragraph paragraph(String s) { Paragraph p=new Paragraph(s); add(p); return p; }
     public Form form() { Form f=new Form(); add(f); return f; }
     public ServiceCell serviceCell(String title, String targeturl) { ServiceCell sc=new ServiceCell(title,targeturl); add(sc); return sc; }
+    public URLButton urlbutton(String label, String url) { URLButton ub=new URLButton(label,url); add(ub); return ub; }
 
     public String toHtml(State st) {
         return 

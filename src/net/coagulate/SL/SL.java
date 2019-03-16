@@ -65,6 +65,7 @@ public class SL extends Thread {
         } else {
             log.config("SL DEVELOPMENT Services starting up on "+Config.getNodeName()+" (#"+Config.getNode()+")");
         }
+        //startGPHUD(); if (1==1) { System.exit(0); }
         LLCATruster.doNotUse(); // as in we use our own truster later on
         ClassTools.getClasses();
         db=new MariaDBConnection("SL"+(DEV?"DEV":""),Config.getJdbc());

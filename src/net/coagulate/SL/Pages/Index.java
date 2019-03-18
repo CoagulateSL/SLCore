@@ -35,7 +35,7 @@ public class Index extends AuthenticatedContainerHandler {
         raw("</ul></td></tr>");
         raw("<tr width=100%><td width=100%><ul style=\"white-space: nowrap;\">");
         */
-        page.serviceCell("GPHUD","/GPHUD/").
+        page.serviceCell("<img src=\"/resources/serviceicon-gphud.png\">","/GPHUD/").
                 add(new Paragraph("GPHUD is the 2nd generation role-play HUD.")).
                 add(new Paragraph("This is used to implement various game modes at sims."));
     }

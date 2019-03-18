@@ -103,7 +103,7 @@ public class Page extends Container {
         String r="<html><head><title>Coagulate SL Services</title>"
                 + "<link rel=\"shortcut icon\" href=\"/resources/icon-cluster"+(SL.DEV?"-dev":"")+".png\">"
                 + "</head><body>"
-                + "<p align=center><img src=\"/resources/banner-coagulate.png\"></p><p><hr>";
+                + "<p align=center><img src=\"/resources/banner-coagulate"+(SL.DEV?"-dev":"")+".png\"></p><p><hr>";
         r+="<table width=100%><tr width=100%><td align=left width=400px>"
                 + "Greetings";
         if (state.user()!=null) { r+=",&nbsp;"+state.user().getUsername().replaceAll(" ", "&nbsp;"); }        

@@ -146,6 +146,13 @@ public class SL extends Thread {
 
     public static DBConnection getDB() { return db; }
 
+    public static String getBannerURL() {
+        return "/resources/banner-coagulate"+(DEV?"-dev":"")+".png";
+    }
+    public static String getBannerHREF() { 
+        return "<img src=\""+getBannerURL()+"\">";
+    }
+
     private SL() {}
     @Override
     public void run() { if (!SL.shutdown) { log.severe("JVM Shutdown Hook invoked"); } SL.shutdown=true; }

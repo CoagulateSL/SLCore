@@ -10,7 +10,7 @@ public class Submit extends Container {
 
     String name;
     String value=null;
-    public Submit(String name) { this.name=name; }
+    public Submit(String name) { this.name=name; this.value=name; super.add(new Raw(name)); }
     public Submit(String name,String value) { this.name=name; this.value=value; }
     @Override
     public String toHtml(State st) {

@@ -1,24 +1,24 @@
 package net.coagulate.SL;
 
-import java.sql.SQLException;
-import java.util.Date;
-import static java.util.logging.Level.SEVERE;
-import java.util.logging.Logger;
 import net.coagulate.Core.Database.DB;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Database.MariaDBConnection;
 import net.coagulate.Core.HTTP.HTTPListener;
-import net.coagulate.Core.Tools.ClassTools;
-import net.coagulate.Core.Tools.LogHandler;
-import net.coagulate.Core.Tools.MailTools;
-import net.coagulate.Core.Tools.SystemException;
+import net.coagulate.Core.Tools.*;
 import net.coagulate.GPHUD.GPHUD;
 import net.coagulate.JSLBot.JSLBot;
 import net.coagulate.JSLBot.LLCATruster;
 import net.coagulate.LSLR.LSLR;
-import static net.coagulate.SL.Config.LOCK_NUMBER_GPHUD_MAINTENANCE;
 import net.coagulate.SL.Data.LockTest;
 import net.coagulate.SL.HTTPPipelines.PageMapper;
+
+import javax.mail.MessagingException;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.SEVERE;
+import static net.coagulate.SL.Config.LOCK_NUMBER_GPHUD_MAINTENANCE;
 
 /** Bootstrap class.
  *
@@ -156,5 +156,12 @@ public class SL extends Thread {
     private SL() {}
     @Override
     public void run() { if (!SL.shutdown) { log.severe("JVM Shutdown Hook invoked"); } SL.shutdown=true; }
-    
+
+    public static final void report(String header, Throwable t, DumpableState state) {
+        String output=ExceptionTools.dumpException(t)+"<br><hr><br>"+state.toHTML();
+        LogHandler.alreadyMailed(t);
+        try { MailTools.mail((DEV?"Dev":"PROD")+" EX : "+header+" - "+t.getLocalizedMessage(),output); }
+        catch (MessagingException e) { getLogger().log(SEVERE,"Exception mailing out about exception",e); }
+    }
+
 }

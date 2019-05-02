@@ -1,20 +1,23 @@
 package net.coagulate.SL.Pages.HTML;
-import java.util.HashMap;
-import java.util.Map;
+
+import net.coagulate.Core.Tools.DumpableState;
 import net.coagulate.SL.Data.Session;
 import net.coagulate.SL.Data.User;
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.protocol.*;
+import org.apache.http.protocol.HttpContext;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /** General purpose state storage
  *
  * @author Iain Price
  */
 @SuppressWarnings("deprecation")
-public class State {
+public class State extends DumpableState {
     // We love HTTP :P
     public State(HttpRequest request,HttpResponse response,HttpContext httpcontext) {
         this.request=request;

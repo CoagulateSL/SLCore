@@ -1,7 +1,5 @@
 package net.coagulate.SL.HTTPPipelines;
 
-import static java.util.logging.Level.SEVERE;
-import static java.util.logging.Level.WARNING;
 import net.coagulate.Core.Database.NoDataException;
 import net.coagulate.Core.Tools.UserException;
 import net.coagulate.JSLBot.Packets.Types.LLUUID;
@@ -12,6 +10,9 @@ import net.coagulate.SL.SL;
 import org.apache.http.HttpStatus;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
 
 /**
  *
@@ -50,6 +51,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
             }
             try { content=handleString(state); }
             catch (UserException ue) {
+                SL.report("AuthenticatedStringHandler caught exception",ue,state);
                 SL.getLogger().log(WARNING,"User exception propagated to handler",ue);
                 content="<p>Exception: "+ue.getLocalizedMessage()+"</p>";
             }

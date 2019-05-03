@@ -29,8 +29,6 @@ public class Paragraph extends Container {
 		return "";
 	}
 
-	;
-
 	public Paragraph align(ALIGNMENT alignment) {
 		this.alignment = alignment;
 		return this;

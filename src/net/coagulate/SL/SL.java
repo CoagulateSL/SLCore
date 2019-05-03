@@ -48,7 +48,7 @@ public class SL extends Thread {
 	public static void shutdown() { shutdown = true; }
 
 	public static void main(String[] args) {
-		if (args.length > 0 && args[0].equalsIgnoreCase("DEV")) { DEV = true; }
+		if (args.length > 0 && "DEV".equalsIgnoreCase(args[0])) { DEV = true; }
 		try {
 			try { startup(); }
 			// print stack trace is discouraged, but the log handler may not be ready yet.

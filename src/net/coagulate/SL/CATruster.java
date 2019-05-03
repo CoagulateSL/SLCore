@@ -91,7 +91,7 @@ public class CATruster implements X509TrustManager, HostnameVerifier {
 		}
 	}
 
-	public synchronized static void initialise() {
+	public static synchronized void initialise() {
 		if (initialised) { return; }
 		CATruster llcaTruster = new CATruster();
 		HttpsURLConnection.setDefaultHostnameVerifier(llcaTruster);

@@ -30,7 +30,6 @@ public class User extends LockableTable {
 	/**
 	 * Obtain a reference to the SYSTEM avatar, for auditing system functions.
 	 *
-	 * @param st State
 	 * @return Reference to the SYSTEM avatar
 	 */
 	public static User getSystem() {
@@ -161,7 +160,6 @@ public class User extends LockableTable {
 	/**
 	 * Find avatar in database, by name or key.
 	 *
-	 * @param name Name or UUID of avatar
 	 * @return Avatar object
 	 */
 	public static User findOptional(String nameorkey) {
@@ -269,7 +267,6 @@ public class User extends LockableTable {
 	/**
 	 * Sets the new email address, returning the token that must be used to validate it.
 	 *
-	 * @param newmail New email address
 	 * @return String token used to validate the email address
 	 */
 	public String setNewEmail(String newemail) {

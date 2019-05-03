@@ -38,7 +38,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
 				if (username == null || username.isEmpty()) {
 					return new StringEntity(new Page().add(new Raw(loginPage())).toHtml(state), ContentType.TEXT_HTML);
 				} else {
-					if (state.get("Login").equals("Login") && !username.isEmpty() && password.isEmpty()) {
+					if ("Login".equals(state.get("Login")) && !username.isEmpty() && password.isEmpty()) {
 						User target = User.findOptional(username);
 						if (target != null) {
 							String token = target.generateSSO();
@@ -76,7 +76,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
 		String password = state.get("login_password");
 		state.put("parameters", "login_username", "OBSCURED FROM DEEPER CODE");
 		state.put("parameters", "login_password", "OBSCURED FROM DEEPER CODE");
-		if (state.get("Login").equals("Login") && !username.isEmpty() && !password.isEmpty()) {
+		if ("Login".equals(state.get("Login")) && !username.isEmpty() && !password.isEmpty()) {
 			User u = null;
 			try { u = User.get(username, false); } catch (NoDataException ignore) {}
 			if (u == null) {

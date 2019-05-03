@@ -61,7 +61,7 @@ public class User extends LockableTable {
 		lastname = lastname.substring(0, 1).toUpperCase() + lastname.substring(1);
 		// only append the surname if /not/ resident
 		String output = firstname;
-		if (!lastname.equalsIgnoreCase("Resident")) { output = output + " " + lastname; } // redundant ignores case
+		if (!"Resident".equalsIgnoreCase(lastname)) { output = output + " " + lastname; } // redundant ignores case
 		return output;
 	}
 
@@ -94,7 +94,7 @@ public class User extends LockableTable {
 	public static User get(String username) { return get(username, false); }
 
 	public static User resolveDeveloperKey(String key) {
-		if (key == null || key.equals("")) {
+		if (key == null || "".equals(key)) {
 			return null;
 		}
 		Integer userid = SL.getDB().dqi(false, "select id from users where developerkey=?", key);
@@ -112,7 +112,7 @@ public class User extends LockableTable {
 	}
 
 	public static User findOrCreateAvatar(String name, String key) throws SystemException {
-		if (name == null || name.equals("")) { name = ""; }
+		if (name == null || "".equals(name)) { name = ""; }
 		Integer userid = SL.getDB().dqi(false, "select id from users where (username=? or avatarkey=?)", name, key);
 		if (userid == null) {
 			if (name.isEmpty()) { throw new SystemException("Empty avatar name blocks creation"); }
@@ -122,7 +122,7 @@ public class User extends LockableTable {
 			}
 			try {
 				// special key used by the SYSTEM avatar
-				if (!key.equals("DEADBEEF")) {
+				if (!"DEADBEEF".equals(key)) {
 					SL.getLogger("User").info("Creating new avatar entry for '" + name + "'");
 				}
 				SL.getDB().d("insert into users(username,lastactive,avatarkey) values(?,?,?)", name, getUnixTime(), key);
@@ -163,7 +163,7 @@ public class User extends LockableTable {
 	 * @return Avatar object
 	 */
 	public static User findOptional(String nameorkey) {
-		if (nameorkey == null || nameorkey.equals("")) { throw new UserException("Avatar name/key not supplied"); }
+		if (nameorkey == null || "".equals(nameorkey)) { throw new UserException("Avatar name/key not supplied"); }
 		Integer userid = SL.getDB().dqi(false, "select id from users where username=? or avatarkey=?", nameorkey, nameorkey);
 		if (userid == null) { return null; }
 		return get(userid);
@@ -181,7 +181,7 @@ public class User extends LockableTable {
 	@Override
 	public String toString() { return getUsername() + "#" + getId(); }
 
-	public boolean superuser() { return getId() == 1 && username.equalsIgnoreCase("Iain Maltz"); }
+	public boolean superuser() { return getId() == 1 && "Iain Maltz".equalsIgnoreCase(username); }
 
 	public boolean hasDeveloperKey() {
 		try {
@@ -304,7 +304,7 @@ public class User extends LockableTable {
 	public String getTimeZone() {
 		String s = getString("timezone");
 		if (s == null) { return "America/Los_Angeles"; }
-		if (s.equals("SLT")) { return "America/Los_Angeles"; }
+		if ("SLT".equals(s)) { return "America/Los_Angeles"; }
 		return s;
 	}
 

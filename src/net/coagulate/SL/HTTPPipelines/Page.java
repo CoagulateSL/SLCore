@@ -12,8 +12,6 @@ public class Page extends Container {
 
 	private PAGELAYOUT layout = PAGELAYOUT.NONE;
 
-	;
-
 	public static String pageHeader(State state) {
 		//new Exception().printStackTrace();
 		String r = "<html><head><title>Coagulate SL Services</title>"

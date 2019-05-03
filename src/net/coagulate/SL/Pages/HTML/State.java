@@ -17,7 +17,6 @@ import java.util.Map;
  *
  * @author Iain Price
  */
-@SuppressWarnings("deprecation")
 public class State extends DumpableState {
 	private final HttpRequest request;
 	private final HttpResponse response;

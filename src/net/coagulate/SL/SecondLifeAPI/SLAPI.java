@@ -50,7 +50,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 			st.put("slapi_objectvelocity", req.getHeaders("X-SecondLife-Local-Velocity")[0].getValue());
 			st.put("slapi_objectrotation", req.getHeaders("X-SecondLife-Local-Rotation")[0].getValue());
 			st.put("slapi_objectposition", req.getHeaders("X-SecondLife-Local-Position")[0].getValue());
-			if (!shard.equalsIgnoreCase("Production")) {
+			if (!"Production".equalsIgnoreCase(shard)) {
 				SL.getLogger(this.getClass().getSimpleName()).severe("INCORRECT SHARD : " + objectDump(st));
 				resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
 				return;

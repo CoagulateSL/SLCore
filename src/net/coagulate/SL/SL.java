@@ -41,9 +41,9 @@ public class SL extends Thread {
 
 	private SL() {}
 
-	public static final Logger getLogger(String subspace) { return Logger.getLogger(log.getName() + "." + subspace); }
+	public static Logger getLogger(String subspace) { return Logger.getLogger(log.getName() + "." + subspace); }
 
-	public static final Logger getLogger() { return log; }
+	public static Logger getLogger() { return log; }
 
 	public static void shutdown() { shutdown = true; }
 
@@ -175,7 +175,7 @@ public class SL extends Thread {
 		return "<img src=\"" + getBannerURL() + "\">";
 	}
 
-	public static final void report(String header, Throwable t, DumpableState state) {
+	public static void report(String header, Throwable t, DumpableState state) {
 		String output = ExceptionTools.dumpException(t) + "<br><hr><br>" + state.toHTML();
 		LogHandler.alreadyMailed(t);
 		try {

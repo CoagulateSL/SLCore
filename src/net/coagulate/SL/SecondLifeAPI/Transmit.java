@@ -75,7 +75,7 @@ public class Transmit extends Thread {
 		}
 	}
 
-	private String sendAttempt() throws MalformedURLException, IOException {
+	private String sendAttempt() throws IOException {
 		boolean debug = false;
 		URLConnection transmission = new URL(url).openConnection();
 		transmission.setDoOutput(true);

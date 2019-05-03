@@ -106,12 +106,12 @@ public class CATruster implements X509TrustManager, HostnameVerifier {
 	}
 
 	@Override
-	public void checkClientTrusted(X509Certificate[] xcs, String string) throws CertificateException {
+	public void checkClientTrusted(X509Certificate[] xcs, String string) {
 		throw new AssertionError("CheckClientTrusted called in LLCATruster");
 	}
 
 	@Override
-	public void checkServerTrusted(X509Certificate[] xcs, String string) throws CertificateException {
+	public void checkServerTrusted(X509Certificate[] xcs, String string) {
 		// FIXME
 		//System.out.println("Cert len:"+xcs.length);
 		//System.out.println("Random string:"+string);

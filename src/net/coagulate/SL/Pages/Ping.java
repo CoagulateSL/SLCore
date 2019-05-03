@@ -9,17 +9,17 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 
 /**
- *
  * @author Iain Price
  */
 public class Ping extends Handler {
 
-    @Url("/Ping")
-    public Ping(){super();}
-    @Override
-    protected HttpEntity handleContent(State state) {
-        String response="nodename:"+Config.getNodeName()+"\nnode:"+Config.getNode()+"\nhostname:"+Config.getHostName();
-        return new StringEntity(response, ContentType.TEXT_PLAIN);
-    }
-   
+	@Url("/Ping")
+	public Ping() {super();}
+
+	@Override
+	protected HttpEntity handleContent(State state) {
+		String response = "nodename:" + Config.getNodeName() + "\nnode:" + Config.getNode() + "\nhostname:" + Config.getHostName();
+		return new StringEntity(response, ContentType.TEXT_PLAIN);
+	}
+
 }

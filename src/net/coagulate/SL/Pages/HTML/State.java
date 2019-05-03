@@ -114,7 +114,7 @@ public class State extends DumpableState {
 
 	void loadSession() {
 		session = null;
-		if (sessionid == null || sessionid.isEmpty() || sessionid.equalsIgnoreCase("none")) { return; }
+		if (sessionid == null || sessionid.isEmpty() || "none".equalsIgnoreCase(sessionid)) { return; }
 		session = Session.get(sessionid);
 		//System.out.println("Loaded session id "+sessionid+" and got "+session);
 		if (session != null) { user = session.user(); } else { sessionid = null; }

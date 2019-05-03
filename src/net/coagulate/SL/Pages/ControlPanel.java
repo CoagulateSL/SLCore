@@ -31,7 +31,7 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 		}
 		page.layout(Page.PAGELAYOUT.CENTERCOLUMN);
 		page.header("Control Panel");
-		if (state.get("Test Mail").equals("Test Mail")) {
+		if ("Test Mail".equals(state.get("Test Mail"))) {
 			page.paragraph("Sending mail");
 			try {
 				MailTools.mail("CL Cluster " + Config.getHostName(), "sl-cluster-alerts@predestined.net", "SL Mail Tester", "sl-cluster-alerts@predestined.net", "SL Cluster mail test", "Test OK");
@@ -41,13 +41,13 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 			}
 			page.paragraph("Sent mail");
 		}
-		if (state.get("UserException").equals("UserException")) {
+		if ("UserException".equals(state.get("UserException"))) {
 			throw new UserException("Manually triggered user exception");
 		}
-		if (state.get("SystemException").equals("SystemException")) {
+		if ("SystemException".equals(state.get("SystemException"))) {
 			throw new SystemException("Manually triggered system exception");
 		}
-		if (state.get("Region Stats Archival").equals("Region Stats Archival")) {
+		if ("Region Stats Archival".equals(state.get("Region Stats Archival"))) {
 			page.paragraph("Running Region State");
 			Maintenance.regionStatsArchival();
 		}

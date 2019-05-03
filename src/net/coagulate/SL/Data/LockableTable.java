@@ -1,24 +1,26 @@
 package net.coagulate.SL.Data;
 
-import java.util.logging.Logger;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Database.StandardLockableTableRow;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.SL;
 
-/**  Tailored for this env
+import java.util.logging.Logger;
+
+/**
+ * Tailored for this env
  *
  * @author Iain Price
  */
 public abstract class LockableTable extends StandardLockableTableRow {
 
-    public LockableTable(int id) { super(id); }
+	public LockableTable(int id) { super(id); }
 
-    @Override
-    public final int getNode() { return Config.getNode(); }
+	@Override
+	public final int getNode() { return Config.getNode(); }
 
-    @Override
-    public final DBConnection getDatabase() { return SL.getDB(); }
-    
-    public Logger logger() { return SL.getLogger(this.getClass().getSimpleName()); }
+	@Override
+	public final DBConnection getDatabase() { return SL.getDB(); }
+
+	public Logger logger() { return SL.getLogger(this.getClass().getSimpleName()); }
 }

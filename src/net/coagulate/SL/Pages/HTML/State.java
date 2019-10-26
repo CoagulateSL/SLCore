@@ -3,14 +3,15 @@ package net.coagulate.SL.Pages.HTML;
 import net.coagulate.Core.Tools.DumpableState;
 import net.coagulate.SL.Data.Session;
 import net.coagulate.SL.Data.User;
-import org.apache.http.Header;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
+import net.coagulate.SL.SL;
+import org.apache.http.*;
+import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * General purpose state storage
@@ -99,7 +100,13 @@ public class State extends DumpableState {
 		//return ia.getCanonicalHostName()+" / "+ia.getHostAddress();
 		//} catch (Exception e) { SL.getLogger().log(WARNING,"Exception getting client address",e); }
 		Header[] headers = request.getHeaders("X-Forwarded-For");
-		if (headers.length == 0) { return "UNKNOWN"; }
+		if (headers.length == 0) {
+			try {
+				HttpInetConnection connection = (HttpInetConnection) httpcontext.getAttribute(ExecutionContext.HTTP_CONNECTION);
+				InetAddress ia = connection.getRemoteAddress();
+				return "DIRECT:" + ia.getHostAddress();
+			} catch (Exception e) { SL.getLogger().log(Level.WARNING,"Exception getting client address",e); return "UNKNOWN"; }
+		}
 		if (headers.length > 1) { return "MULTIPLE?:" + headers[0].getValue(); }
 		return headers[0].getValue();
 	}

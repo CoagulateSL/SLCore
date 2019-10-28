@@ -4,6 +4,9 @@ import net.coagulate.Core.Tools.ExceptionTools;
 import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.SystemException;
 import net.coagulate.Core.Tools.UserException;
+import net.coagulate.GPHUD.Modules.Scripting.Language.Generated.GSParser;
+import net.coagulate.GPHUD.Modules.Scripting.Language.Generated.GSStart;
+import net.coagulate.GPHUD.Modules.Scripting.Language.Generated.ParseException;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.HTTPPipelines.AuthenticatedContainerHandler;
 import net.coagulate.SL.HTTPPipelines.Page;
@@ -15,6 +18,7 @@ import net.coagulate.SL.Pages.HTML.Table;
 import net.coagulate.SL.SL;
 
 import javax.mail.MessagingException;
+import java.io.ByteArrayInputStream;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -78,13 +82,38 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 		if ("Shutdown".equals(state.get("Shutdown"))) {
 			SL.shutdown();
 		}
+		if ("GS Test".equals(state.get("GS Test"))) {
+			String script=state.get("script");
+			ByteArrayInputStream bais=new ByteArrayInputStream(script.getBytes());
+			GSParser parser = new GSParser(bais);
+			parser.enable_tracing();
+			try {
+				GSStart gsscript=parser.Start();
+				page.paragraph("Parser completed");
+				page.add(new Raw(gsscript.toHtml()));
+				page.paragraph("<pre>"+"</pre>");
+			}
+			catch (Throwable e) { // catch throwable bad, but "lexical error" is an ERROR type... which we're not meant to catch.   but have to.  great.
+				if (e instanceof ParseException) {
+					ParseException pe=(ParseException)e;
+					parser.enable_tracing();
+					String tokenimage="";
+					tokenimage="Last token: "+pe.currentToken.image+"<br>";
+					page.paragraph("Parse failed: "+e.toString()+"<br>"+tokenimage);
+				}
+				page.paragraph("Parse failed: "+e.toString());
+				e.printStackTrace();
+			}
+		}
 		page.form().
+				submit("GS Test").
 				submit("Thread Info").
 				submit("Test Mail").
 				submit("Region Stats Archival").
 				submit("UserException").
 				submit("SystemException").
-				submit("Shutdown");
+				submit("Shutdown").
+				add(new Raw("<br><textarea rows=10 cols=80 name=script>"+(state.get("script")!=null?state.get("script"):"")+"</textarea>"));
 	}
 
 

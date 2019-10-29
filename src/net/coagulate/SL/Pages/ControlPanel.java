@@ -4,6 +4,9 @@ import net.coagulate.Core.Tools.ExceptionTools;
 import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.SystemException;
 import net.coagulate.Core.Tools.UserException;
+import net.coagulate.GPHUD.Modules.Scripting.Language.ByteCode.ByteCode;
+import net.coagulate.GPHUD.Modules.Scripting.Language.GSCompiler;
+import net.coagulate.GPHUD.Modules.Scripting.Language.GSVM;
 import net.coagulate.GPHUD.Modules.Scripting.Language.Generated.GSParser;
 import net.coagulate.GPHUD.Modules.Scripting.Language.Generated.GSStart;
 import net.coagulate.GPHUD.Modules.Scripting.Language.Generated.ParseException;
@@ -19,6 +22,8 @@ import net.coagulate.SL.SL;
 
 import javax.mail.MessagingException;
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -87,8 +92,9 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 			ByteArrayInputStream bais=new ByteArrayInputStream(script.getBytes());
 			GSParser parser = new GSParser(bais);
 			parser.enable_tracing();
+			GSStart gsscript=null;
 			try {
-				GSStart gsscript=parser.Start();
+				gsscript=parser.Start();
 				page.paragraph("Parser completed");
 				page.add(new Raw(gsscript.toHtml()));
 				page.paragraph("<pre>"+"</pre>");
@@ -103,6 +109,38 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 				}
 				page.paragraph("Parse failed: "+e.toString());
 				e.printStackTrace();
+			}
+			if (gsscript!=null) {
+				try {
+					GSCompiler compiler=new GSCompiler(gsscript);
+					List<ByteCode> bytecode=compiler.compile();
+					page.paragraph("Compilation completed!");
+					String code="<pre><table border=0>";
+					for(ByteCode bc:bytecode) {
+						code+="<tr><td>"+bc.explain().replaceFirst(" \\(","</td><td><i>(")+"</i></td><td>";
+						ArrayList<Byte> bcl=new ArrayList<>();
+						bc.toByteCode(bcl);
+						for (Byte b:bcl) {
+							code+=b+" ";
+						}
+						code+="</td></tr>";
+					}
+					code+="</table></pre>";
+					page.paragraph(code);
+					page.paragraph("<b>Byte code</b>");
+					Byte[] rawcode=compiler.toByteCode();
+					String bcstring="<pre><table border=0><tr><th>00</th>";
+					for (int i=0;i<rawcode.length;i++) {
+						if ((i%10)==0) { bcstring+="</tr><tr><th>"+i+"</th>"; }
+						bcstring+="<td>"+rawcode[i]+"</td>";
+					}
+					bcstring+="</tr></table></pre>";
+					page.paragraph(bcstring);
+					page.paragraph("<b>Byte code decode</b>");
+					GSVM gsvm=new GSVM(rawcode);
+					page.paragraph(gsvm.toHtml());
+
+				} catch (Throwable e) { page.paragraph("<b>Compilation failed : "+e.toString()+"</b>"); page.paragraph(ExceptionTools.toHTML(e));}
 			}
 		}
 		page.form().

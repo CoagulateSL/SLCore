@@ -139,7 +139,30 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 					page.paragraph("<b>Byte code decode</b>");
 					GSVM gsvm=new GSVM(rawcode);
 					page.paragraph(gsvm.toHtml());
-
+					page.paragraph("<b>Simulation run</b>");
+					List<GSVM.ExecutionStep> steps = gsvm.simulate();
+					String output="<table border=1><th>PC</th><th>OpCode</th><th>OpArgs</th><th>Stack</th><th>Variables</th></tr>";
+					for (GSVM.ExecutionStep step:steps) {
+						output+="<tr><th>"+step.programcounter+"</th><td>"+step.decode+"</td><td><table>";
+						for (int i=0;i<step.resultingstack.size();i++) {
+							output+="<tr><th>"+i+"</th><td>"+
+									step.resultingstack.get(i).htmlDecode()+"</td></tr>";
+						}
+						output+="</table></td><td><table>";
+						for (String k:step.resultingvariables.keySet()) {
+							String decode="???";
+							if (step.resultingvariables.get(k)!=null) {
+								decode = step.resultingvariables.get(k).htmlDecode();
+							}
+							output+="<tr><th>"+k+"</th><td>"+
+									decode+"</td></tr>";
+						}
+						output+="</table></td></tr>";
+						if (step.t!=null) { output+="<tr><td colspan=100>"+
+								ExceptionTools.toHTML(step.t)+"</td></tr>"; }
+					}
+					output+="</table>";
+					page.paragraph(output);
 				} catch (Throwable e) { page.paragraph("<b>Compilation failed : "+e.toString()+"</b>"); page.paragraph(ExceptionTools.toHTML(e));}
 			}
 		}

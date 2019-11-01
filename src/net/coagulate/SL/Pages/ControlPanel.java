@@ -140,7 +140,7 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 					GSVM gsvm=new GSVM(rawcode);
 					page.paragraph(gsvm.toHtml());
 					page.paragraph("<b>Simulation run</b>");
-					List<GSVM.ExecutionStep> steps = gsvm.simulate();
+					List<GSVM.ExecutionStep> steps = gsvm.simulate(null);
 					String output="<table border=1><th>PC</th><th>OpCode</th><th>OpArgs</th><th>Stack</th><th>Variables</th></tr>";
 					for (GSVM.ExecutionStep step:steps) {
 						output+="<tr><th>"+step.programcounter+"</th><td>"+step.decode+"</td><td><table>";

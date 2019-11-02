@@ -126,4 +126,9 @@ public class State extends DumpableState {
 		//System.out.println("Loaded session id "+sessionid+" and got "+session);
 		if (session != null) { user = session.user(); } else { sessionid = null; }
 	}
+
+	@Override
+	protected String dumpAdditionalStateToHtml() {
+		return "";
+	}
 }

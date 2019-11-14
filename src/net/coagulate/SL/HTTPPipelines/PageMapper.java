@@ -31,7 +31,6 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 		net.coagulate.GPHUD.Interface.base = "GPHUD";
 		exact("/GPHUD/system", new net.coagulate.GPHUD.Interfaces.System.Interface());
 		prefix("/GPHUD/", new net.coagulate.GPHUD.Interfaces.User.Interface());
-		prefix("/GPHUD/hud/", new net.coagulate.GPHUD.Interfaces.HUD.Interface());
 		prefix("/Rental", new net.coagulate.LSLR.HttpReceiver());
 		prefix("/rentals-scijp2", new net.coagulate.LSLR.HttpReceiver());
 		prefix("/rentalavailability-scijp2", new net.coagulate.LSLR.HttpReceiver());

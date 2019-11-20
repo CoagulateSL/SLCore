@@ -179,7 +179,7 @@ public class User extends LockableTable {
 	public String getTableName() { return "users"; }
 
 	@Override
-	public String toString() { return getUsername() + "#" + getId(); }
+	public String toString() { return getUsername() + "[#" + getId()+"]"; }
 
 	public boolean superuser() { return getId() == 1 && "Iain Maltz".equalsIgnoreCase(username); }
 

@@ -14,7 +14,7 @@ public class Page extends Container {
 
 	public static String pageHeader(State state) {
 		//new Exception().printStackTrace();
-		String r = "<html><head><title>Coagulate SL Services</title>"
+		String r = "<html><head><title>"+(SL.DEV?"DEV ":"")+"Coagulate SL</title>"
 				+ "<link rel=\"shortcut icon\" href=\"/resources/icon-cluster" + (SL.DEV ? "-dev" : "") + ".png\">"
 				+ "</head><body>"
 				+ "<p align=center>" + SL.getBannerHREF() + "</p><p><hr>";

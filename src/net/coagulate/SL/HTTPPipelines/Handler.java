@@ -72,10 +72,10 @@ public abstract class Handler implements HttpRequestHandler {
 
 			if (state.sessionId() != null && !state.sessionId().isEmpty() && !"none".equalsIgnoreCase(state.sessionId())) {
 				if (!state.sessionId().equals(cookiemap.get("coagulateslsessionid"))) {
-					resp.addHeader("Set-Cookie", "coagulateslsessionid=" + state.sessionId() + "; HttpOnly; Path=/; Domain=sl" + (SL.DEV ? "dev" : "") + ".coagulate.net; Secure;");
+					resp.addHeader("Set-Cookie", "coagulateslsessionid=" + state.sessionId() + "; HttpOnly; Path=/; Secure;");
 				}
 			} else {
-				resp.addHeader("Set-Cookie", "coagulateslsessionid=none; HttpOnly; Path=/; Domain=sl" + (SL.DEV ? "dev" : "") + ".coagulate.net; expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure;");
+				resp.addHeader("Set-Cookie", "coagulateslsessionid=none; HttpOnly; Path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure;");
 			}
 			resp.setStatusCode(state.status());
 

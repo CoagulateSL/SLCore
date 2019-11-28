@@ -5,8 +5,7 @@ import net.coagulate.SL.Data.Session;
 import net.coagulate.SL.Data.User;
 import net.coagulate.SL.SL;
 import org.apache.http.*;
-import org.apache.http.protocol.ExecutionContext;
-import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.*;
 
 import java.net.InetAddress;
 import java.util.HashMap;
@@ -94,7 +93,7 @@ public class State extends DumpableState {
 		} else { session.setUser(user); }
 		this.user = user;
 	}
-
+	@SuppressWarnings("deprecation")
 	public String getClientIP() {
 		//try {
 		//HttpInetConnection connection = (HttpInetConnection) httpcontext.getAttribute(ExecutionContext.HTTP_CONNECTION);

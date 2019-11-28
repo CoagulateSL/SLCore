@@ -52,7 +52,7 @@ public class Table extends Container {
 		return this;
 	}
 
-	public void load(Map map) {
+	public void load(Map<String,String> map) {
 		for (List<Element> list : table) {
 			for (Element ele : list) {
 				ele.load(map);

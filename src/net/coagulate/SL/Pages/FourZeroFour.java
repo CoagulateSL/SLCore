@@ -12,7 +12,7 @@ import org.apache.http.HttpStatus;
 public class FourZeroFour extends StringHandler {
 	private static String uri;
 
-	public FourZeroFour(String uri) { this.uri = uri; }
+	public FourZeroFour(String uri) { FourZeroFour.uri = uri; }
 
 	@Override
 	protected String handleString(State state) {

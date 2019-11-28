@@ -36,8 +36,8 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 		prefix("/rentalavailability-scijp2", new net.coagulate.LSLR.HttpReceiver());
 		// SL pages
 		int count = 0;
-		for (Constructor c : ClassTools.getAnnotatedConstructors(Url.class)) {
-			String url = ((Url) (c.getAnnotation(Url.class))).value();
+		for (Constructor<?> c : ClassTools.getAnnotatedConstructors(Url.class)) {
+			String url = c.getAnnotation(Url.class).value();
 			count++;
 			try {
 				exact(url, (HttpRequestHandler) c.newInstance());
@@ -47,8 +47,8 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 		}
 		logger.log(Level.FINE, "Loaded " + count + " exact URI handlers");
 		count = 0;
-		for (Constructor c : ClassTools.getAnnotatedConstructors(Prefix.class)) {
-			String url = ((Prefix) (c.getAnnotation(Prefix.class))).value();
+		for (Constructor<?> c : ClassTools.getAnnotatedConstructors(Prefix.class)) {
+			String url = c.getAnnotation(Prefix.class).value();
 			count++;
 			try {
 				prefix(url, (HttpRequestHandler) c.newInstance());
@@ -114,7 +114,7 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 	@Documented
 	@Target(ElementType.CONSTRUCTOR)
 	public @interface Url {
-		public String value();
+		String value();
 	}
 
 
@@ -122,7 +122,7 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 	@Documented
 	@Target(ElementType.CONSTRUCTOR)
 	public @interface Prefix {
-		public String value();
+		String value();
 	}
 
 }

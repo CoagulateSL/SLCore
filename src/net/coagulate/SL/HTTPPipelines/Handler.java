@@ -12,6 +12,7 @@ import org.apache.http.protocol.HttpRequestHandler;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,7 @@ public abstract class Handler implements HttpRequestHandler {
 	public void handle(HttpRequest req, HttpResponse resp, HttpContext hc) {
 		try {
 			Map<String, String> parameters = new HashMap<>();
-			List<NameValuePair> uriparams = URLEncodedUtils.parse(new URI(req.getRequestLine().getUri()), Charset.forName("UTF-8"));
+			List<NameValuePair> uriparams = URLEncodedUtils.parse(new URI(req.getRequestLine().getUri()), StandardCharsets.UTF_8);
 			for (NameValuePair up : uriparams) {
 				parameters.put(up.getName(), up.getValue());
 				if (DEBUG_PARAMS) {
@@ -56,7 +57,7 @@ public abstract class Handler implements HttpRequestHandler {
 			Map<String, String> cookiemap = new HashMap<>();
 			for (Header header : req.getHeaders("Cookie")) {
 				for (String component : header.getValue().split(";")) {
-					String kv[] = component.split("=");
+					String[] kv = component.split("=");
 					if (kv.length != 2) {
 						SL.getLogger().log(Level.WARNING, "Unusual cookie element to parse in line " + header.getValue() + " piece " + component);
 					} else {

@@ -18,6 +18,8 @@ import java.util.logging.Level;
  *
  * @author Iain Price
  */
+
+@SuppressWarnings("deprecation")
 public class State extends DumpableState {
 	private final HttpRequest request;
 	private final HttpResponse response;

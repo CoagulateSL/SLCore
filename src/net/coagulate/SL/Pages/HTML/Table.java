@@ -11,8 +11,8 @@ import java.util.Map;
 public class Table extends Container {
 	protected TRGenerator trgen = null;
 	// a table is ...
-	List<List<Element>> table;
-	List<Element> headers = new ArrayList<>();
+	final List<List<Element>> table;
+	final List<Element> headers = new ArrayList<>();
 	List<Element> row = null;
 
 	public Table() {

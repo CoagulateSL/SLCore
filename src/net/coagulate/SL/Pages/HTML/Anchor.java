@@ -4,7 +4,7 @@ package net.coagulate.SL.Pages.HTML;
  * @author Iain Price
  */
 public class Anchor extends Container {
-	String target;
+	final String target;
 
 	public Anchor(String target) { this.target = target; }
 

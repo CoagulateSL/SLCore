@@ -19,14 +19,8 @@ import static java.util.logging.Level.WARNING;
  */
 public abstract class AuthenticatedStringHandler extends Handler {
 
-	private static final String loginpage1 = "<table width=100%><tr><td align=center width=500px valign=top><form method=post><p align=center><table><tr><td colspan=2>&nbsp;</td></tr><tr><td></td><td colspan=2 align=center><font size=5><u>Login</u></font></td></tr><tr><th>Avatar Name:</th><td><input autofocus type=text size=20 name=login_username></td></tr>";
-	private static final String loginpageprebot = ""
-			+ "<tr><td></td><td><i>OPTIONAL: If you do not<br>enter a password,<br>your avatar will be sent a<br>login URL in Second Life</i></td></tr>"
-			+ "<tr><th>Coagulate SL Password:</th><td><input type=password size=20 name=login_password></td></tr>"
-			+ "<tr><td colspan=2>&nbsp;</td></tr>"
-			+ "<tr><td></td><td><button type=submit name=Login value=Login style='width:100%;'>Login</button></td></tr>"
-			+ "</table>";
-	private static final String loginpagepostbot = "</p></form></td><td valign=top><p>"+
+	private static final String loginpage1 = "<form method=post><p align=center>"+
+			"<table align=center><tr><td colspan=2>"+
 			"<h1>Welcome to Coagulate.SL</h1><br>" +
 			"Coagulate.SL is an umbrella service that contains a set of different services used in Second Life.<br>" +
 			"Currently this consists of the following:<ul>" +
@@ -35,7 +29,20 @@ public abstract class AuthenticatedStringHandler extends Handler {
 			"<li>Quiet Life Rentals - Land rental company in Second Life (<a href=\"https://coagulate.sl/Docs/QLR/\">Documentation)</a></li>" +
 			"</ul>" +
 			"These services are run by <a href=\"secondlife:///app/agent/8dc52677-bea8-4fc3-b69b-21c5e2224306/about\">Iain Maltz</a>"+
-			"</p></td></tr></table>";
+			"</p></td></tr>"+
+			"<tr><td colspan=2>&nbsp;</td></tr>" +
+			"<tr><td colspan=2><hr></td></tr>"+
+			"<tr><td colspan=2>&nbsp;</td></tr>" +
+			"<tr><td colspan=2 align=center><font size=5><u>Login</u></font></td></tr>"+
+			"<tr><td>&nbsp;</td></tr>"+
+			"<tr><th align=right>Avatar Name:</th><td><input autofocus type=text size=20 name=login_username></td></tr>";
+	private static final String loginpageprebot = ""
+			+ "<tr><th align=right>Coagulate SL Password:</th><td><input type=password size=20 name=login_password></td></tr>"
+			+ "<tr><td colspan=2 align=center><i>If you do not enter a password, your avatar will be IMed a login in Second Life</i></td></tr>"
+			+ "<tr><td colspan=2>&nbsp;</td></tr>"
+			+ "<tr><td colspan=2 align=center><button type=submit name=Login value=Login>Login</button></td></tr>"
+			+ "</table>";
+	private static final String loginpagepostbot = "</p></form></table>";
 
 	@Override
 	public StringEntity handleContent(State state) {

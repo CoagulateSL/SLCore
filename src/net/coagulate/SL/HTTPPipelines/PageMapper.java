@@ -20,9 +20,9 @@ import java.util.logging.Logger;
  */
 public final class PageMapper implements HttpRequestHandlerMapper {
 	private static final boolean DEBUG = false;
-	public Logger logger;
-	Map<String, HttpRequestHandler> prefixes = new HashMap<>();
-	Map<String, HttpRequestHandler> exact = new HashMap<>();
+	public final Logger logger;
+	final Map<String, HttpRequestHandler> prefixes = new HashMap<>();
+	final Map<String, HttpRequestHandler> exact = new HashMap<>();
 
 	public PageMapper() {
 		logger = Logger.getLogger(PageMapper.class.getCanonicalName());

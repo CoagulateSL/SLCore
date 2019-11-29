@@ -20,7 +20,7 @@ import static net.coagulate.Core.Tools.UnixTime.getUnixTime;
 public class User extends LockableTable {
 
 	private static final Map<Integer, User> users = new HashMap<>();
-	String username;
+	final String username;
 
 	private User(int id, String username) {
 		super(id);

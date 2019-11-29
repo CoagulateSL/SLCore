@@ -245,7 +245,7 @@ public class User extends LockableTable {
 	public Set<Subscription> getSubscriptions(Pricing.SERVICE service, boolean activeonly, boolean paidonly) {
 		Results res;
 		int paiduntilfilter = UnixTime.getUnixTime();
-		if (paidonly == false) { paiduntilfilter = 0; }
+		if (!paidonly) { paiduntilfilter = 0; }
 		String activeonlysql;
 		if (activeonly) { activeonlysql = " and active=1"; } else { activeonlysql = ""; }
 		if (service != null) {

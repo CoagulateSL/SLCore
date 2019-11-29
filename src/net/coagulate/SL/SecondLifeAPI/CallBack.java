@@ -24,6 +24,7 @@ public class CallBack extends SLAPI {
 		object.put("hostname", Config.getHostName()); // saturn mars neptune
 		object.remove("developerkey");
 		getLogger().fine("CallBack received for URL " + url);
+		//noinspection CallToThreadRun
 		new Transmit(object, url).run();
 		return object;
 	}

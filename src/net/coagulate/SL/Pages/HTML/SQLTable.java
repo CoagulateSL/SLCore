@@ -69,7 +69,7 @@ public class SQLTable extends Table {
 		return "<td>";
 	}
 
-	class Column {
+	static class Column {
 
 		final String columnname;
 		final String header;

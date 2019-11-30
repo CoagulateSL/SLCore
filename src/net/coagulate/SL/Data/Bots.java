@@ -1,5 +1,7 @@
 package net.coagulate.SL.Data;
 
+import javax.annotation.Nonnull;
+
 /**
  * @author Iain Price
  */
@@ -9,6 +11,7 @@ public class Bots extends LockableTable {
 		super(id);
 	}
 
+	@Nonnull
 	@Override
 	public String getTableName() {
 		return "bots";

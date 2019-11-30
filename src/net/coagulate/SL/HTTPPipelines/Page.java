@@ -5,6 +5,8 @@ import net.coagulate.SL.Config;
 import net.coagulate.SL.Pages.HTML.*;
 import net.coagulate.SL.SL;
 
+import javax.annotation.Nonnull;
+
 /**
  * @author Iain Price
  */
@@ -12,7 +14,8 @@ public class Page extends Container {
 
 	private PAGELAYOUT layout = PAGELAYOUT.NONE;
 
-	public static String pageHeader(State state) {
+	@Nonnull
+	public static String pageHeader(@Nonnull State state) {
 		//new Exception().printStackTrace();
 		String r = "<html><head><title>"+(SL.DEV?"DEV ":"")+"Coagulate SL</title>"
 				+ "<link rel=\"shortcut icon\" href=\"/resources/icon-cluster" + (SL.DEV ? "-dev" : "") + ".png\">"
@@ -39,6 +42,7 @@ public class Page extends Container {
 		return r;
 	}
 
+	@Nonnull
 	public static String pageFooter(State state) {
 		String ret = "<div style='position:absolute;bottom:5;right:5;left:5;'><hr>";
 		ret += (SL.DEV ? "DEVELOPMENT" : "Production");
@@ -49,48 +53,56 @@ public class Page extends Container {
 
 	public void layout(PAGELAYOUT layout) { this.layout = layout; }
 
+	@Nonnull
 	public String preLayout() {
 		if (layout == PAGELAYOUT.NONE) { return ""; }
 		if (layout == PAGELAYOUT.CENTERCOLUMN) { return "<p align=center><table><tr><td style=\"max-width: 800px;\">"; }
 		throw new SystemException("Unhandled pre-layout " + layout);
 	}
 
+	@Nonnull
 	public String postLayout() {
 		if (layout == PAGELAYOUT.NONE) { return ""; }
 		if (layout == PAGELAYOUT.CENTERCOLUMN) { return "</td></td></table></p>"; }
 		throw new SystemException("Unhandled post-layout " + layout);
 	}
 
+	@Nonnull
 	public Header1 header(String header) {
 		Header1 h = new Header1(header);
 		add(h);
 		return h;
 	}
 
+	@Nonnull
 	public Paragraph paragraph() {
 		Paragraph p = new Paragraph();
 		add(p);
 		return p;
 	}
 
+	@Nonnull
 	public Paragraph paragraph(String s) {
 		Paragraph p = new Paragraph(s);
 		add(p);
 		return p;
 	}
 
+	@Nonnull
 	public Form form() {
 		Form f = new Form();
 		add(f);
 		return f;
 	}
 
+	@Nonnull
 	public ServiceCell serviceCell(String title, String targeturl) {
 		ServiceCell sc = new ServiceCell(title, targeturl);
 		add(sc);
 		return sc;
 	}
 
+	@Nonnull
 	public URLButton urlbutton(String label, String url) {
 		URLButton ub = new URLButton(label, url);
 		add(ub);
@@ -147,7 +159,8 @@ public class Page extends Container {
     public Page errorBlock(String error) { return raw("<br><span style=\"margin: 10px; padding:5px; border-style: solid; border-width: 2; border-color: red;\">"+error+"</span><br><br>"); }
 */
 
-	public String toHtml(State st) {
+	@Nonnull
+	public String toHtml(@Nonnull State st) {
 		return
 				pageHeader(st) +
 						preLayout() +

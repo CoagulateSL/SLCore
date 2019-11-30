@@ -11,6 +11,8 @@ import org.apache.http.HttpStatus;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 
+import javax.annotation.Nonnull;
+
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
 
@@ -44,8 +46,9 @@ public abstract class AuthenticatedStringHandler extends Handler {
 			+ "</table>";
 	private static final String loginpagepostbot = "</p></form></table>";
 
+	@Nonnull
 	@Override
-	public StringEntity handleContent(State state) {
+	public StringEntity handleContent(@Nonnull State state) {
 		try {
 			String content = "<p><b>WEIRD INTERNAL LOGIC ERROR</b></p>";
 			String username = state.get("login_username");
@@ -85,7 +88,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
 		}
 	}
 
-	protected boolean checkAuth(State state) {
+	protected boolean checkAuth(@Nonnull State state) {
 		if (state.user() != null) { return true; }
 		// not (yet?) logged in
 		String username = state.get("login_username");
@@ -108,14 +111,18 @@ public abstract class AuthenticatedStringHandler extends Handler {
 		return false;
 	}
 
+	@Nonnull
 	private String failPage() { return loginpage1 + "<tr><td colspan=2><font color=red><b>Invalid Login</b></font></td></tr>" + loginpageprebot + botLine() + loginpagepostbot; }
 
+	@Nonnull
 	private String ssoSentPage() { return loginpage1 + "<tr><td colspan=2><font color=blue><b>Login sent via IM in Second Life</b></font></td></tr>" + loginpageprebot + botLine() + loginpagepostbot; }
 
+	@Nonnull
 	private String loginPage() { return loginpage1 + loginpageprebot + botLine() + loginpagepostbot; }
 
 	public abstract String handleString(State state);
 
+	@Nonnull
 	private String botLine() { return ""; }
 	//return "===> Click <a href=\"secondlife:///app/agent/"+SL.bot.getUUID().toUUIDString()+"/im\">to instant message the bot "+SL.bot.getUsername()+"</a><br>";
 

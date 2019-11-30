@@ -2,13 +2,16 @@ package net.coagulate.SL.HTTPPipelines;
 
 import net.coagulate.SL.Pages.HTML.State;
 
+import javax.annotation.Nonnull;
+
 /**
  * @author Iain Price
  */
 public abstract class AuthenticatedContainerHandler extends AuthenticatedStringHandler {
 
+	@Nonnull
 	@Override
-	public String handleString(State state) {
+	public String handleString(@Nonnull State state) {
 		Page container = new Page();
 		run(state, container);
 		return container.toHtml(state);

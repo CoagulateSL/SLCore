@@ -8,6 +8,7 @@ import net.coagulate.Core.Tools.UserException;
 import net.coagulate.SL.SL;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -19,14 +20,17 @@ public class RegionStats extends Table {
 	public static final int HOUR = 60 * 60;
 	public static final int DAY = 24 * HOUR;
 
+	@Nullable
 	public static Float getAverage(@Nonnull Regions reg, String stattype, int time) {
 		return SL.getDB().dqf(false, "select avg(statavg) from regionstats where regionid=? and timestamp>? and stattype=?", reg.getId(), UnixTime.getUnixTime() - time, stattype);
 	}
 
+	@Nullable
 	public static Float getMin(@Nonnull Regions reg, String stattype, int time) {
 		return SL.getDB().dqf(false, "select min(statavg) from regionstats where regionid=? and timestamp>? and stattype=?", reg.getId(), UnixTime.getUnixTime() - time, stattype);
 	}
 
+	@Nullable
 	public static Float getMax(@Nonnull Regions reg, String stattype, int time) {
 		return SL.getDB().dqf(false, "select max(statavg) from regionstats where regionid=? and timestamp>? and stattype=?", reg.getId(), UnixTime.getUnixTime() - time, stattype);
 	}
@@ -49,6 +53,7 @@ public class RegionStats extends Table {
 		log(region.getId(), timestamp, statstype, min, max, avg, sd);
 	}
 
+	@Nullable
 	public static Results graphableData(@Nonnull Regions r, String stattype, int from, int to, int x) {
 		DBConnection d = SL.getDB();
 		// 'x' defines how many 'slots' we have for data (horizontal pixels).  eventually borders and stuff so

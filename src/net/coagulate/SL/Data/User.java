@@ -38,6 +38,7 @@ public class User extends LockableTable {
 		return findOrCreateAvatar("SYSTEM", "DEADBEEF");
 	}
 
+	@Nonnull
 	public static String getGPHUDLink(String name, int id) {
 		return new Link(name, "/GPHUD/avatars/view/" + id).asHtml(null, true);
 	}
@@ -177,6 +178,7 @@ public class User extends LockableTable {
 		return get(userid);
 	}
 
+	@Nonnull
 	public String getGPHUDLink() { return getGPHUDLink(getUsername(), getId()); }
 
 	public String getUsername() { return username; }
@@ -201,6 +203,7 @@ public class User extends LockableTable {
 		} catch (NoDataException e) { return false; }
 	}
 
+	@Nullable
 	public String getDeveloperKey() {
 		return dqs(true, "select developerkey from users where id=?", getId());
 	}
@@ -272,8 +275,10 @@ public class User extends LockableTable {
 		return subs;
 	}
 
+	@Nullable
 	public String getEmail() { return getString("email"); }
 
+	@Nullable
 	public String getNewEmail() { return getString("newemail"); }
 
 	/**
@@ -309,11 +314,13 @@ public class User extends LockableTable {
 	 *
 	 * @return UUID (Avatar Key)
 	 */
+	@Nullable
 	public String getUUID() {
 		return getString("avatarkey");
 	}
 
 
+	@Nullable
 	public String getTimeZone() {
 		String s = getString("timezone");
 		if (s == null) { return "America/Los_Angeles"; }
@@ -337,6 +344,7 @@ public class User extends LockableTable {
 	 *
 	 * @return The last active time for an avatar, possibly null.
 	 */
+	@Nullable
 	public Integer getLastActive() {
 		return dqi(true, "select lastactive from users where id=?", getId());
 	}

@@ -120,6 +120,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
 	@Nonnull
 	private String loginPage() { return loginpage1 + loginpageprebot + botLine() + loginpagepostbot; }
 
+	@Nonnull
 	public abstract String handleString(State state);
 
 	@Nonnull

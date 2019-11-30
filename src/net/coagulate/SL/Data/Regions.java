@@ -6,6 +6,7 @@ import net.coagulate.Core.Tools.UnixTime;
 import net.coagulate.SL.SL;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * @author Iain Price
@@ -28,6 +29,7 @@ public class Regions extends LockableTable {
 	@Override
 	public String getTableName() { return "regions"; }
 
+	@Nullable
 	public String getStatus() { return getString("status"); }
 
 	public int getLastUpdate() {
@@ -53,6 +55,7 @@ public class Regions extends LockableTable {
 		return since;
 	}
 
+	@Nullable
 	public String getName() {
 		return getString("region");
 	}

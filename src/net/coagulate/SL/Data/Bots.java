@@ -1,6 +1,7 @@
 package net.coagulate.SL.Data;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * @author Iain Price
@@ -17,10 +18,13 @@ public class Bots extends LockableTable {
 		return "bots";
 	}
 
+	@Nullable
 	public String getFirstName() { return getString("firstname"); }
 
+	@Nullable
 	public String getLastName() { return getString("lastname"); }
 
+	@Nullable
 	public String getPassword() { return getString("password"); }
 
 	public User getOwner() { return User.get(getInt("ownerid")); }

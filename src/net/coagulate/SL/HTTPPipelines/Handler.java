@@ -91,5 +91,6 @@ public abstract class Handler implements HttpRequestHandler {
 		}
 	}
 
+	@Nonnull
 	protected abstract HttpEntity handleContent(State state);
 }

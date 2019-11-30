@@ -37,6 +37,7 @@ public abstract class StringHandler extends Handler {
 		}
 	}
 
+	@Nonnull
 	protected abstract String handleString(State state);
 
 }

@@ -54,7 +54,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
 				if (username == null || username.isEmpty()) {
 					return new StringEntity(new Page().add(new Raw(loginPage())).toHtml(state), ContentType.TEXT_HTML);
 				} else {
-					if ("Login".equals(state.get("Login")) && !username.isEmpty() && password.isEmpty()) {
+					if ("Login".equals(state.get("Login")) && password.isEmpty()) {
 						User target = User.findOptional(username);
 						if (target != null) {
 							String token = target.generateSSO();

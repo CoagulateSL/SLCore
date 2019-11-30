@@ -13,13 +13,13 @@ public class Submit extends Container {
 	@Nullable
 	String value = null;
 
-	public Submit(String name) {
+	public Submit(@Nullable String name) {
 		this.name = name;
 		this.value = name;
 		super.add(new Raw(name));
 	}
 
-	public Submit(String name, String value) {
+	public Submit(String name, @Nullable String value) {
 		this.name = name;
 		this.value = value;
 	}

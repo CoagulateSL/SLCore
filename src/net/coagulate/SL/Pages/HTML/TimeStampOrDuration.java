@@ -2,11 +2,14 @@ package net.coagulate.SL.Pages.HTML;
 
 import net.coagulate.Core.Tools.UnixTime;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * @author Iain Price
  */
 public class TimeStampOrDuration extends TimeStamp {
-	public String render(State st, String strvalue) {
+	public String render(@Nonnull State st, @Nullable String strvalue) {
 		if (strvalue == null || strvalue.isEmpty() || Integer.parseInt(strvalue) == 0) { return "-"; }
 		int value = Integer.parseInt(strvalue);
 		int now = UnixTime.getUnixTime();

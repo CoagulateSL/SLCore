@@ -21,6 +21,7 @@ import net.coagulate.SL.Pages.HTML.State;
 import net.coagulate.SL.Pages.HTML.Table;
 import net.coagulate.SL.SL;
 
+import javax.annotation.Nonnull;
 import javax.mail.MessagingException;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 	public ControlPanel() {super();}
 
 	@Override
-	protected void run(State state, Page page) {
+	protected void run(@Nonnull State state, @Nonnull Page page) {
 		if (!state.user().superuser()) {
 			throw new SystemException("Unauthorised access to Control Panel from " + state.user());
 		}

@@ -6,6 +6,8 @@ import net.coagulate.SL.Pages.HTML.Raw;
 import net.coagulate.SL.Pages.HTML.State;
 import org.apache.http.HttpStatus;
 
+import javax.annotation.Nonnull;
+
 /**
  * @author Iain Price
  */
@@ -15,7 +17,7 @@ public class FourZeroFour extends StringHandler {
 	public FourZeroFour(String uri) { FourZeroFour.uri = uri; }
 
 	@Override
-	protected String handleString(State state) {
+	protected String handleString(@Nonnull State state) {
 		state.status(HttpStatus.SC_NOT_FOUND);
 		return new Page().add(new Raw("<h1 align=center>Four Hundred and Four</h1><br><br><p align=center>As in, 404, Page Not Found</p><br><br><br><br><p align=center>The requested URI (" + uri + ") was not mapped to a page handler.</p>")).toHtml(state);
 	}

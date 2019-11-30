@@ -7,6 +7,8 @@ import net.coagulate.SL.SL;
 import org.apache.http.*;
 import org.apache.http.protocol.*;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,9 +28,12 @@ public class State extends DumpableState {
 	// We love general purpose KV maps.  more than one of them.
 	private final Map<String, Map<String, String>> maps = new HashMap<>();
 	private int returnstatus = HttpStatus.SC_OK;
+	@Nullable
 	private String sessionid = null;
 	// hmm, getting a bit complex here
+	@Nullable
 	private User user = null;
+	@Nullable
 	private Session session = null;
 
 	// We love HTTP :P
@@ -53,6 +58,7 @@ public class State extends DumpableState {
 		loadSession();
 	}
 
+	@Nullable
 	public String sessionId() { return sessionid; }
 
 	private Map<String, String> getMap(String mapname) {
@@ -83,9 +89,10 @@ public class State extends DumpableState {
 
 	public void put(String key, String value) { put("parameters", key, value); }
 
+	@Nullable
 	public User user() { return user; }
 
-	public void user(User user) {
+	public void user(@Nonnull User user) {
 		// got a session?
 		if (session == null) {
 			session = Session.create(user);
@@ -128,6 +135,7 @@ public class State extends DumpableState {
 		if (session != null) { user = session.user(); } else { sessionid = null; }
 	}
 
+	@Nonnull
 	@Override
 	protected String dumpAdditionalStateToHtml() {
 		return "";

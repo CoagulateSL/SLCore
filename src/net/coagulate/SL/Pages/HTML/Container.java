@@ -1,5 +1,6 @@
 package net.coagulate.SL.Pages.HTML;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ public class Container implements Element {
 		return ret.toString();
 	}
 
+	@Nonnull
 	public String toString(State st) {
 		StringBuilder ret = new StringBuilder();
 		for (Element e : content) { ret.append(e.toString(st)).append("\n"); }

@@ -1,5 +1,7 @@
 package net.coagulate.SL.Pages.HTML;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,44 +11,53 @@ import java.util.Map;
  * @author Iain Price
  */
 public class Table extends Container {
+	@Nullable
 	protected TRGenerator trgen = null;
 	// a table is ...
+	@Nonnull
 	final List<List<Element>> table;
 	final List<Element> headers = new ArrayList<>();
+	@Nullable
 	List<Element> row = null;
 
 	public Table() {
 		table = new ArrayList<>();
 	}
 
+	@Nonnull
 	public Table openRow() {
 		row = new ArrayList<>();
 		table.add(row);
 		return this;
 	}
 
+	@Nonnull
 	public Table checkRow() {
 		if (row == null) { openRow(); }
 		return this;
 	}
 
+	@Nonnull
 	public Table add(Element e) {
 		checkRow();
 		row.add(e);
 		return this;
 	}
 
+	@Nonnull
 	public Table add(String s) {
 		checkRow();
 		row.add(new Raw(s));
 		return this;
 	}
 
+	@Nonnull
 	public Table header(Element e) {
 		headers.add(e);
 		return this;
 	}
 
+	@Nonnull
 	public Table header(String s) {
 		headers.add(new Raw(s));
 		return this;
@@ -60,6 +71,7 @@ public class Table extends Container {
 		}
 	}
 
+	@Nonnull
 	public String toHtml(State st) {
 		return
 				"<table>" +
@@ -68,6 +80,7 @@ public class Table extends Container {
 						"</table>";
 	}
 
+	@Nonnull
 	protected String headerRow(State st) {
 		if (headers.isEmpty()) { return ""; }
 		StringBuilder r = new StringBuilder("<tr>");

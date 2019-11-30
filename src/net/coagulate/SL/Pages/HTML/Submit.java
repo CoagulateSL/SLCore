@@ -1,5 +1,7 @@
 package net.coagulate.SL.Pages.HTML;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
@@ -8,6 +10,7 @@ import java.util.Map;
 public class Submit extends Container {
 
 	final String name;
+	@Nullable
 	String value = null;
 
 	public Submit(String name) {
@@ -21,6 +24,7 @@ public class Submit extends Container {
 		this.value = value;
 	}
 
+	@Nonnull
 	@Override
 	public String toHtml(State st) {
 		String v = value;
@@ -31,7 +35,7 @@ public class Submit extends Container {
 	}
 
 	@Override
-	public void load(Map<String, String> map) {
+	public void load(@Nonnull Map<String, String> map) {
 		if (value == null) {
 			if (map.containsKey(name)) {
 				value = map.get(name);

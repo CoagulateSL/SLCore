@@ -1,5 +1,7 @@
 package net.coagulate.SL.Pages.HTML;
 
+import javax.annotation.Nonnull;
+
 /**
  * @author Iain Price
  */
@@ -18,6 +20,7 @@ public class Anchor extends Container {
 		add(new Raw(content));
 	}
 
+	@Nonnull
 	public String toHtml(State st) {
 		return
 				"<a href=\"#" + target + "\">" +

@@ -16,6 +16,7 @@ public abstract class Renderer implements Element {
 	@Nullable
 	public String get() { return value; }
 
+	@Nullable
 	@Override
 	public String toHtml(State st) { return render(st, value); }
 
@@ -25,5 +26,6 @@ public abstract class Renderer implements Element {
 	@Override
 	public void load(Map<String, String> map) {}
 
+	@Nullable
 	public abstract String render(State st, String value);
 }

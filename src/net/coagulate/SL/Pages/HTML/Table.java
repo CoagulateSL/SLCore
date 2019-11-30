@@ -91,6 +91,7 @@ public class Table extends Container {
 		return r.toString();
 	}
 
+	@Nonnull
 	protected String contentRows(State st) {
 		StringBuilder r = new StringBuilder();
 		for (List<Element> row : table) {
@@ -112,11 +113,13 @@ public class Table extends Container {
 		return r.toString();
 	}
 
+	@Nonnull
 	protected String openRow(State st, Map<String, String> row) {
 		if (trgen == null) { return "<tr>"; }
 		return trgen.render(st, row);
 	}
 
+	@Nonnull
 	public Table rowGenerator(TRGenerator generator) {
 		trgen = generator;
 		return this;

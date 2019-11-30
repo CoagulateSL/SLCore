@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
  */
 public class TimeStamp extends Renderer {
 
+	@Nullable
 	@Override
 	public String render(@Nonnull State st, @Nullable String value) {
 		if (value == null || value.isEmpty() || Integer.parseInt(value) == 0) { return "-"; }

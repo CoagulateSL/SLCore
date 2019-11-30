@@ -16,6 +16,7 @@ public class FourZeroFour extends StringHandler {
 
 	public FourZeroFour(String uri) { FourZeroFour.uri = uri; }
 
+	@Nonnull
 	@Override
 	protected String handleString(@Nonnull State state) {
 		state.status(HttpStatus.SC_NOT_FOUND);

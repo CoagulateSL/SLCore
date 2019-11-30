@@ -12,6 +12,7 @@ public class Container implements Element {
 
 	final List<Element> content = new ArrayList<>();
 
+	@Nonnull
 	@Override
 	public String toHtml(State st) {
 		StringBuilder ret = new StringBuilder();
@@ -31,6 +32,7 @@ public class Container implements Element {
 		for (Element e : content) { e.load(map); }
 	}
 
+	@Nonnull
 	public Container add(Element element) {
 		content.add(element);
 		return this;

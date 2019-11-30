@@ -19,5 +19,6 @@ public abstract class TRGenerator implements Element {
 	@Override
 	public void load(Map<String, String> map) {}
 
+	@Nonnull
 	public abstract String render(State st, Map<String, String> row);
 }

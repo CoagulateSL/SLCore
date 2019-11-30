@@ -16,6 +16,7 @@ public class Logout extends StringHandler {
 	@Url("/Logout")
 	public Logout() {super();}
 
+	@Nonnull
 	@Override
 	protected String handleString(@Nonnull State state) {
 		state.logout();

@@ -42,7 +42,6 @@ public class Transmit extends Thread {
 	public void run() {
 		boolean debug = false;
 		if (delay > 0) {
-			if (debug) { System.out.println("Delay " + delay); }
 			try { Thread.sleep(delay * 1000); } catch (InterruptedException e) {}
 		}
 		int retries = 5;
@@ -94,7 +93,6 @@ public class Transmit extends Thread {
 		while ((line = rd.readLine()) != null) {
 			response.append(line).append("\n");
 		}
-		if (debug) { getLogger().log(FINER, "Push: " + json.toString() + "\ngives " + response); }
 		return response.toString();
 	}
 }

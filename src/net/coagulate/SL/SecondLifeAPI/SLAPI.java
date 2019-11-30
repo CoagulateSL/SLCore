@@ -111,6 +111,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 	}
 
 
+	@Nonnull
 	protected abstract JSONObject handleJSON(JSONObject object, State st);
 
 	protected boolean needsDigest() { return true; }

@@ -3,6 +3,8 @@ package net.coagulate.SL.SecondLifeAPI;
 import net.coagulate.SL.SL;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -19,7 +21,9 @@ import static java.util.logging.Level.*;
 public class Transmit extends Thread {
 	public static boolean debugspawn = false;
 	final String url;
+	@Nullable
 	JSONObject json = null;
+	@Nullable
 	JSONObject jsonresponse = null;
 	int delay = 0;
 	public Transmit(JSONObject json, String url) {
@@ -35,6 +39,7 @@ public class Transmit extends Thread {
 
 	Logger getLogger() { return SL.getLogger("SLAPI.Transmit"); }
 
+	@Nullable
 	public JSONObject getResponse() { return jsonresponse; }
 
 	// can call .start() to background run this, or .run() to async run inline/inthread
@@ -73,6 +78,7 @@ public class Transmit extends Thread {
 		}
 	}
 
+	@Nonnull
 	private String sendAttempt() throws IOException {
 		boolean debug = false;
 		URLConnection transmission = new URL(url).openConnection();

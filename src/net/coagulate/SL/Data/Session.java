@@ -1,5 +1,6 @@
 package net.coagulate.SL.Data;
 
+import net.coagulate.Core.Database.NoDataException;
 import net.coagulate.Core.Database.ResultsRow;
 import net.coagulate.Core.Tools.Tokens;
 import net.coagulate.Core.Tools.UnixTime;
@@ -24,19 +25,17 @@ public class Session extends Table {
 
 	@Nullable
 	public static Session get(String sessionid) {
-		ResultsRow user = SL.getDB().dqone(false, "select userid,expires from sessions where cookie=? and expires>?", sessionid, UnixTime.getUnixTime());
-		if (user == null) {
-			//Log.note("Session","Invalid session id presented");
-			return null;
-		}
-		int userid = user.getInt("userid");
-		int expires = user.getInt("expires");
-		int expiresin = expires - UnixTime.getUnixTime();
-		if (expiresin < (Config.SESSIONLIFESPANSECONDS / 2)) {
-			// refresh
-			SL.getDB().d("update sessions set expires=? where cookie=?", UnixTime.getUnixTime() + Config.SESSIONLIFESPANSECONDS, sessionid);
-		}
-		return new Session(sessionid, User.get(userid));
+		try {
+			ResultsRow user = SL.getDB().dqone("select userid,expires from sessions where cookie=? and expires>?", sessionid, UnixTime.getUnixTime());
+			int userid = user.getInt("userid");
+			int expires = user.getInt("expires");
+			int expiresin = expires - UnixTime.getUnixTime();
+			if (expiresin < (Config.SESSIONLIFESPANSECONDS / 2)) {
+				// refresh
+				SL.getDB().d("update sessions set expires=? where cookie=?", UnixTime.getUnixTime() + Config.SESSIONLIFESPANSECONDS, sessionid);
+			}
+			return new Session(sessionid, User.get(userid));
+		} catch (NoDataException e) { return null; }
 	}
 
 	@Nonnull

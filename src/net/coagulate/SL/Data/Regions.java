@@ -1,6 +1,7 @@
 package net.coagulate.SL.Data;
 
 import net.coagulate.Core.Database.LockException;
+import net.coagulate.Core.Database.NoDataException;
 import net.coagulate.Core.Tools.SystemException;
 import net.coagulate.Core.Tools.UnixTime;
 import net.coagulate.SL.SL;
@@ -17,12 +18,17 @@ public class Regions extends LockableTable {
 
 	@Nonnull
 	public static Regions getByName(String name) {
-		Integer id = SL.getDB().dqi(false, "select id from regions where region like ?", name);
-		if (id != null) { return new Regions(id); }
-		SL.getDB().d("insert into regions(region) values(?)", name);
-		id = SL.getDB().dqi(false, "select id from regions where region like ?", name);
-		if (id != null) { return new Regions(id); }
-		throw new SystemException("Failed to find inserted region in regions table");
+		try {
+			Integer id = SL.getDB().dqi("select id from regions where region like ?", name);
+			return new Regions(id);
+		} catch (NoDataException e) {
+			SL.getDB().d("insert into regions(region) values(?)", name);
+			try {
+				Integer id = SL.getDB().dqi("select id from regions where region like ?", name);
+				return new Regions(id);
+			}
+			catch (NoDataException f) { throw new SystemException("Failed to find inserted region in regions table",f); }
+		}
 	}
 
 	@Nonnull

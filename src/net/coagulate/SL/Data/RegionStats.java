@@ -1,6 +1,7 @@
 package net.coagulate.SL.Data;
 
 import net.coagulate.Core.Database.DBConnection;
+import net.coagulate.Core.Database.NoDataException;
 import net.coagulate.Core.Database.Results;
 import net.coagulate.Core.Database.ResultsRow;
 import net.coagulate.Core.Tools.UnixTime;
@@ -22,17 +23,20 @@ public class RegionStats extends Table {
 
 	@Nullable
 	public static Float getAverage(@Nonnull Regions reg, String stattype, int time) {
-		return SL.getDB().dqf(false, "select avg(statavg) from regionstats where regionid=? and timestamp>? and stattype=?", reg.getId(), UnixTime.getUnixTime() - time, stattype);
+		try { return SL.getDB().dqf( "select avg(statavg) from regionstats where regionid=? and timestamp>? and stattype=?", reg.getId(), UnixTime.getUnixTime() - time, stattype); }
+		catch (NoDataException e) { return null; }
 	}
 
 	@Nullable
 	public static Float getMin(@Nonnull Regions reg, String stattype, int time) {
-		return SL.getDB().dqf(false, "select min(statavg) from regionstats where regionid=? and timestamp>? and stattype=?", reg.getId(), UnixTime.getUnixTime() - time, stattype);
+		try { return SL.getDB().dqf( "select min(statavg) from regionstats where regionid=? and timestamp>? and stattype=?", reg.getId(), UnixTime.getUnixTime() - time, stattype); }
+		catch (NoDataException e) { return null; }
 	}
 
 	@Nullable
 	public static Float getMax(@Nonnull Regions reg, String stattype, int time) {
-		return SL.getDB().dqf(false, "select max(statavg) from regionstats where regionid=? and timestamp>? and stattype=?", reg.getId(), UnixTime.getUnixTime() - time, stattype);
+		try { return SL.getDB().dqf( "select max(statavg) from regionstats where regionid=? and timestamp>? and stattype=?", reg.getId(), UnixTime.getUnixTime() - time, stattype); }
+		catch (NoDataException e) { return null; }
 	}
 
 	@Nonnull

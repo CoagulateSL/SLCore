@@ -80,18 +80,18 @@ public class User extends LockableTable {
 
 	public static User get(String username, boolean createifnecessary) {
 		username = formatUsername(username);
-		boolean mandatory = true;
-		if (createifnecessary) { mandatory = false; }
-		Integer id = SL.getDB().dqi(mandatory, "select id from users where username=?", username);
+		Integer id = null;
+		try { id=SL.getDB().dqi("select id from users where username=?", username); } catch (NoDataException e) {}
 		if (id != null) { return factory(id, username); }
+		if (!createifnecessary) { throw new NoDataException("Can not find existing user for "+username); }
 		SL.getDB().d("insert into users(username) values(?)", username);
-		id = SL.getDB().dqi(false, "select id from users where username=?", username);
+		try { id = SL.getDB().dqi( "select id from users where username=?", username); } catch (NoDataException e) {}
 		if (id != null) { return factory(id, username); }
 		throw new SystemException("Created user for " + username + " and then couldn't find its id");
 	}
 
 	public static User get(int id) {
-		String username = SL.getDB().dqs(true, "select username from users where id=?", id);
+		String username = SL.getDB().dqs( "select username from users where id=?", id);
 		return factory(id, username);
 	}
 
@@ -102,24 +102,27 @@ public class User extends LockableTable {
 		if (key == null || "".equals(key)) {
 			return null;
 		}
-		Integer userid = SL.getDB().dqi(false, "select id from users where developerkey=?", key);
-		if (userid == null) { return null; }
-		return get(userid);
+		try {
+			Integer userid = SL.getDB().dqi("select id from users where developerkey=?", key);
+			return get(userid);
+		} catch (NoDataException e) { return null; }
 	}
 
 	@Nullable
 	public static User getSSO(String token) {
 		// purge old tokens
 		SL.getDB().d("update users set ssotoken=null,ssoexpires=null where ssoexpires<?", UnixTime.getUnixTime());
-		Integer match = SL.getDB().dqi(false, "select id from users where ssotoken=?", token);
-		if (match == null) { return null; }
-		SL.getDB().d("update users set ssotoken=null,ssoexpires=null where id=?", match);
-		return get(match);
+		try {
+			Integer match = SL.getDB().dqi("select id from users where ssotoken=?", token);
+			SL.getDB().d("update users set ssotoken=null,ssoexpires=null where id=?", match);
+			return get(match);
+		} catch (NoDataException e) { return null; }
 	}
 
 	public static User findOrCreateAvatar(@Nullable String name, @Nonnull String key) throws SystemException {
 		if (name == null || "".equals(name)) { name = ""; }
-		Integer userid = SL.getDB().dqi(false, "select id from users where (username=? or avatarkey=?)", name, key);
+		Integer userid = null;
+		try { userid=SL.getDB().dqi( "select id from users where (username=? or avatarkey=?)", name, key); } catch (NoDataException e){}
 		if (userid == null) {
 			if (name.isEmpty()) { throw new SystemException("Empty avatar name blocks creation"); }
 			if (key.isEmpty()) { throw new SystemException("Empty avatar key blocks creation"); }
@@ -136,7 +139,7 @@ public class User extends LockableTable {
 				SL.getLogger("User").log(SEVERE, "Exception creating avatar " + name, ex);
 				throw ex;
 			}
-			userid = SL.getDB().dqi(false, "select id from users where avatarkey=?", key);
+			try { userid = SL.getDB().dqi( "select id from users where avatarkey=?", key); } catch (NoDataException e) {}
 		}
 		if (userid == null) {
 			SL.getLogger("User").severe("Failed to find avatar '" + name + "' after creating it");
@@ -173,9 +176,10 @@ public class User extends LockableTable {
 	@Nullable
 	public static User findOptional(@Nullable String nameorkey) {
 		if (nameorkey == null || "".equals(nameorkey)) { throw new UserException("Avatar name/key not supplied"); }
-		Integer userid = SL.getDB().dqi(false, "select id from users where username=? or avatarkey=?", nameorkey, nameorkey);
-		if (userid == null) { return null; }
-		return get(userid);
+		try {
+			Integer userid = SL.getDB().dqi("select id from users where username=? or avatarkey=?", nameorkey, nameorkey);
+			return get(userid);
+		} catch (NoDataException e) { return null; }
 	}
 
 	@Nonnull
@@ -205,11 +209,11 @@ public class User extends LockableTable {
 
 	@Nullable
 	public String getDeveloperKey() {
-		return dqs(true, "select developerkey from users where id=?", getId());
+		return dqs( "select developerkey from users where id=?", getId());
 	}
 
 	public boolean isSuperAdmin() {
-		Integer isadmin = dqi(true, "select superadmin from users where id=?", getId());
+		Integer isadmin = dqi( "select superadmin from users where id=?", getId());
 		return isadmin == 1;
 	}
 
@@ -228,7 +232,7 @@ public class User extends LockableTable {
 	}
 
 	public boolean checkPassword(@Nonnull String password) {
-		String hash = dqs(true, "select password from users where id=?", getId());
+		String hash = dqs( "select password from users where id=?", getId());
 		if (hash == null || hash.isEmpty()) {
 			SL.getLogger().warning("Attempt to log in with a null or empty password hash for user " + getUsername());
 			return false;
@@ -237,9 +241,10 @@ public class User extends LockableTable {
 	}
 
 	public int balance() {
-		Integer balance = dqi(false, "select sum(ammount) from journal where userid=?", getId());
-		if (balance == null) { return 0; }
-		return balance;
+		try {
+			Integer balance = dqi("select sum(ammount) from journal where userid=?", getId());
+			return balance;
+		} catch (NoDataException e) { return 0; }
 	}
 
 	public void bill(int ammount, String description) throws UserException {
@@ -295,7 +300,7 @@ public class User extends LockableTable {
 	}
 
 	public void confirmNewEmail(@Nullable String token) {
-		ResultsRow r = dqone(true, "select newemail,newemailtoken,newemailexpires from users where id=?", getId());
+		ResultsRow r = dqone( "select newemail,newemailtoken,newemailexpires from users where id=?", getId());
 		String newemail = r.getString("newemail");
 		String newtoken = r.getString("newemailtoken");
 		int expires = r.getInt("newemailexpires");
@@ -346,7 +351,7 @@ public class User extends LockableTable {
 	 */
 	@Nullable
 	public Integer getLastActive() {
-		return dqi(true, "select lastactive from users where id=?", getId());
+		return dqi( "select lastactive from users where id=?", getId());
 	}
 
 

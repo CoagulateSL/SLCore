@@ -28,12 +28,12 @@ import static net.coagulate.SL.Config.LOCK_NUMBER_GPHUD_MAINTENANCE;
 public class SL extends Thread {
 	public static final String VERSION = "v0.02.00";
 	public static boolean DEV = false;
-	public static JSLBot bot;
-	private static Logger log;
+	public static JSLBot bot = null;
+	private static Logger log = null;
 	private static boolean shutdown = false;
 	private static boolean errored = false;
-	private static DBConnection db;
-	private static HTTPListener listener;
+	private static DBConnection db = null;
+	private static HTTPListener listener = null;
 	private static int watchdogcycle = 0;
 	private static long laststats = new Date().getTime();
 	private static long nextarchival = new Date().getTime() + ((int) ((Math.random() * 60.0 * 45.0 * 1000.0)));

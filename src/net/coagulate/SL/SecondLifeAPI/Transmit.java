@@ -26,12 +26,12 @@ public class Transmit extends Thread {
 	@Nullable
 	JSONObject jsonresponse = null;
 	int delay = 0;
-	public Transmit(JSONObject json, String url) {
+	public Transmit(@Nullable JSONObject json, String url) {
 		this.url = url;
 		this.json = json;
 	}
 
-	public Transmit(JSONObject json, String url, int delay) {
+	public Transmit(@Nullable JSONObject json, String url, int delay) {
 		this.url = url;
 		this.json = json;
 		this.delay = delay;

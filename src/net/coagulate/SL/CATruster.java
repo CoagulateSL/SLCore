@@ -1,5 +1,6 @@
 package net.coagulate.SL;
 
+import javax.annotation.Nonnull;
 import javax.net.ssl.*;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -68,6 +69,7 @@ public class CATruster implements X509TrustManager, HostnameVerifier {
 			"Ob8VZRzI9neWagqNdwvYkQsEjgfbKbYK7p2CNTUQ\n" +
 			"-----END CERTIFICATE-----";
 	private static X509Certificate[] cas;
+	@Nonnull
 	private static Boolean initialised = false;
 
 	public CATruster() {
@@ -86,7 +88,7 @@ public class CATruster implements X509TrustManager, HostnameVerifier {
 			sc.init(null, new TrustManager[]{this}, new java.security.SecureRandom());
 			// install
 			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-		} catch (CertificateException | KeyManagementException | NoSuchAlgorithmException ex) {
+		} catch (@Nonnull CertificateException | KeyManagementException | NoSuchAlgorithmException ex) {
 			throw new AssertionError("Error configuring SSL CA Trust", ex);
 		}
 	}
@@ -100,7 +102,7 @@ public class CATruster implements X509TrustManager, HostnameVerifier {
 	}
 
 	@Override
-	public boolean verify(String string, SSLSession ssls) {
+	public boolean verify(String string, @Nonnull SSLSession ssls) {
 		throw new AssertionError("Verify for " + string + " called with session " + ssls.toString());
 		//return true;
 	}

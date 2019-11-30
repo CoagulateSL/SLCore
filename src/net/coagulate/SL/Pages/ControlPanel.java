@@ -65,15 +65,15 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 				t.add(thread.getName());
 				t.add(thread.isDaemon()+"");
 				StackTraceElement[] stack= entry.getValue();
-				String stacktrace="";
+				StringBuilder stacktrace= new StringBuilder();
 				for (StackTraceElement element:stack) {
-					if (!stacktrace.isEmpty()) { stacktrace+="<br>"; }
+					if (stacktrace.length() > 0) { stacktrace.append("<br>"); }
 					String classname=element.getClassName();
 					if (classname.startsWith("net.coagulate.")) {
-						stacktrace+=classname+"/"+element.getMethodName()+":"+element.getLineNumber();
+						stacktrace.append(classname).append("/").append(element.getMethodName()).append(":").append(element.getLineNumber());
 					}
 				}
-				t.add(stacktrace);
+				t.add(stacktrace.toString());
 			}
 		}
 		if ("UserException".equals(state.get("UserException"))) {
@@ -117,54 +117,51 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 					GSCompiler compiler=new GSCompiler(gsscript);
 					List<ByteCode> bytecode=compiler.compile();
 					page.paragraph("Compilation completed!");
-					String code="<pre><table border=0>";
+					StringBuilder code= new StringBuilder("<pre><table border=0>");
 					for(ByteCode bc:bytecode) {
-						code+="<tr><td>"+bc.explain().replaceFirst(" \\(","</td><td><i>(")+"</i></td><td>";
+						code.append("<tr><td>").append(bc.explain().replaceFirst(" \\(", "</td><td><i>(")).append("</i></td><td>");
 						ArrayList<Byte> bcl=new ArrayList<>();
 						bc.toByteCode(bcl);
 						for (Byte b:bcl) {
-							code+=b+" ";
+							code.append(b).append(" ");
 						}
-						code+="</td></tr>";
+						code.append("</td></tr>");
 					}
-					code+="</table></pre>";
-					page.paragraph(code);
+					code.append("</table></pre>");
+					page.paragraph(code.toString());
 					page.paragraph("<b>Byte code</b>");
 					Byte[] rawcode=compiler.toByteCode();
-					String bcstring="<pre><table border=0><tr><th>00</th>";
+					StringBuilder bcstring= new StringBuilder("<pre><table border=0><tr><th>00</th>");
 					for (int i=0;i<rawcode.length;i++) {
-						if ((i%10)==0) { bcstring+="</tr><tr><th>"+i+"</th>"; }
-						bcstring+="<td>"+rawcode[i]+"</td>";
+						if ((i%10)==0) { bcstring.append("</tr><tr><th>").append(i).append("</th>"); }
+						bcstring.append("<td>").append(rawcode[i]).append("</td>");
 					}
-					bcstring+="</tr></table></pre>";
-					page.paragraph(bcstring);
+					bcstring.append("</tr></table></pre>");
+					page.paragraph(bcstring.toString());
 					page.paragraph("<b>Byte code decode</b>");
 					GSVM gsvm=new GSVM(rawcode);
 					page.paragraph(gsvm.toHtml());
 					page.paragraph("<b>Simulation run</b>");
 					List<GSVM.ExecutionStep> steps = gsvm.simulate(null);
-					String output="<table border=1><th>PC</th><th>OpCode</th><th>OpArgs</th><th>Stack</th><th>Variables</th></tr>";
+					StringBuilder output= new StringBuilder("<table border=1><th>PC</th><th>OpCode</th><th>OpArgs</th><th>Stack</th><th>Variables</th></tr>");
 					for (GSVM.ExecutionStep step:steps) {
-						output+="<tr><th>"+step.programcounter+"</th><td>"+step.decode+"</td><td><table>";
+						output.append("<tr><th>").append(step.programcounter).append("</th><td>").append(step.decode).append("</td><td><table>");
 						for (int i=0;i<step.resultingstack.size();i++) {
-							output+="<tr><th>"+i+"</th><td>"+
-									step.resultingstack.get(i).htmlDecode()+"</td></tr>";
+							output.append("<tr><th>").append(i).append("</th><td>").append(step.resultingstack.get(i).htmlDecode()).append("</td></tr>");
 						}
-						output+="</table></td><td><table>";
+						output.append("</table></td><td><table>");
 						for (Map.Entry<String, ByteCodeDataType> entry : step.resultingvariables.entrySet()) {
 							String decode="???";
 							if (entry.getValue() !=null) {
 								decode = entry.getValue().htmlDecode();
 							}
-							output+="<tr><th>"+ entry.getKey() +"</th><td>"+
-									decode+"</td></tr>";
+							output.append("<tr><th>").append(entry.getKey()).append("</th><td>").append(decode).append("</td></tr>");
 						}
-						output+="</table></td></tr>";
-						if (step.t!=null) { output+="<tr><td colspan=100>"+
-								ExceptionTools.toHTML(step.t)+"</td></tr>"; }
+						output.append("</table></td></tr>");
+						if (step.t!=null) { output.append("<tr><td colspan=100>").append(ExceptionTools.toHTML(step.t)).append("</td></tr>"); }
 					}
-					output+="</table>";
-					page.paragraph(output);
+					output.append("</table>");
+					page.paragraph(output.toString());
 				} catch (Throwable e) { page.paragraph("<b>Compilation failed : "+e.toString()+"</b>"); page.paragraph(ExceptionTools.toHTML(e));}
 			}
 		}

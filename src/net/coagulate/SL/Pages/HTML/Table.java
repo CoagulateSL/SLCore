@@ -70,19 +70,16 @@ public class Table extends Container {
 
 	protected String headerRow(State st) {
 		if (headers.isEmpty()) { return ""; }
-		String r = "<tr>";
+		StringBuilder r = new StringBuilder("<tr>");
 		for (Element e : headers) {
-			r = r +
-					"<th>" +
-					e.toHtml(st) +
-					"</th>";
+			r.append("<th>").append(e.toHtml(st)).append("</th>");
 		}
-		r += "</tr>";
-		return r;
+		r.append("</tr>");
+		return r.toString();
 	}
 
 	protected String contentRows(State st) {
-		String r = "";
+		StringBuilder r = new StringBuilder();
 		for (List<Element> row : table) {
 			Map<String, String> stringrow = new HashMap<>();
 			for (Element cell : row) {
@@ -91,15 +88,15 @@ public class Table extends Container {
 					stringrow.put(headers.get(pos).toString(st), cell.toString(st));
 				}
 			}
-			r += openRow(st, stringrow);
+			r.append(openRow(st, stringrow));
 			for (Element cell : row) {
-				r += "<td>";
-				r += cell.toHtml(st);
-				r += "</td>";
+				r.append("<td>");
+				r.append(cell.toHtml(st));
+				r.append("</td>");
 			}
-			r += "</tr>";
+			r.append("</tr>");
 		}
-		return r;
+		return r.toString();
 	}
 
 	protected String openRow(State st, Map<String, String> row) {

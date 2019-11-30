@@ -13,15 +13,15 @@ public class Container implements Element {
 
 	@Override
 	public String toHtml(State st) {
-		String ret = "";
-		for (Element e : content) { ret += e.toHtml(st); }
-		return ret;
+		StringBuilder ret = new StringBuilder();
+		for (Element e : content) { ret.append(e.toHtml(st)); }
+		return ret.toString();
 	}
 
 	public String toString(State st) {
-		String ret = "";
-		for (Element e : content) { ret += e.toString(st) + "\n"; }
-		return ret;
+		StringBuilder ret = new StringBuilder();
+		for (Element e : content) { ret.append(e.toString(st)).append("\n"); }
+		return ret.toString();
 	}
 
 	@Override

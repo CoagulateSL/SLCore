@@ -40,21 +40,21 @@ public class SQLTable extends Table {
 
 	public String contentRows(State st) {
 		Results results = db.dq(sql, params);
-		String r = "";
+		StringBuilder r = new StringBuilder();
 		for (ResultsRow row : results) {
 			Map<String, String> rowstr = new HashMap<>();
 			for (Column column : columns) { rowstr.put(column.columnname, row.getString(column.columnname)); }
-			r += openRow(st, rowstr);
+			r.append(openRow(st, rowstr));
 			for (Column column : columns) {
 				//System.out.println("On column "+column.columnname);
 				//for (String s:row.keySet()) { System.out.println("Exists:"+s); }
-				r += openCell(column);
-				r += column.render(st, row.getString(column.columnname));
-				r += "</td>";
+				r.append(openCell(column));
+				r.append(column.render(st, row.getString(column.columnname)));
+				r.append("</td>");
 			}
-			r += "</tr>";
+			r.append("</tr>");
 		}
-		return r;
+		return r.toString();
 	}
 
 	public SQLTable rowGenerator(TRGenerator generator) {

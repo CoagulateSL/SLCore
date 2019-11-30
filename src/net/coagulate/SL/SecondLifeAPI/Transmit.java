@@ -90,11 +90,11 @@ public class Transmit extends Thread {
 		out.close();
 		BufferedReader rd = new BufferedReader(new InputStreamReader(transmission.getInputStream()));
 		String line;
-		String response = "";
+		StringBuilder response = new StringBuilder();
 		while ((line = rd.readLine()) != null) {
-			response += line + "\n";
+			response.append(line).append("\n");
 		}
 		if (debug) { getLogger().log(FINER, "Push: " + json.toString() + "\ngives " + response); }
-		return response;
+		return response.toString();
 	}
 }

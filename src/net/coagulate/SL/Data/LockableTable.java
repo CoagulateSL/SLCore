@@ -6,7 +6,6 @@ import net.coagulate.SL.Config;
 import net.coagulate.SL.SL;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.logging.Logger;
 
 /**

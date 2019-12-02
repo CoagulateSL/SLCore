@@ -4,7 +4,6 @@ import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.SL.SL;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * @author Iain Price

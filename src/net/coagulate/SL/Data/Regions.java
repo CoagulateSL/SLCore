@@ -39,7 +39,7 @@ public class Regions extends LockableTable {
 	public String getStatus() { return getString("status"); }
 
 	public int getLastUpdate() {
-		Integer lu = getInt("lastperf");
+		Integer lu = getIntNullable("lastperf");
 		if (lu == null) { return 0; }
 		return lu;
 	}
@@ -56,7 +56,7 @@ public class Regions extends LockableTable {
 	}
 
 	public int getSince() {
-		Integer since = getInt("since");
+		Integer since = getIntNullable("since");
 		if (since == null) { return 0; }
 		return since;
 	}

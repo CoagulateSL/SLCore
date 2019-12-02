@@ -27,8 +27,8 @@ public class Session extends Table {
 	public static Session get(String sessionid) {
 		try {
 			ResultsRow user = SL.getDB().dqone("select userid,expires from sessions where cookie=? and expires>?", sessionid, UnixTime.getUnixTime());
-			int userid = user.getInt("userid");
-			int expires = user.getInt("expires");
+			int userid = user.getIntNullable("userid");
+			int expires = user.getIntNullable("expires");
 			int expiresin = expires - UnixTime.getUnixTime();
 			if (expiresin < (Config.SESSIONLIFESPANSECONDS / 2)) {
 				// refresh

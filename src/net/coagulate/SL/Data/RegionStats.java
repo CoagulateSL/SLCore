@@ -43,7 +43,7 @@ public class RegionStats extends Table {
 	public static Iterable<String> getStatTypes(@Nonnull Regions region, int time) {
 		Set<String> stattypes = new HashSet<>();
 		for (ResultsRow row : SL.getDB().dq("select distinct stattype from regionstats where regionid=? and timestamp>?", region.getId(), UnixTime.getUnixTime() - time)) {
-			stattypes.add(row.getString());
+			stattypes.add(row.getStringNullable());
 		}
 		return stattypes;
 	}
@@ -99,9 +99,9 @@ public class RegionStats extends Table {
 				log.fine("Stopping incomplete archival run due to runtime>30 seconds");
 				return;
 			}
-			int regionid = r.getInt("regionid");
-			int basetime = r.getInt("basetime");
-			String stattype = r.getString("stattype");
+			int regionid = r.getIntNullable("regionid");
+			int basetime = r.getIntNullable("basetime");
+			String stattype = r.getStringNullable("stattype");
 			float min = r.getFloat("newmin");
 			float max = r.getFloat("newmax");
 			float avg = r.getFloat("newavg");
@@ -121,9 +121,9 @@ public class RegionStats extends Table {
 				log.fine("Stopping incomplete archival run due to runtime>30 seconds");
 				return;
 			}
-			int regionid = r.getInt("regionid");
-			int basetime = r.getInt("basetime");
-			String stattype = r.getString("stattype");
+			int regionid = r.getIntNullable("regionid");
+			int basetime = r.getIntNullable("basetime");
+			String stattype = r.getStringNullable("stattype");
 			float min = r.getFloat("newmin");
 			float max = r.getFloat("newmax");
 			float avg = r.getFloat("newavg");

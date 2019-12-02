@@ -154,12 +154,12 @@ public class User extends LockableTable {
 		Map<Integer, String> results = new TreeMap<>();
 		Results rows = SL.getDB().dq("select id,username from users");
 		for (ResultsRow r : rows) {
-			results.put(r.getInt("id"), TableRow.getLink(r.getString("username"), "avatars", r.getInt("id")));
+			results.put(r.getIntNullable("id"), TableRow.getLink(r.getStringNullable("username"), "avatars", r.getIntNullable("id")));
 		}
 		return results;
 	}
 
-	@Nullable
+	@Nonnull
 	public static User findMandatory(String nameorkey) {
 		User user = findOptional(nameorkey);
 		if (user == null) {
@@ -242,8 +242,7 @@ public class User extends LockableTable {
 
 	public int balance() {
 		try {
-			Integer balance = dqi("select sum(ammount) from journal where userid=?", getId());
-			return balance;
+			return dqi("select sum(ammount) from journal where userid=?", getId());
 		} catch (NoDataException e) { return 0; }
 	}
 
@@ -275,7 +274,7 @@ public class User extends LockableTable {
 		}
 		Set<Subscription> subs = new HashSet<>();
 		for (ResultsRow r : res) {
-			subs.add(new Subscription(r.getInt("id")));
+			subs.add(new Subscription(r.getIntNullable("id")));
 		}
 		return subs;
 	}
@@ -301,9 +300,9 @@ public class User extends LockableTable {
 
 	public void confirmNewEmail(@Nullable String token) {
 		ResultsRow r = dqone( "select newemail,newemailtoken,newemailexpires from users where id=?", getId());
-		String newemail = r.getString("newemail");
-		String newtoken = r.getString("newemailtoken");
-		int expires = r.getInt("newemailexpires");
+		String newemail = r.getStringNullable("newemail");
+		String newtoken = r.getStringNullable("newemailtoken");
+		int expires = r.getIntNullable("newemailexpires");
 		if (token == null || token.isEmpty()) { throw new UserException("No token passed"); }
 		if (!token.equals(newtoken)) { throw new UserException("Email token does not match"); }
 		if (expires < UnixTime.getUnixTime()) {

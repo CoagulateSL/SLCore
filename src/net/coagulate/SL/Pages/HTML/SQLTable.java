@@ -51,13 +51,13 @@ public class SQLTable extends Table {
 		StringBuilder r = new StringBuilder();
 		for (ResultsRow row : results) {
 			Map<String, String> rowstr = new HashMap<>();
-			for (Column column : columns) { rowstr.put(column.columnname, row.getString(column.columnname)); }
+			for (Column column : columns) { rowstr.put(column.columnname, row.getStringNullable(column.columnname)); }
 			r.append(openRow(st, rowstr));
 			for (Column column : columns) {
 				//System.out.println("On column "+column.columnname);
 				//for (String s:row.keySet()) { System.out.println("Exists:"+s); }
 				r.append(openCell(column));
-				r.append(column.render(st, row.getString(column.columnname)));
+				r.append(column.render(st, row.getStringNullable(column.columnname)));
 				r.append("</td>");
 			}
 			r.append("</tr>");

@@ -7,7 +7,7 @@ import java.util.Map;
  */
 public class Raw implements Element {
 
-	private String content;
+	private final String content;
 
 	public Raw(String content) { this.content = content; }
 

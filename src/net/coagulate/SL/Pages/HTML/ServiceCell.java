@@ -5,8 +5,8 @@ package net.coagulate.SL.Pages.HTML;
  */
 public class ServiceCell extends Container {
 
-	private String target;
-	private String title;
+	private final String target;
+	private final String title;
 
 	public ServiceCell(String title, String targeturl) {
 		target = targeturl;

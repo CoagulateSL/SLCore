@@ -1,24 +1,12 @@
 package net.coagulate.SL.Pages;
 
-import net.coagulate.Core.Tools.ExceptionTools;
-import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.SystemException;
-import net.coagulate.Core.Tools.UserException;
-import net.coagulate.SL.Config;
 import net.coagulate.SL.HTTPPipelines.ContainerHandler;
 import net.coagulate.SL.HTTPPipelines.Page;
 import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
-import net.coagulate.SL.Maintenance;
 import net.coagulate.SL.Pages.HTML.Paragraph;
-import net.coagulate.SL.Pages.HTML.Raw;
 import net.coagulate.SL.Pages.HTML.State;
-import net.coagulate.SL.Pages.HTML.Table;
 import net.coagulate.SL.SL;
-
-import javax.mail.MessagingException;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Iain Price

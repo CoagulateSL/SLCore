@@ -5,6 +5,7 @@ import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.SystemException;
 import net.coagulate.Core.Tools.UserException;
 import net.coagulate.GPHUD.Modules.Scripting.Language.ByteCode.ByteCode;
+import net.coagulate.GPHUD.Modules.Scripting.Language.ByteCode.ByteCodeDataType;
 import net.coagulate.GPHUD.Modules.Scripting.Language.GSCompiler;
 import net.coagulate.GPHUD.Modules.Scripting.Language.GSVM;
 import net.coagulate.GPHUD.Modules.Scripting.Language.Generated.GSParser;
@@ -58,11 +59,12 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 			page.add(t);
 			t.header("Name").header("Daemon").header("Stacktrace");
 			Map<Thread, StackTraceElement[]> threads = Thread.getAllStackTraces();
-			for (Thread thread:threads.keySet()) {
+			for (Map.Entry<Thread, StackTraceElement[]> entry : threads.entrySet()) {
+				Thread thread = entry.getKey();
 				t.openRow();
 				t.add(thread.getName());
 				t.add(thread.isDaemon()+"");
-				StackTraceElement[] stack=threads.get(thread);
+				StackTraceElement[] stack= entry.getValue();
 				String stacktrace="";
 				for (StackTraceElement element:stack) {
 					if (!stacktrace.isEmpty()) { stacktrace+="<br>"; }
@@ -149,12 +151,12 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 									step.resultingstack.get(i).htmlDecode()+"</td></tr>";
 						}
 						output+="</table></td><td><table>";
-						for (String k:step.resultingvariables.keySet()) {
+						for (Map.Entry<String, ByteCodeDataType> entry : step.resultingvariables.entrySet()) {
 							String decode="???";
-							if (step.resultingvariables.get(k)!=null) {
-								decode = step.resultingvariables.get(k).htmlDecode();
+							if (entry.getValue() !=null) {
+								decode = entry.getValue().htmlDecode();
 							}
-							output+="<tr><th>"+k+"</th><td>"+
+							output+="<tr><th>"+ entry.getKey() +"</th><td>"+
 									decode+"</td></tr>";
 						}
 						output+="</table></td></tr>";

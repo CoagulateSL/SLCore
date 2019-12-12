@@ -9,7 +9,7 @@ import java.util.Map;
  */
 public class Container implements Element {
 
-	List<Element> content = new ArrayList<>();
+	final List<Element> content = new ArrayList<>();
 
 	@Override
 	public String toHtml(State st) {

@@ -7,7 +7,7 @@ import java.util.Map;
  */
 public class Submit extends Container {
 
-	String name;
+	final String name;
 	String value = null;
 
 	public Submit(String name) {

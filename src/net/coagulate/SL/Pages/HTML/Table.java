@@ -11,8 +11,8 @@ import java.util.Map;
 public class Table extends Container {
 	protected TRGenerator trgen = null;
 	// a table is ...
-	List<List<Element>> table;
-	List<Element> headers = new ArrayList<>();
+	final List<List<Element>> table;
+	final List<Element> headers = new ArrayList<>();
 	List<Element> row = null;
 
 	public Table() {
@@ -52,7 +52,7 @@ public class Table extends Container {
 		return this;
 	}
 
-	public void load(Map map) {
+	public void load(Map<String,String> map) {
 		for (List<Element> list : table) {
 			for (Element ele : list) {
 				ele.load(map);

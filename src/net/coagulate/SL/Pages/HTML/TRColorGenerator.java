@@ -10,7 +10,7 @@ public class TRColorGenerator extends TRGenerator {
 
 	private final String columnname;
 	private final String defaultcolor;
-	Map<String, String> valuemap = new HashMap<>();
+	final Map<String, String> valuemap = new HashMap<>();
 
 	public TRColorGenerator(String columnname, String defaultcolor) {
 		this.columnname = columnname;

@@ -146,7 +146,6 @@ public class SL extends Thread {
 			log.log(SEVERE, "Database failed connectivity test, shutting down.");
 			shutdown = true;
 			errored = true;
-			return;
 		}
 		// hmm //if (!listener.isAlive()) { log.log(SEVERE,"Primary listener thread is not alive"); shutdown=true; errored=true; return; }
 	}

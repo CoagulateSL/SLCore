@@ -18,7 +18,7 @@ import static java.util.logging.Level.*;
  */
 public class Transmit extends Thread {
 	public static boolean debugspawn = false;
-	String url;
+	final String url;
 	JSONObject json = null;
 	JSONObject jsonresponse = null;
 	int delay = 0;
@@ -66,8 +66,7 @@ public class Transmit extends Thread {
 		if (response == null) { getLogger().log(WARNING, "Failed all retransmission attempts for " + json.toString()); }
 		if (response != null && !response.isEmpty()) {
 			try {
-				JSONObject j = new JSONObject(response);
-				jsonresponse = j;
+				jsonresponse = new JSONObject(response);
 				// process response?
 			} catch (Exception e) {
 				getLogger().log(WARNING, "Exception in response parser", e);

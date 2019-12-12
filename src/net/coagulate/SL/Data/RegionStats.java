@@ -50,7 +50,6 @@ public class RegionStats extends Table {
 	public static Results graphableData(Regions r, String stattype, int from, int to, int x) {
 		DBConnection d = SL.getDB();
 		// 'x' defines how many 'slots' we have for data (horizontal pixels).  eventually borders and stuff so
-		int xsize = x;
 		int timerange = to - from;
 		if (timerange < 0) {
 			int swap = from;
@@ -76,7 +75,7 @@ public class RegionStats extends Table {
 				+ "and stattype=? "
 				+ "and regionid=? "
 				+ "group by x "
-				+ "order by timestamp asc", xsize, from, timerange, from, to, stattype, r.getId());
+				+ "order by timestamp asc", x, from, timerange, from, to, stattype, r.getId());
 	}
 
 	public static void archiveOld() {

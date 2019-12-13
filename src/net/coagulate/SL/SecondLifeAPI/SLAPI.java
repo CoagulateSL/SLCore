@@ -15,6 +15,7 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import java.util.logging.Logger;
 
 import static java.util.logging.Level.SEVERE;
@@ -31,7 +32,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 	}
 
 	@Override
-	public void handle(HttpRequest req, HttpResponse resp, HttpContext hc) {
+	public void handle(HttpRequest req, @Nonnull HttpResponse resp, HttpContext hc) {
 		try {
 			JSONObject content = new JSONObject();
 			if (req instanceof HttpEntityEnclosingRequest) {
@@ -100,7 +101,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 		}
 	}
 
-	protected void checkVersion(JSONObject object, String match, State st) {
+	protected void checkVersion(@Nonnull JSONObject object, @Nonnull String match, @Nonnull State st) {
 		String version = "NULL";
 		if (object.has("version")) {
 			version = object.getString("version");
@@ -110,11 +111,13 @@ public abstract class SLAPI implements HttpRequestHandler {
 	}
 
 
+	@Nonnull
 	protected abstract JSONObject handleJSON(JSONObject object, State st);
 
 	protected boolean needsDigest() { return true; }
 
-	String objectDump(State st) {
+	@Nonnull
+	String objectDump(@Nonnull State st) {
 		return "'" + st.get("slapi_objectname") + "' [" + st.get("slapi_objectkey") + "] owned by " + st.get("slapi_ownername") + " [" + st.get("slapi_ownerkey") + "] at " + st.get("slapi_region") + " " + st.get("slapi_objectposition");
 	}
 }

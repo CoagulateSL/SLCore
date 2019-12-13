@@ -9,6 +9,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
 
+import javax.annotation.Nonnull;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -29,7 +30,7 @@ public abstract class Handler implements HttpRequestHandler {
 	private static final boolean DEBUG_PARAMS = false;
 
 	@Override
-	public void handle(HttpRequest req, HttpResponse resp, HttpContext hc) {
+	public void handle(@Nonnull HttpRequest req, @Nonnull HttpResponse resp, HttpContext hc) {
 		try {
 			Map<String, String> parameters = new HashMap<>();
 			List<NameValuePair> uriparams = URLEncodedUtils.parse(new URI(req.getRequestLine().getUri()), StandardCharsets.UTF_8);
@@ -90,5 +91,6 @@ public abstract class Handler implements HttpRequestHandler {
 		}
 	}
 
+	@Nonnull
 	protected abstract HttpEntity handleContent(State state);
 }

@@ -12,6 +12,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
 
+import javax.annotation.Nonnull;
+
 import static java.util.logging.Level.SEVERE;
 
 /**
@@ -22,7 +24,7 @@ public class SSOExchange implements HttpRequestHandler {
 	public SSOExchange() {super();}
 
 	@Override
-	public void handle(HttpRequest req, HttpResponse resp, HttpContext hc) {
+	public void handle(@Nonnull HttpRequest req, @Nonnull HttpResponse resp, HttpContext hc) {
 		try {
 
 			String token = req.getRequestLine().getUri().replaceFirst("/SSO/", "");
@@ -46,6 +48,7 @@ public class SSOExchange implements HttpRequestHandler {
 		}
 	}
 
+	@Nonnull
 	@Override
 	public String toString() { return "SSOExchange"; }
 

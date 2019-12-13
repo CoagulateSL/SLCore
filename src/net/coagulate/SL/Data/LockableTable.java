@@ -5,6 +5,7 @@ import net.coagulate.Core.Database.StandardLockableTableRow;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.SL;
 
+import javax.annotation.Nullable;
 import java.util.logging.Logger;
 
 /**
@@ -19,6 +20,7 @@ public abstract class LockableTable extends StandardLockableTableRow {
 	@Override
 	public final int getNode() { return Config.getNode(); }
 
+	@Nullable
 	@Override
 	public final DBConnection getDatabase() { return SL.getDB(); }
 

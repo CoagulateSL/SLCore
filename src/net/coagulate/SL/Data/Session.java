@@ -6,6 +6,9 @@ import net.coagulate.Core.Tools.UnixTime;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.SL;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * @author Iain Price
  */
@@ -19,6 +22,7 @@ public class Session extends Table {
 		this.user = user;
 	}
 
+	@Nullable
 	public static Session get(String sessionid) {
 		ResultsRow user = SL.getDB().dqone(false, "select userid,expires from sessions where cookie=? and expires>?", sessionid, UnixTime.getUnixTime());
 		if (user == null) {
@@ -35,7 +39,8 @@ public class Session extends Table {
 		return new Session(sessionid, User.get(userid));
 	}
 
-	public static Session create(User user) {
+	@Nonnull
+	public static Session create(@Nonnull User user) {
 		// we abuse this "pipeline" to purge old sessions
 		try { SL.getDB().d("delete from sessions where expires<?", UnixTime.getUnixTime()); } catch (Exception e) {}
 		int userid = user.getId();
@@ -49,7 +54,7 @@ public class Session extends Table {
 
 	public User user() { return user; }
 
-	public void setUser(User user) {
+	public void setUser(@Nonnull User user) {
 		getDatabase().d("update sessions set userid=? where cookie=?", user.getId(), token());
 	}
 
@@ -57,6 +62,7 @@ public class Session extends Table {
 		getDatabase().d("delete from sessions where cookie=?", token());
 	}
 
+	@Nonnull
 	@Override
 	public String getTableName() { return "sessions"; }
 }

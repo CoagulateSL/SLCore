@@ -9,6 +9,8 @@ import net.coagulate.SL.Config;
 import net.coagulate.SL.Pricing;
 import net.coagulate.SL.SL;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 import static java.util.logging.Level.SEVERE;
@@ -36,10 +38,12 @@ public class User extends LockableTable {
 		return findOrCreateAvatar("SYSTEM", "DEADBEEF");
 	}
 
+	@Nonnull
 	public static String getGPHUDLink(String name, int id) {
 		return new Link(name, "/GPHUD/avatars/view/" + id).asHtml(null, true);
 	}
 
+	@Nonnull
 	public static String formatUsername(String username) {
 		String original = username;
 		// possible formats
@@ -93,7 +97,8 @@ public class User extends LockableTable {
 
 	public static User get(String username) { return get(username, false); }
 
-	public static User resolveDeveloperKey(String key) {
+	@Nullable
+	public static User resolveDeveloperKey(@Nullable String key) {
 		if (key == null || "".equals(key)) {
 			return null;
 		}
@@ -102,6 +107,7 @@ public class User extends LockableTable {
 		return get(userid);
 	}
 
+	@Nullable
 	public static User getSSO(String token) {
 		// purge old tokens
 		SL.getDB().d("update users set ssotoken=null,ssoexpires=null where ssoexpires<?", UnixTime.getUnixTime());
@@ -111,7 +117,7 @@ public class User extends LockableTable {
 		return get(match);
 	}
 
-	public static User findOrCreateAvatar(String name, String key) throws SystemException {
+	public static User findOrCreateAvatar(@Nullable String name, @Nonnull String key) throws SystemException {
 		if (name == null || "".equals(name)) { name = ""; }
 		Integer userid = SL.getDB().dqi(false, "select id from users where (username=? or avatarkey=?)", name, key);
 		if (userid == null) {
@@ -140,6 +146,7 @@ public class User extends LockableTable {
 	}
 
 	// GPHUD legacy
+	@Nonnull
 	public static Map<Integer, String> loadMap() {
 		Map<Integer, String> results = new TreeMap<>();
 		Results rows = SL.getDB().dq("select id,username from users");
@@ -149,6 +156,7 @@ public class User extends LockableTable {
 		return results;
 	}
 
+	@Nullable
 	public static User findMandatory(String nameorkey) {
 		User user = findOptional(nameorkey);
 		if (user == null) {
@@ -162,22 +170,26 @@ public class User extends LockableTable {
 	 *
 	 * @return Avatar object
 	 */
-	public static User findOptional(String nameorkey) {
+	@Nullable
+	public static User findOptional(@Nullable String nameorkey) {
 		if (nameorkey == null || "".equals(nameorkey)) { throw new UserException("Avatar name/key not supplied"); }
 		Integer userid = SL.getDB().dqi(false, "select id from users where username=? or avatarkey=?", nameorkey, nameorkey);
 		if (userid == null) { return null; }
 		return get(userid);
 	}
 
+	@Nonnull
 	public String getGPHUDLink() { return getGPHUDLink(getUsername(), getId()); }
 
 	public String getUsername() { return username; }
 
 	public String getName() { return getUsername(); }
 
+	@Nonnull
 	@Override
 	public String getTableName() { return "users"; }
 
+	@Nonnull
 	@Override
 	public String toString() { return getUsername() + "[#" + getId()+"]"; }
 
@@ -191,6 +203,7 @@ public class User extends LockableTable {
 		} catch (NoDataException e) { return false; }
 	}
 
+	@Nullable
 	public String getDeveloperKey() {
 		return dqs(true, "select developerkey from users where id=?", getId());
 	}
@@ -200,6 +213,7 @@ public class User extends LockableTable {
 		return isadmin == 1;
 	}
 
+	@Nonnull
 	public String generateSSO() {
 		String token = Tokens.generateToken();
 		int expires = UnixTime.getUnixTime() + Config.SSOWINDOWSECONDS;
@@ -207,13 +221,13 @@ public class User extends LockableTable {
 		return token;
 	}
 
-	public void setPassword(String password, String clientip) throws UserException {
+	public void setPassword(@Nonnull String password, String clientip) throws UserException {
 		if (password.length() < 6) { throw new UserException("Password not long enough"); }
 		d("update users set password=? where id=?", Passwords.createHash(password), getId());
 		SL.getLogger().info("User " + this.getUsername() + " has set password from " + clientip);
 	}
 
-	public boolean checkPassword(String password) {
+	public boolean checkPassword(@Nonnull String password) {
 		String hash = dqs(true, "select password from users where id=?", getId());
 		if (hash == null || hash.isEmpty()) {
 			SL.getLogger().warning("Attempt to log in with a null or empty password hash for user " + getUsername());
@@ -242,7 +256,8 @@ public class User extends LockableTable {
 		} finally { unlock(serial); }
 	}
 
-	public Set<Subscription> getSubscriptions(Pricing.SERVICE service, boolean activeonly, boolean paidonly) {
+	@Nonnull
+	public Set<Subscription> getSubscriptions(@Nullable Pricing.SERVICE service, boolean activeonly, boolean paidonly) {
 		Results res;
 		int paiduntilfilter = UnixTime.getUnixTime();
 		if (!paidonly) { paiduntilfilter = 0; }
@@ -260,8 +275,10 @@ public class User extends LockableTable {
 		return subs;
 	}
 
+	@Nullable
 	public String getEmail() { return getString("email"); }
 
+	@Nullable
 	public String getNewEmail() { return getString("newemail"); }
 
 	/**
@@ -269,6 +286,7 @@ public class User extends LockableTable {
 	 *
 	 * @return String token used to validate the email address
 	 */
+	@Nonnull
 	public String setNewEmail(String newemail) {
 		int expires = UnixTime.getUnixTime() + Config.NEWEMAIL_TOKEN_LIFESPAN;
 		String token = Tokens.generateToken();
@@ -276,7 +294,7 @@ public class User extends LockableTable {
 		return token;
 	}
 
-	public void confirmNewEmail(String token) {
+	public void confirmNewEmail(@Nullable String token) {
 		ResultsRow r = dqone(true, "select newemail,newemailtoken,newemailexpires from users where id=?", getId());
 		String newemail = r.getString("newemail");
 		String newtoken = r.getString("newemailtoken");
@@ -296,11 +314,13 @@ public class User extends LockableTable {
 	 *
 	 * @return UUID (Avatar Key)
 	 */
+	@Nullable
 	public String getUUID() {
 		return getString("avatarkey");
 	}
 
 
+	@Nullable
 	public String getTimeZone() {
 		String s = getString("timezone");
 		if (s == null) { return "America/Los_Angeles"; }
@@ -315,7 +335,7 @@ public class User extends LockableTable {
 	 *
 	 * @param i Instance to set to
 	 */
-	public void setLastInstance(Instance i) {
+	public void setLastInstance(@Nonnull Instance i) {
 		d("update users set lastgphudinstance=? where id=?", i.getId(), getId());
 	}
 
@@ -324,6 +344,7 @@ public class User extends LockableTable {
 	 *
 	 * @return The last active time for an avatar, possibly null.
 	 */
+	@Nullable
 	public Integer getLastActive() {
 		return dqi(true, "select lastactive from users where id=?", getId());
 	}

@@ -7,6 +7,8 @@ import org.apache.http.HttpStatus;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 
+import javax.annotation.Nonnull;
+
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
 
@@ -18,8 +20,9 @@ import static java.util.logging.Level.WARNING;
 public abstract class StringHandler extends Handler {
 	private static final boolean DEBUG_PARAMS = false;
 
+	@Nonnull
 	@Override
-	public StringEntity handleContent(State state) {
+	public StringEntity handleContent(@Nonnull State state) {
 		try {
 			String content = "<p><b>WEIRD INTERNAL LOGIC ERROR</b></p>";
 			try { content = handleString(state); } catch (UserException ue) {
@@ -34,6 +37,7 @@ public abstract class StringHandler extends Handler {
 		}
 	}
 
+	@Nonnull
 	protected abstract String handleString(State state);
 
 }

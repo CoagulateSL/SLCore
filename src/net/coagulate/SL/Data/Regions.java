@@ -5,6 +5,9 @@ import net.coagulate.Core.Tools.SystemException;
 import net.coagulate.Core.Tools.UnixTime;
 import net.coagulate.SL.SL;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * @author Iain Price
  */
@@ -12,6 +15,7 @@ public class Regions extends LockableTable {
 
 	public Regions(int id) { super(id); }
 
+	@Nonnull
 	public static Regions getByName(String name) {
 		Integer id = SL.getDB().dqi(false, "select id from regions where region like ?", name);
 		if (id != null) { return new Regions(id); }
@@ -21,9 +25,11 @@ public class Regions extends LockableTable {
 		throw new SystemException("Failed to find inserted region in regions table");
 	}
 
+	@Nonnull
 	@Override
 	public String getTableName() { return "regions"; }
 
+	@Nullable
 	public String getStatus() { return getString("status"); }
 
 	public int getLastUpdate() {
@@ -49,6 +55,7 @@ public class Regions extends LockableTable {
 		return since;
 	}
 
+	@Nullable
 	public String getName() {
 		return getString("region");
 	}

@@ -1,5 +1,6 @@
 package net.coagulate.SL.Pages.HTML;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
 
 /**
@@ -15,6 +16,7 @@ public class URLButton implements Element {
 		this.url = url;
 	}
 
+	@Nonnull
 	@Override
 	public String toHtml(State st) {
 		return "<a href=\"" + url + "\"><button type=submit>" + label + "</button></a>";

@@ -1,5 +1,7 @@
 package net.coagulate.SL.Pages.HTML;
 
+import javax.annotation.Nonnull;
+
 /**
  * @author Iain Price
  */
@@ -13,6 +15,7 @@ public class ServiceCell extends Container {
 		this.title = title;
 	}
 
+	@Nonnull
 	@Override
 	public String toHtml(State st) {
 		return

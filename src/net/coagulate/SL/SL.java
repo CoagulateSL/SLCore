@@ -31,7 +31,12 @@ public class SL extends Thread {
 	public static final String VERSION = "v0.02.00";
 	public static boolean DEV = false;
 	@Nullable
-	public static JSLBot bot = null;
+	private static JSLBot bot = null;
+	@Nonnull
+	public static JSLBot bot() {
+		if (bot==null) { throw new SystemException("Access to bot before it is set up"); }
+		return bot;
+	}
 	@Nullable
 	private static Logger log = null;
 	private static boolean shutdown = false;
@@ -49,8 +54,11 @@ public class SL extends Thread {
 
 	public static Logger getLogger(String subspace) { return Logger.getLogger(log.getName() + "." + subspace); }
 
-	@Nullable
-	public static Logger getLogger() { return log; }
+	@Nonnull
+	public static Logger getLogger() {
+		if (log==null) { throw new SystemException("Logger not yet initialised"); }
+		return log;
+	}
 
 	public static void shutdown() { shutdown = true; }
 
@@ -171,8 +179,11 @@ public class SL extends Thread {
 		MailTools.defaultserver = "127.0.0.1";
 	}
 
-	@Nullable
-	public static DBConnection getDB() { return db; }
+	@Nonnull
+	public static DBConnection getDB() {
+		if (db==null) { throw new SystemException("DB access before DB is initialised"); }
+		return db;
+	}
 
 	@Nonnull
 	public static String getBannerURL() {

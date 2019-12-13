@@ -12,6 +12,8 @@ import net.coagulate.LSLR.LSLR;
 import net.coagulate.SL.Data.LockTest;
 import net.coagulate.SL.HTTPPipelines.PageMapper;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import java.sql.SQLException;
 import java.util.Date;
@@ -28,11 +30,15 @@ import static net.coagulate.SL.Config.LOCK_NUMBER_GPHUD_MAINTENANCE;
 public class SL extends Thread {
 	public static final String VERSION = "v0.02.00";
 	public static boolean DEV = false;
+	@Nullable
 	public static JSLBot bot = null;
+	@Nullable
 	private static Logger log = null;
 	private static boolean shutdown = false;
 	private static boolean errored = false;
+	@Nullable
 	private static DBConnection db = null;
+	@Nullable
 	private static HTTPListener listener = null;
 	private static int watchdogcycle = 0;
 	private static long laststats = new Date().getTime();
@@ -43,11 +49,12 @@ public class SL extends Thread {
 
 	public static Logger getLogger(String subspace) { return Logger.getLogger(log.getName() + "." + subspace); }
 
+	@Nullable
 	public static Logger getLogger() { return log; }
 
 	public static void shutdown() { shutdown = true; }
 
-	public static void main(String[] args) {
+	public static void main(@Nonnull String[] args) {
 		if (args.length > 0 && "DEV".equalsIgnoreCase(args[0])) { DEV = true; }
 		try {
 			try { startup(); }
@@ -164,17 +171,20 @@ public class SL extends Thread {
 		MailTools.defaultserver = "127.0.0.1";
 	}
 
+	@Nullable
 	public static DBConnection getDB() { return db; }
 
+	@Nonnull
 	public static String getBannerURL() {
 		return "/resources/banner-coagulate" + (DEV ? "-dev" : "") + ".png";
 	}
 
+	@Nonnull
 	public static String getBannerHREF() {
 		return "<img src=\"" + getBannerURL() + "\">";
 	}
 
-	public static void report(String header, Throwable t, DumpableState state) {
+	public static void report(String header, @Nonnull Throwable t, @Nonnull DumpableState state) {
 		String output = ExceptionTools.dumpException(t) + "<br><hr><br>" + state.toHTML();
 		LogHandler.alreadyMailed(t);
 		try {

@@ -27,6 +27,7 @@ public class Bots extends LockableTable {
 	@Nullable
 	public String getPassword() { return getString("password"); }
 
+	@Nonnull
 	public User getOwner() { return User.get(getInt("ownerid")); }
 
 }

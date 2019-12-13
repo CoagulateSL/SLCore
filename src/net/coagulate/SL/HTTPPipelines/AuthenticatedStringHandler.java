@@ -68,7 +68,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
 								message = "\n\nPlease click the link below to log in to Coagulate SL Services\n\nThis link will be valid for 5 minutes only, and one use.\nIf you wish to log in through the web page rather than via the bot, please 'Set Password' under 'Account' on the top right of the web page after following the link below.\n\n[https://coagulate.sl/SSO/" + token + " Log in to Coagulate SL]\n\n";
 							}
 
-							SL.bot.im(new LLUUID(target.getUUID()), message);
+							SL.bot().im(new LLUUID(target.getUUID()), message);
 							return new StringEntity(new Page().add(new Raw(ssoSentPage())).toHtml(state), ContentType.TEXT_HTML);
 						}
 					}

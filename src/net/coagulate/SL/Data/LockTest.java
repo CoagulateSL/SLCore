@@ -11,7 +11,7 @@ public class LockTest extends LockableTable {
 
 	public LockTest(int id) {
 		super(id);
-		Integer count = dqi(true, "select count(*) from locktest where id=?", id);
+		Integer count = dqi( "select count(*) from locktest where id=?", id);
 		if (count == 0) { throw new SystemException("Lock test row " + id + " does not exist"); }
 	}
 

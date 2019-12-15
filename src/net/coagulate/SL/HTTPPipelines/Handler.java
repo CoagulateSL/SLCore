@@ -71,7 +71,8 @@ public abstract class Handler implements HttpRequestHandler {
 
 			resp.setEntity(handleContent(state));
 
-			if (state.sessionId() != null && !state.sessionId().isEmpty() && !"none".equalsIgnoreCase(state.sessionId())) {
+			state.sessionId();
+			if (!state.sessionId().isEmpty() && !"none".equalsIgnoreCase(state.sessionId())) {
 				if (!state.sessionId().equals(cookiemap.get("coagulateslsessionid"))) {
 					resp.addHeader("Set-Cookie", "coagulateslsessionid=" + state.sessionId() + "; HttpOnly; Path=/; Secure;");
 				}

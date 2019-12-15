@@ -23,13 +23,13 @@ public class Page extends Container {
 				+ "<p align=center>" + SL.getBannerHREF() + "</p><p><hr>";
 		r += "<table width=100%><tr width=100%><td align=left width=400px>"
 				+ "Greetings";
-		if (state.user() != null) { r += ",&nbsp;" + state.user().getUsername().replaceAll(" ", "&nbsp;"); }
+		if (state.userNullable() != null) { r += ",&nbsp;" + state.userNullable().getUsername().replaceAll(" ", "&nbsp;"); }
 		r += "</td><td align=center>";
 		r += "<a href=\"/\">[&nbsp;Home&nbsp;]</a>";
 		r += "</td><td align=right width=400px>";
 		r += "<a href=\"/Info\">[Info]</a>" + "&nbsp;&nbsp;&nbsp;";
-		if (state.user() != null) {
-			r += "<a href=\"/Billing\">[&nbsp;Billing&nbsp;(L$" + state.user().balance() + ")&nbsp;]</a>"
+		if (state.userNullable() != null) {
+			r += "<a href=\"/Billing\">[&nbsp;Billing&nbsp;(L$" + state.userNullable().balance() + ")&nbsp;]</a>"
 					+ "&nbsp;&nbsp;&nbsp;"
 					+ "<a href=\"/Account\">[&nbsp;Account&nbsp;]</a>"
 					+ "&nbsp;&nbsp;&nbsp;"

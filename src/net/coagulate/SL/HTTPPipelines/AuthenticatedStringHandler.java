@@ -89,7 +89,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
 	}
 
 	protected boolean checkAuth(@Nonnull State state) {
-		if (state.user() != null) { return true; }
+		if (state.userNullable() != null) { return true; }
 		// not (yet?) logged in
 		String username = state.get("login_username");
 		String password = state.get("login_password");

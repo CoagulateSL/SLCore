@@ -57,7 +57,7 @@ public class RegionStats extends Table {
 		log(region.getId(), timestamp, statstype, min, max, avg, sd);
 	}
 
-	@Nullable
+	@Nonnull
 	public static Results graphableData(@Nonnull Regions r, String stattype, int from, int to, int x) {
 		DBConnection d = SL.getDB();
 		// 'x' defines how many 'slots' we have for data (horizontal pixels).  eventually borders and stuff so

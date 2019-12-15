@@ -2,7 +2,7 @@ package net.coagulate.SL.Data;
 
 import net.coagulate.Core.Database.LockException;
 import net.coagulate.Core.Database.NoDataException;
-import net.coagulate.Core.Exceptions.SystemException;
+import net.coagulate.Core.Exceptions.System.SystemConsistencyException;
 import net.coagulate.Core.Tools.UnixTime;
 import net.coagulate.SL.SL;
 
@@ -27,7 +27,7 @@ public class Regions extends LockableTable {
 				final Integer id = SL.getDB().dqi("select id from regions where region like ?", name);
 				return new Regions(id);
 			}
-			catch (final NoDataException f) { throw new SystemException("Failed to find inserted region in regions table",f); }
+			catch (final NoDataException f) { throw new SystemConsistencyException("Failed to find inserted region in regions table",f); }
 		}
 	}
 

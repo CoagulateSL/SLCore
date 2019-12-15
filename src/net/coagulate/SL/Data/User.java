@@ -1,9 +1,16 @@
 package net.coagulate.SL.Data;
 
 import net.coagulate.Core.Database.*;
+import net.coagulate.Core.Exceptions.System.SystemBadValueException;
+import net.coagulate.Core.Exceptions.System.SystemConsistencyException;
+import net.coagulate.Core.Exceptions.System.SystemImplementationException;
+import net.coagulate.Core.Exceptions.System.SystemRemoteFailureException;
 import net.coagulate.Core.Exceptions.SystemException;
+import net.coagulate.Core.Exceptions.User.*;
 import net.coagulate.Core.Exceptions.UserException;
-import net.coagulate.Core.Tools.*;
+import net.coagulate.Core.Tools.Passwords;
+import net.coagulate.Core.Tools.Tokens;
+import net.coagulate.Core.Tools.UnixTime;
 import net.coagulate.GPHUD.Data.Instance;
 import net.coagulate.GPHUD.Data.TableRow;
 import net.coagulate.GPHUD.Interfaces.Outputs.Link;
@@ -58,7 +65,7 @@ public class User extends LockableTable {
 		if (!username.contains(" ")) { username = username + " Resident"; } // merge "user" and "user resident"
 		final String[] parts = username.split(" ");
 		if (parts.length != 2) {
-			throw new SystemException("Formatting username '" + original + "' gave '" + username + "' which has " + parts.length + " parts, which is not 2...");
+			throw new SystemImplementationException("Formatting username '" + original + "' gave '" + username + "' which has " + parts.length + " parts, which is not 2...");
 		}
 		// convert to "uppercase-first"
 		String firstname = parts[0].toLowerCase();
@@ -89,7 +96,7 @@ public class User extends LockableTable {
 		SL.getDB().d("insert into users(username) values(?)", username);
 		try { id = SL.getDB().dqi( "select id from users where username=?", username); } catch (final NoDataException e) {}
 		if (id != null) { return factory(id, username); }
-		throw new SystemException("Created user for " + username + " and then couldn't find its id");
+		throw new SystemConsistencyException("Created user for " + username + " and then couldn't find its id");
 	}
 
 	public static User get(final int id) {
@@ -126,10 +133,10 @@ public class User extends LockableTable {
 		Integer userid = null;
 		try { userid=SL.getDB().dqi( "select id from users where (username=? or avatarkey=?)", name, key); } catch (final NoDataException e){}
 		if (userid == null) {
-			if (name.isEmpty()) { throw new SystemException("Empty avatar name blocks creation"); }
-			if (key.isEmpty()) { throw new SystemException("Empty avatar key blocks creation"); }
+			if (name.isEmpty()) { throw new SystemBadValueException("Empty avatar name blocks creation"); }
+			if (key.isEmpty()) { throw new SystemBadValueException("Empty avatar key blocks creation"); }
 			if (name.contains("Loading...")) {
-				throw new SystemException("No avatar name was sent with the key, can not create new avatar record");
+				throw new SystemRemoteFailureException("No avatar name was sent with the key, can not create new avatar record");
 			}
 			try {
 				// special key used by the SYSTEM avatar
@@ -165,7 +172,7 @@ public class User extends LockableTable {
 	public static User findMandatory(final String nameorkey) {
 		final User user = findOptional(nameorkey);
 		if (user == null) {
-			throw new UserException("Failed to find avatar object for name or key '" + nameorkey + "'");
+			throw new UserInputLookupFailureException("Failed to find avatar object for name or key '" + nameorkey + "'");
 		}
 		return user;
 	}
@@ -177,7 +184,7 @@ public class User extends LockableTable {
 	 */
 	@Nullable
 	public static User findOptional(@Nullable final String nameorkey) {
-		if (nameorkey == null || "".equals(nameorkey)) { throw new UserException("Avatar name/key not supplied"); }
+		if (nameorkey == null || "".equals(nameorkey)) { throw new UserInputEmptyException("Avatar name/key not supplied"); }
 		try {
 			final Integer userid = SL.getDB().dqi("select id from users where username=? or avatarkey=?", nameorkey, nameorkey);
 			return get(userid);
@@ -228,7 +235,7 @@ public class User extends LockableTable {
 	}
 
 	public void setPassword(@Nonnull final String password, final String clientip) throws UserException {
-		if (password.length() < 6) { throw new UserException("Password not long enough"); }
+		if (password.length() < 6) { throw new UserInputTooShortException("Password not long enough"); }
 		d("update users set password=? where id=?", Passwords.createHash(password), getId());
 		SL.getLogger().info("User " + getUsername() + " has set password from " + clientip);
 	}
@@ -251,12 +258,12 @@ public class User extends LockableTable {
 	public void bill(final int ammount, final String description) throws UserException {
 		final int serial;
 		try {serial = lock();} catch (final LockException e) {
-			throw new UserException("Your balance is currently being updated elsewhere, please retry in a moment");
+			throw new UserInputStateException("Your balance is currently being updated elsewhere, please retry in a moment");
 		}
 		try {
 			final int balance = balance();
 			if (balance < ammount) {
-				throw new UserException("Insufficient balance (L$" + balance + ") to pay charge L$" + ammount);
+				throw new UserInsufficientCreditException("Insufficient balance (L$" + balance + ") to pay charge L$" + ammount);
 			}
 			d("insert into journal(tds,userid,ammount,description) values(?,?,?,?)", UnixTime.getUnixTime(), getId(), -ammount, description);
 		} finally { unlock(serial); }
@@ -305,10 +312,10 @@ public class User extends LockableTable {
 		final String newemail = r.getStringNullable("newemail");
 		final String newtoken = r.getStringNullable("newemailtoken");
 		final int expires = r.getIntNullable("newemailexpires");
-		if (token == null || token.isEmpty()) { throw new UserException("No token passed"); }
-		if (!token.equals(newtoken)) { throw new UserException("Email token does not match"); }
+		if (token == null || token.isEmpty()) { throw new UserInputEmptyException("No token passed"); }
+		if (!token.equals(newtoken)) { throw new UserInputStateException("Email token does not match"); }
 		if (expires < UnixTime.getUnixTime()) {
-			throw new UserException("Email token has expired, please register new email address again");
+			throw new UserInputStateException("Email token has expired, please register new email address again");
 		}
 		// token matches, not expired, promote the address
 		d("update users set newemail=null, newemailtoken=null, newemailexpires=0, email=? where id=?", newemail, getId());

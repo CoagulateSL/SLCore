@@ -1,7 +1,7 @@
 package net.coagulate.SL.HTTPPipelines;
 
+import net.coagulate.Core.Exceptions.System.SystemImplementationException;
 import net.coagulate.Core.Tools.ClassTools;
-import net.coagulate.Core.Exceptions.SystemException;
 import net.coagulate.SL.Pages.FourZeroFour;
 import org.apache.http.HttpRequest;
 import org.apache.http.protocol.HttpRequestHandler;
@@ -64,7 +64,7 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 	public void exact(@Nonnull final String url, final HttpRequestHandler handler) {
 		if (DEBUG) { System.out.println("Registering exact '" + url + "'"); }
 		if (exact.containsKey(url.toLowerCase())) {
-			throw new SystemException("Duplicate EXACT URL registration for '" + url + "'");
+			throw new SystemImplementationException("Duplicate EXACT URL registration for '" + url + "'");
 		}
 		exact.put(url.toLowerCase(), handler);
 	}
@@ -72,7 +72,7 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 	public void prefix(@Nonnull final String url, final HttpRequestHandler handler) {
 		if (DEBUG) { System.out.println("Registering prefix '" + url + "'"); }
 		if (prefixes.containsKey(url.toLowerCase())) {
-			throw new SystemException("Duplicate PREFIX URL registration for '" + url + "'");
+			throw new SystemImplementationException("Duplicate PREFIX URL registration for '" + url + "'");
 		}
 		prefixes.put(url.toLowerCase(), handler);
 	}

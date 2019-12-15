@@ -4,8 +4,8 @@ import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Database.NoDataException;
 import net.coagulate.Core.Database.Results;
 import net.coagulate.Core.Database.ResultsRow;
+import net.coagulate.Core.Exceptions.User.UserInputValidationParseException;
 import net.coagulate.Core.Tools.UnixTime;
-import net.coagulate.Core.Exceptions.UserException;
 import net.coagulate.SL.SL;
 
 import javax.annotation.Nonnull;
@@ -68,7 +68,7 @@ public class RegionStats extends Table {
 			to = swap;
 			timerange = to - from;
 		}
-		if (timerange == 0) { throw new UserException("No time range covered?"); }
+		if (timerange == 0) { throw new UserInputValidationParseException("No time range covered?"); }
 
 
 		// range is "from" to "to", subtract the from, divide by the total range, scale to size

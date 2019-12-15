@@ -1,6 +1,6 @@
 package net.coagulate.SL.HTTPPipelines;
 
-import net.coagulate.Core.Exceptions.SystemException;
+import net.coagulate.Core.Exceptions.System.SystemImplementationException;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.Pages.HTML.*;
 import net.coagulate.SL.SL;
@@ -57,14 +57,14 @@ public class Page extends Container {
 	public String preLayout() {
 		if (layout == PAGELAYOUT.NONE) { return ""; }
 		if (layout == PAGELAYOUT.CENTERCOLUMN) { return "<p align=center><table><tr><td style=\"max-width: 800px;\">"; }
-		throw new SystemException("Unhandled pre-layout " + layout);
+		throw new SystemImplementationException("Unhandled pre-layout " + layout);
 	}
 
 	@Nonnull
 	public String postLayout() {
 		if (layout == PAGELAYOUT.NONE) { return ""; }
 		if (layout == PAGELAYOUT.CENTERCOLUMN) { return "</td></td></table></p>"; }
-		throw new SystemException("Unhandled post-layout " + layout);
+		throw new SystemImplementationException("Unhandled post-layout " + layout);
 	}
 
 	@Nonnull

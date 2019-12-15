@@ -15,7 +15,7 @@ public class Page extends Container {
 	private PAGELAYOUT layout = PAGELAYOUT.NONE;
 
 	@Nonnull
-	public static String pageHeader(@Nonnull State state) {
+	public static String pageHeader(@Nonnull final State state) {
 		//new Exception().printStackTrace();
 		String r = "<html><head><title>"+(SL.DEV?"DEV ":"")+"Coagulate SL</title>"
 				+ "<link rel=\"shortcut icon\" href=\"/resources/icon-cluster" + (SL.DEV ? "-dev" : "") + ".png\">"
@@ -43,7 +43,7 @@ public class Page extends Container {
 	}
 
 	@Nonnull
-	public static String pageFooter(State state) {
+	public static String pageFooter(final State state) {
 		String ret = "<div style='position:absolute;bottom:5;right:5;left:5;'><hr>";
 		ret += (SL.DEV ? "DEVELOPMENT" : "Production");
 		ret += " // " + Config.getHostName();
@@ -51,7 +51,7 @@ public class Page extends Container {
 		return ret;
 	}
 
-	public void layout(PAGELAYOUT layout) { this.layout = layout; }
+	public void layout(final PAGELAYOUT layout) { this.layout = layout; }
 
 	@Nonnull
 	public String preLayout() {
@@ -68,43 +68,43 @@ public class Page extends Container {
 	}
 
 	@Nonnull
-	public Header1 header(String header) {
-		Header1 h = new Header1(header);
+	public Header1 header(final String header) {
+		final Header1 h = new Header1(header);
 		add(h);
 		return h;
 	}
 
 	@Nonnull
 	public Paragraph paragraph() {
-		Paragraph p = new Paragraph();
+		final Paragraph p = new Paragraph();
 		add(p);
 		return p;
 	}
 
 	@Nonnull
-	public Paragraph paragraph(String s) {
-		Paragraph p = new Paragraph(s);
+	public Paragraph paragraph(final String s) {
+		final Paragraph p = new Paragraph(s);
 		add(p);
 		return p;
 	}
 
 	@Nonnull
 	public Form form() {
-		Form f = new Form();
+		final Form f = new Form();
 		add(f);
 		return f;
 	}
 
 	@Nonnull
-	public ServiceCell serviceCell(String title, String targeturl) {
-		ServiceCell sc = new ServiceCell(title, targeturl);
+	public ServiceCell serviceCell(final String title, final String targeturl) {
+		final ServiceCell sc = new ServiceCell(title, targeturl);
 		add(sc);
 		return sc;
 	}
 
 	@Nonnull
-	public URLButton urlbutton(String label, String url) {
-		URLButton ub = new URLButton(label, url);
+	public URLButton urlbutton(final String label, final String url) {
+		final URLButton ub = new URLButton(label, url);
 		add(ub);
 		return ub;
 	}
@@ -160,7 +160,7 @@ public class Page extends Container {
 */
 
 	@Nonnull
-	public String toHtml(@Nonnull State st) {
+	public String toHtml(@Nonnull final State st) {
 		return
 				pageHeader(st) +
 						preLayout() +

@@ -9,9 +9,9 @@ import javax.annotation.Nonnull;
  */
 public class LockTest extends LockableTable {
 
-	public LockTest(int id) {
+	public LockTest(final int id) {
 		super(id);
-		Integer count = dqi( "select count(*) from locktest where id=?", id);
+		final Integer count = dqi( "select count(*) from locktest where id=?", id);
 		if (count == 0) { throw new SystemException("Lock test row " + id + " does not exist"); }
 	}
 

@@ -11,8 +11,8 @@ public abstract class ContainerHandler extends StringHandler {
 
 	@Nonnull
 	@Override
-	protected String handleString(@Nonnull State state) {
-		Page container = new Page();
+	protected String handleString(@Nonnull final State state) {
+		final Page container = new Page();
 		run(state, container);
 		return container.toHtml(state);
 	}

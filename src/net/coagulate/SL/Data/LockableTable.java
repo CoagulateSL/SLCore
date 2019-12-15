@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  */
 public abstract class LockableTable extends StandardLockableTableRow {
 
-	public LockableTable(int id) { super(id); }
+	public LockableTable(final int id) { super(id); }
 
 	@Override
 	public final int getNode() { return Config.getNode(); }
@@ -24,5 +24,5 @@ public abstract class LockableTable extends StandardLockableTableRow {
 	@Override
 	public final DBConnection getDatabase() { return SL.getDB(); }
 
-	public Logger logger() { return SL.getLogger(this.getClass().getSimpleName()); }
+	public Logger logger() { return SL.getLogger(getClass().getSimpleName()); }
 }

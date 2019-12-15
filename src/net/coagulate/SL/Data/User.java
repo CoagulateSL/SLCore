@@ -26,7 +26,7 @@ public class User extends LockableTable {
 	private static final Map<Integer, User> users = new HashMap<>();
 	final String username;
 
-	private User(int id, String username) {
+	private User(final int id, final String username) {
 		super(id);
 		this.username = username;
 	}
@@ -41,13 +41,13 @@ public class User extends LockableTable {
 	}
 
 	@Nonnull
-	public static String getGPHUDLink(String name, int id) {
+	public static String getGPHUDLink(final String name, final int id) {
 		return new Link(name, "/GPHUD/avatars/view/" + id).asHtml(null, true);
 	}
 
 	@Nonnull
 	public static String formatUsername(String username) {
-		String original = username;
+		final String original = username;
 		// possible formats
 		// user.resident
 		// user resident
@@ -56,7 +56,7 @@ public class User extends LockableTable {
 		username = username.replaceAll("\\.", " "); // merge "user.resident" and "user resident"
 		// for simplicity, force to "double barrel"
 		if (!username.contains(" ")) { username = username + " Resident"; } // merge "user" and "user resident"
-		String[] parts = username.split(" ");
+		final String[] parts = username.split(" ");
 		if (parts.length != 2) {
 			throw new SystemException("Formatting username '" + original + "' gave '" + username + "' which has " + parts.length + " parts, which is not 2...");
 		}
@@ -71,60 +71,60 @@ public class User extends LockableTable {
 		return output;
 	}
 
-	private static User factory(int id, String username) {
+	private static User factory(final int id, final String username) {
 		synchronized (users) {
 			if (users.containsKey(id)) { return users.get(id); }
-			User u = new User(id, username);
+			final User u = new User(id, username);
 			users.put(id, u);
 			return u;
 		}
 	}
 
-	public static User get(String username, boolean createifnecessary) {
+	public static User get(String username, final boolean createifnecessary) {
 		username = formatUsername(username);
 		Integer id = null;
-		try { id=SL.getDB().dqi("select id from users where username=?", username); } catch (NoDataException e) {}
+		try { id=SL.getDB().dqi("select id from users where username=?", username); } catch (final NoDataException e) {}
 		if (id != null) { return factory(id, username); }
 		if (!createifnecessary) { throw new NoDataException("Can not find existing user for "+username); }
 		SL.getDB().d("insert into users(username) values(?)", username);
-		try { id = SL.getDB().dqi( "select id from users where username=?", username); } catch (NoDataException e) {}
+		try { id = SL.getDB().dqi( "select id from users where username=?", username); } catch (final NoDataException e) {}
 		if (id != null) { return factory(id, username); }
 		throw new SystemException("Created user for " + username + " and then couldn't find its id");
 	}
 
-	public static User get(int id) {
-		String username = SL.getDB().dqs( "select username from users where id=?", id);
+	public static User get(final int id) {
+		final String username = SL.getDB().dqs( "select username from users where id=?", id);
 		return factory(id, username);
 	}
 
-	public static User get(String username) { return get(username, false); }
+	public static User get(final String username) { return get(username, false); }
 
 	@Nullable
-	public static User resolveDeveloperKey(@Nullable String key) {
+	public static User resolveDeveloperKey(@Nullable final String key) {
 		if (key == null || "".equals(key)) {
 			return null;
 		}
 		try {
-			Integer userid = SL.getDB().dqi("select id from users where developerkey=?", key);
+			final Integer userid = SL.getDB().dqi("select id from users where developerkey=?", key);
 			return get(userid);
-		} catch (NoDataException e) { return null; }
+		} catch (final NoDataException e) { return null; }
 	}
 
 	@Nullable
-	public static User getSSO(String token) {
+	public static User getSSO(final String token) {
 		// purge old tokens
 		SL.getDB().d("update users set ssotoken=null,ssoexpires=null where ssoexpires<?", UnixTime.getUnixTime());
 		try {
-			Integer match = SL.getDB().dqi("select id from users where ssotoken=?", token);
+			final Integer match = SL.getDB().dqi("select id from users where ssotoken=?", token);
 			SL.getDB().d("update users set ssotoken=null,ssoexpires=null where id=?", match);
 			return get(match);
-		} catch (NoDataException e) { return null; }
+		} catch (final NoDataException e) { return null; }
 	}
 
-	public static User findOrCreateAvatar(@Nullable String name, @Nonnull String key) throws SystemException {
+	public static User findOrCreateAvatar(@Nullable String name, @Nonnull final String key) throws SystemException {
 		if (name == null || "".equals(name)) { name = ""; }
 		Integer userid = null;
-		try { userid=SL.getDB().dqi( "select id from users where (username=? or avatarkey=?)", name, key); } catch (NoDataException e){}
+		try { userid=SL.getDB().dqi( "select id from users where (username=? or avatarkey=?)", name, key); } catch (final NoDataException e){}
 		if (userid == null) {
 			if (name.isEmpty()) { throw new SystemException("Empty avatar name blocks creation"); }
 			if (key.isEmpty()) { throw new SystemException("Empty avatar key blocks creation"); }
@@ -137,11 +137,11 @@ public class User extends LockableTable {
 					SL.getLogger("User").info("Creating new avatar entry for '" + name + "'");
 				}
 				SL.getDB().d("insert into users(username,lastactive,avatarkey) values(?,?,?)", name, getUnixTime(), key);
-			} catch (DBException ex) {
+			} catch (final DBException ex) {
 				SL.getLogger("User").log(SEVERE, "Exception creating avatar " + name, ex);
 				throw ex;
 			}
-			try { userid = SL.getDB().dqi( "select id from users where avatarkey=?", key); } catch (NoDataException e) {}
+			try { userid = SL.getDB().dqi( "select id from users where avatarkey=?", key); } catch (final NoDataException e) {}
 		}
 		if (userid == null) {
 			SL.getLogger("User").severe("Failed to find avatar '" + name + "' after creating it");
@@ -153,17 +153,17 @@ public class User extends LockableTable {
 	// GPHUD legacy
 	@Nonnull
 	public static Map<Integer, String> loadMap() {
-		Map<Integer, String> results = new TreeMap<>();
-		Results rows = SL.getDB().dq("select id,username from users");
-		for (ResultsRow r : rows) {
+		final Map<Integer, String> results = new TreeMap<>();
+		final Results rows = SL.getDB().dq("select id,username from users");
+		for (final ResultsRow r : rows) {
 			results.put(r.getIntNullable("id"), TableRow.getLink(r.getStringNullable("username"), "avatars", r.getIntNullable("id")));
 		}
 		return results;
 	}
 
 	@Nonnull
-	public static User findMandatory(String nameorkey) {
-		User user = findOptional(nameorkey);
+	public static User findMandatory(final String nameorkey) {
+		final User user = findOptional(nameorkey);
 		if (user == null) {
 			throw new UserException("Failed to find avatar object for name or key '" + nameorkey + "'");
 		}
@@ -176,12 +176,12 @@ public class User extends LockableTable {
 	 * @return Avatar object
 	 */
 	@Nullable
-	public static User findOptional(@Nullable String nameorkey) {
+	public static User findOptional(@Nullable final String nameorkey) {
 		if (nameorkey == null || "".equals(nameorkey)) { throw new UserException("Avatar name/key not supplied"); }
 		try {
-			Integer userid = SL.getDB().dqi("select id from users where username=? or avatarkey=?", nameorkey, nameorkey);
+			final Integer userid = SL.getDB().dqi("select id from users where username=? or avatarkey=?", nameorkey, nameorkey);
 			return get(userid);
-		} catch (NoDataException e) { return null; }
+		} catch (final NoDataException e) { return null; }
 	}
 
 	@Nonnull
@@ -203,10 +203,10 @@ public class User extends LockableTable {
 
 	public boolean hasDeveloperKey() {
 		try {
-			String s = getDeveloperKey();
+			final String s = getDeveloperKey();
 			if (s == null || s.isEmpty()) { return false; }
 			return true;
-		} catch (NoDataException e) { return false; }
+		} catch (final NoDataException e) { return false; }
 	}
 
 	@Nullable
@@ -215,26 +215,26 @@ public class User extends LockableTable {
 	}
 
 	public boolean isSuperAdmin() {
-		Integer isadmin = dqi( "select superadmin from users where id=?", getId());
+		final Integer isadmin = dqi( "select superadmin from users where id=?", getId());
 		return isadmin == 1;
 	}
 
 	@Nonnull
 	public String generateSSO() {
-		String token = Tokens.generateToken();
-		int expires = UnixTime.getUnixTime() + Config.SSOWINDOWSECONDS;
+		final String token = Tokens.generateToken();
+		final int expires = UnixTime.getUnixTime() + Config.SSOWINDOWSECONDS;
 		d("update users set ssotoken=?,ssoexpires=? where " + getIdColumn() + "=?", token, expires, getId());
 		return token;
 	}
 
-	public void setPassword(@Nonnull String password, String clientip) throws UserException {
+	public void setPassword(@Nonnull final String password, final String clientip) throws UserException {
 		if (password.length() < 6) { throw new UserException("Password not long enough"); }
 		d("update users set password=? where id=?", Passwords.createHash(password), getId());
-		SL.getLogger().info("User " + this.getUsername() + " has set password from " + clientip);
+		SL.getLogger().info("User " + getUsername() + " has set password from " + clientip);
 	}
 
-	public boolean checkPassword(@Nonnull String password) {
-		String hash = dqs( "select password from users where id=?", getId());
+	public boolean checkPassword(@Nonnull final String password) {
+		final String hash = dqs( "select password from users where id=?", getId());
 		if (hash == null || hash.isEmpty()) {
 			SL.getLogger().warning("Attempt to log in with a null or empty password hash for user " + getUsername());
 			return false;
@@ -245,16 +245,16 @@ public class User extends LockableTable {
 	public int balance() {
 		try {
 			return dqi("select sum(ammount) from journal where userid=?", getId());
-		} catch (NoDataException e) { return 0; }
+		} catch (final NoDataException e) { return 0; }
 	}
 
-	public void bill(int ammount, String description) throws UserException {
-		int serial;
-		try {serial = lock();} catch (LockException e) {
+	public void bill(final int ammount, final String description) throws UserException {
+		final int serial;
+		try {serial = lock();} catch (final LockException e) {
 			throw new UserException("Your balance is currently being updated elsewhere, please retry in a moment");
 		}
 		try {
-			int balance = balance();
+			final int balance = balance();
 			if (balance < ammount) {
 				throw new UserException("Insufficient balance (L$" + balance + ") to pay charge L$" + ammount);
 			}
@@ -263,19 +263,19 @@ public class User extends LockableTable {
 	}
 
 	@Nonnull
-	public Set<Subscription> getSubscriptions(@Nullable Pricing.SERVICE service, boolean activeonly, boolean paidonly) {
-		Results res;
+	public Set<Subscription> getSubscriptions(@Nullable final Pricing.SERVICE service, final boolean activeonly, final boolean paidonly) {
+		final Results res;
 		int paiduntilfilter = UnixTime.getUnixTime();
 		if (!paidonly) { paiduntilfilter = 0; }
-		String activeonlysql;
+		final String activeonlysql;
 		if (activeonly) { activeonlysql = " and active=1"; } else { activeonlysql = ""; }
 		if (service != null) {
 			res = dq("select id from subscriptions where ownerid=? and servicetype=? and paiduntil>?" + activeonlysql, getId(), service.getValue(), paiduntilfilter);
 		} else {
 			res = dq("select id from subscriptions where ownerid=? and paiduntil>?" + activeonlysql, getId(), paiduntilfilter);
 		}
-		Set<Subscription> subs = new HashSet<>();
-		for (ResultsRow r : res) {
+		final Set<Subscription> subs = new HashSet<>();
+		for (final ResultsRow r : res) {
 			subs.add(new Subscription(r.getIntNullable("id")));
 		}
 		return subs;
@@ -293,18 +293,18 @@ public class User extends LockableTable {
 	 * @return String token used to validate the email address
 	 */
 	@Nonnull
-	public String setNewEmail(String newemail) {
-		int expires = UnixTime.getUnixTime() + Config.NEWEMAIL_TOKEN_LIFESPAN;
-		String token = Tokens.generateToken();
+	public String setNewEmail(final String newemail) {
+		final int expires = UnixTime.getUnixTime() + Config.NEWEMAIL_TOKEN_LIFESPAN;
+		final String token = Tokens.generateToken();
 		d("update users set newemail=?,newemailtoken=?,newemailexpires=? where id=?", newemail, token, expires, getId());
 		return token;
 	}
 
-	public void confirmNewEmail(@Nullable String token) {
-		ResultsRow r = dqone( "select newemail,newemailtoken,newemailexpires from users where id=?", getId());
-		String newemail = r.getStringNullable("newemail");
-		String newtoken = r.getStringNullable("newemailtoken");
-		int expires = r.getIntNullable("newemailexpires");
+	public void confirmNewEmail(@Nullable final String token) {
+		final ResultsRow r = dqone( "select newemail,newemailtoken,newemailexpires from users where id=?", getId());
+		final String newemail = r.getStringNullable("newemail");
+		final String newtoken = r.getStringNullable("newemailtoken");
+		final int expires = r.getIntNullable("newemailexpires");
 		if (token == null || token.isEmpty()) { throw new UserException("No token passed"); }
 		if (!token.equals(newtoken)) { throw new UserException("Email token does not match"); }
 		if (expires < UnixTime.getUnixTime()) {
@@ -328,20 +328,20 @@ public class User extends LockableTable {
 
 	@Nullable
 	public String getTimeZone() {
-		String s = getString("timezone");
+		final String s = getString("timezone");
 		if (s == null) { return "America/Los_Angeles"; }
 		if ("SLT".equals(s)) { return "America/Los_Angeles"; }
 		return s;
 	}
 
-	public void setTimeZone(String timezone) { set("timezone", timezone); }
+	public void setTimeZone(final String timezone) { set("timezone", timezone); }
 
 	/**
 	 * Sets the last used instance for the avatar - used for logging in to the web portal.
 	 *
 	 * @param i Instance to set to
 	 */
-	public void setLastInstance(@Nonnull Instance i) {
+	public void setLastInstance(@Nonnull final Instance i) {
 		d("update users set lastgphudinstance=? where id=?", i.getId(), getId());
 	}
 

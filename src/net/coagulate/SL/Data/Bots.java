@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
  */
 public class Bots extends LockableTable {
 
-	public Bots(int id) {
+	public Bots(final int id) {
 		super(id);
 	}
 

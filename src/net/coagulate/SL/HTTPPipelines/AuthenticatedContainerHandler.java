@@ -11,8 +11,8 @@ public abstract class AuthenticatedContainerHandler extends AuthenticatedStringH
 
 	@Nonnull
 	@Override
-	public String handleString(@Nonnull State state) {
-		Page container = new Page();
+	public String handleString(@Nonnull final State state) {
+		final Page container = new Page();
 		run(state, container);
 		return container.toHtml(state);
 	}

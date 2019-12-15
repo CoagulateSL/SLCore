@@ -48,20 +48,20 @@ public abstract class AuthenticatedStringHandler extends Handler {
 
 	@Nonnull
 	@Override
-	public StringEntity handleContent(@Nonnull State state) {
+	public StringEntity handleContent(@Nonnull final State state) {
 		try {
 			String content = "<p><b>WEIRD INTERNAL LOGIC ERROR</b></p>";
-			String username = state.get("login_username");
-			String password = state.get("login_password");
+			final String username = state.get("login_username");
+			final String password = state.get("login_password");
 			if (!checkAuth(state)) {
 				if (username == null || username.isEmpty()) {
 					return new StringEntity(new Page().add(new Raw(loginPage())).toHtml(state), ContentType.TEXT_HTML);
 				} else {
 					if ("Login".equals(state.get("Login")) && password.isEmpty()) {
-						User target = User.findOptional(username);
+						final User target = User.findOptional(username);
 						if (target != null) {
-							String token = target.generateSSO();
-							String message;
+							final String token = target.generateSSO();
+							final String message;
 							if (SL.DEV) {
 								message = "\n\n===== DEVELOPMENT SSO ENTRY POINT =====\n\n\n[https://dev.coagulate.sl/SSO/" + token + " Log in to Coagulate SL DEVELOPMENT ENVIRONMENT]\n\n";
 							} else {
@@ -75,29 +75,29 @@ public abstract class AuthenticatedStringHandler extends Handler {
 					return new StringEntity(new Page().add(new Raw(failPage())).toHtml(state), ContentType.TEXT_HTML);
 				}
 			}
-			try { content = handleString(state); } catch (UserException ue) {
+			try { content = handleString(state); } catch (final UserException ue) {
 				SL.report("AuthenticatedStringHandler caught exception", ue, state);
 				SL.getLogger().log(WARNING, "User exception propagated to handler", ue);
 				content = "<p>Exception: " + ue.getLocalizedMessage() + "</p>";
 			}
 			return new StringEntity(content, ContentType.TEXT_HTML);
-		} catch (Exception ex) {
+		} catch (final Exception ex) {
 			SL.getLogger().log(SEVERE, "Unexpected exception thrown in page handler", ex);
 			state.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
 			return new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>", ContentType.TEXT_HTML);
 		}
 	}
 
-	protected boolean checkAuth(@Nonnull State state) {
+	protected boolean checkAuth(@Nonnull final State state) {
 		if (state.userNullable() != null) { return true; }
 		// not (yet?) logged in
-		String username = state.get("login_username");
-		String password = state.get("login_password");
+		final String username = state.get("login_username");
+		final String password = state.get("login_password");
 		state.put("parameters", "login_username", "OBSCURED FROM DEEPER CODE");
 		state.put("parameters", "login_password", "OBSCURED FROM DEEPER CODE");
 		if ("Login".equals(state.get("Login")) && !username.isEmpty() && !password.isEmpty()) {
 			User u = null;
-			try { u = User.get(username, false); } catch (NoDataException ignore) {}
+			try { u = User.get(username, false); } catch (final NoDataException ignore) {}
 			if (u == null) {
 				SL.getLogger().warning("Attempt to authenticate as invalid user '" + username + "' from " + state.getClientIP());
 				return false;

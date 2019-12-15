@@ -30,11 +30,11 @@ public abstract class Handler implements HttpRequestHandler {
 	private static final boolean DEBUG_PARAMS = false;
 
 	@Override
-	public void handle(@Nonnull HttpRequest req, @Nonnull HttpResponse resp, HttpContext hc) {
+	public void handle(@Nonnull final HttpRequest req, @Nonnull final HttpResponse resp, final HttpContext hc) {
 		try {
-			Map<String, String> parameters = new HashMap<>();
-			List<NameValuePair> uriparams = URLEncodedUtils.parse(new URI(req.getRequestLine().getUri()), StandardCharsets.UTF_8);
-			for (NameValuePair up : uriparams) {
+			final Map<String, String> parameters = new HashMap<>();
+			final List<NameValuePair> uriparams = URLEncodedUtils.parse(new URI(req.getRequestLine().getUri()), StandardCharsets.UTF_8);
+			for (final NameValuePair up : uriparams) {
 				parameters.put(up.getName(), up.getValue());
 				if (DEBUG_PARAMS) {
 					System.out.println("Imported URI parameter '" + up.getName() + "'='" + up.getValue() + "'");
@@ -43,21 +43,21 @@ public abstract class Handler implements HttpRequestHandler {
 
 
 			if (req instanceof HttpEntityEnclosingRequest) {
-				HttpEntityEnclosingRequest r = (HttpEntityEnclosingRequest) req;
-				List<NameValuePair> map = URLEncodedUtils.parse(r.getEntity());
-				for (NameValuePair kv : map) {
+				final HttpEntityEnclosingRequest r = (HttpEntityEnclosingRequest) req;
+				final List<NameValuePair> map = URLEncodedUtils.parse(r.getEntity());
+				for (final NameValuePair kv : map) {
 					parameters.put(kv.getName(), kv.getValue());
 					if (DEBUG_PARAMS) {
 						System.out.println("Imported POST parameter '" + kv.getName() + "'='" + kv.getValue() + "'");
 					}
 				}
 			}
-			State state = new State(req, resp, hc);
+			final State state = new State(req, resp, hc);
 			state.putMap("parameters", parameters);
-			Map<String, String> cookiemap = new HashMap<>();
-			for (Header header : req.getHeaders("Cookie")) {
-				for (String component : header.getValue().split(";")) {
-					String[] kv = component.split("=");
+			final Map<String, String> cookiemap = new HashMap<>();
+			for (final Header header : req.getHeaders("Cookie")) {
+				for (final String component : header.getValue().split(";")) {
+					final String[] kv = component.split("=");
 					if (kv.length != 2) {
 						SL.getLogger().log(Level.WARNING, "Unusual cookie element to parse in line " + header.getValue() + " piece " + component);
 					} else {
@@ -81,11 +81,11 @@ public abstract class Handler implements HttpRequestHandler {
 			}
 			resp.setStatusCode(state.status());
 
-		} catch (URISyntaxException use) { // dont log the exception because we don't want the mail.  this is probably a script kiddie hack attempt that doesn't work
+		} catch (final URISyntaxException use) { // dont log the exception because we don't want the mail.  this is probably a script kiddie hack attempt that doesn't work
 			SL.getLogger().log(WARNING, "Unexpected exception thrown in page handler");
 			resp.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
 			resp.setEntity(new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Whatever you're trying to do is illegal.</p></body></html>", ContentType.TEXT_HTML));
-		} catch (Exception ex) {
+		} catch (final Exception ex) {
 			SL.getLogger().log(SEVERE, "Unexpected exception thrown in page handler", ex);
 			resp.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
 			resp.setEntity(new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>", ContentType.TEXT_HTML));

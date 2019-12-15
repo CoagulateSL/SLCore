@@ -14,20 +14,20 @@ import javax.annotation.Nullable;
  */
 public class Regions extends LockableTable {
 
-	public Regions(int id) { super(id); }
+	public Regions(final int id) { super(id); }
 
 	@Nonnull
-	public static Regions getByName(String name) {
+	public static Regions getByName(final String name) {
 		try {
-			Integer id = SL.getDB().dqi("select id from regions where region like ?", name);
+			final Integer id = SL.getDB().dqi("select id from regions where region like ?", name);
 			return new Regions(id);
-		} catch (NoDataException e) {
+		} catch (final NoDataException e) {
 			SL.getDB().d("insert into regions(region) values(?)", name);
 			try {
-				Integer id = SL.getDB().dqi("select id from regions where region like ?", name);
+				final Integer id = SL.getDB().dqi("select id from regions where region like ?", name);
 				return new Regions(id);
 			}
-			catch (NoDataException f) { throw new SystemException("Failed to find inserted region in regions table",f); }
+			catch (final NoDataException f) { throw new SystemException("Failed to find inserted region in regions table",f); }
 		}
 	}
 
@@ -39,7 +39,7 @@ public class Regions extends LockableTable {
 	public String getStatus() { return getString("status"); }
 
 	public int getLastUpdate() {
-		Integer lu = getIntNullable("lastperf");
+		final Integer lu = getIntNullable("lastperf");
 		if (lu == null) { return 0; }
 		return lu;
 	}
@@ -47,16 +47,16 @@ public class Regions extends LockableTable {
 	public void setLastUpdate() {
 		try {
 			set("lastupdate", UnixTime.getUnixTime());
-		} catch (LockException e) {} // not that important here, something else is updating it...
+		} catch (final LockException e) {} // not that important here, something else is updating it...
 	}
 
-	public void setNewStatus(String status) {
-		int time = UnixTime.getUnixTime();
+	public void setNewStatus(final String status) {
+		final int time = UnixTime.getUnixTime();
 		d("update regions set status=?, since=?, lastupdate=? where id=?", status, time, time, getId());
 	}
 
 	public int getSince() {
-		Integer since = getIntNullable("since");
+		final Integer since = getIntNullable("since");
 		if (since == null) { return 0; }
 		return since;
 	}

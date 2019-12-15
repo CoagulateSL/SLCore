@@ -18,33 +18,33 @@ public class Session extends Table {
 	private final String id;
 	private final User user;
 
-	private Session(String sessionid, User user) {
-		this.id = sessionid;
+	private Session(final String sessionid, final User user) {
+		id = sessionid;
 		this.user = user;
 	}
 
 	@Nullable
-	public static Session get(String sessionid) {
+	public static Session get(final String sessionid) {
 		try {
-			ResultsRow user = SL.getDB().dqone("select userid,expires from sessions where cookie=? and expires>?", sessionid, UnixTime.getUnixTime());
-			int userid = user.getIntNullable("userid");
-			int expires = user.getIntNullable("expires");
-			int expiresin = expires - UnixTime.getUnixTime();
+			final ResultsRow user = SL.getDB().dqone("select userid,expires from sessions where cookie=? and expires>?", sessionid, UnixTime.getUnixTime());
+			final int userid = user.getIntNullable("userid");
+			final int expires = user.getIntNullable("expires");
+			final int expiresin = expires - UnixTime.getUnixTime();
 			if (expiresin < (Config.SESSIONLIFESPANSECONDS / 2)) {
 				// refresh
 				SL.getDB().d("update sessions set expires=? where cookie=?", UnixTime.getUnixTime() + Config.SESSIONLIFESPANSECONDS, sessionid);
 			}
 			return new Session(sessionid, User.get(userid));
-		} catch (NoDataException e) { return null; }
+		} catch (final NoDataException e) { return null; }
 	}
 
 	@Nonnull
-	public static Session create(@Nonnull User user) {
+	public static Session create(@Nonnull final User user) {
 		// we abuse this "pipeline" to purge old sessions
-		try { SL.getDB().d("delete from sessions where expires<?", UnixTime.getUnixTime()); } catch (Exception e) {}
-		int userid = user.getId();
-		String sessionid = Tokens.generateToken();
-		int expires = UnixTime.getUnixTime() + Config.SESSIONLIFESPANSECONDS;
+		try { SL.getDB().d("delete from sessions where expires<?", UnixTime.getUnixTime()); } catch (final Exception e) {}
+		final int userid = user.getId();
+		final String sessionid = Tokens.generateToken();
+		final int expires = UnixTime.getUnixTime() + Config.SESSIONLIFESPANSECONDS;
 		SL.getDB().d("insert into sessions(cookie,userid,expires) values(?,?,?)", sessionid, userid, expires);
 		return new Session(sessionid, user);
 	}
@@ -53,7 +53,7 @@ public class Session extends Table {
 
 	public User user() { return user; }
 
-	public void setUser(@Nonnull User user) {
+	public void setUser(@Nonnull final User user) {
 		getDatabase().d("update sessions set userid=? where cookie=?", user.getId(), token());
 	}
 

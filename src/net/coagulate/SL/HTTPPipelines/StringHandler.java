@@ -22,15 +22,15 @@ public abstract class StringHandler extends Handler {
 
 	@Nonnull
 	@Override
-	public StringEntity handleContent(@Nonnull State state) {
+	public StringEntity handleContent(@Nonnull final State state) {
 		try {
 			String content = "<p><b>WEIRD INTERNAL LOGIC ERROR</b></p>";
-			try { content = handleString(state); } catch (UserException ue) {
+			try { content = handleString(state); } catch (final UserException ue) {
 				SL.getLogger().log(WARNING, "User exception propagated to handler", ue);
 				content = "<p>Exception: " + ue.getLocalizedMessage() + "</p>";
 			}
 			return new StringEntity(content, ContentType.TEXT_HTML);
-		} catch (Exception ex) {
+		} catch (final Exception ex) {
 			SL.getLogger().log(SEVERE, "Unexpected exception thrown in page handler", ex);
 			state.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
 			return new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>", ContentType.TEXT_HTML);

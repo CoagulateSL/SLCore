@@ -13,23 +13,23 @@ import javax.annotation.Nullable;
 public class RegionLog extends Table {
 
 	@Nullable
-	public static Results getLast(@Nonnull Regions region) {
+	public static Results getLast(@Nonnull final Regions region) {
 		return SL.getDB().dq("select tds,changetype,oldvalue,newvalue from regionlog where regionid=? order by tds desc limit 0,100", region.getId());
 	}
 
-	public static void log(int region, String changetype, String oldvalue, String newvalue, int tds) {
+	public static void log(final int region, final String changetype, final String oldvalue, final String newvalue, final int tds) {
 		SL.getDB().d("insert into regionlog(regionid,changetype,oldvalue,newvalue,tds) values(?,?,?,?,?)", region, changetype, oldvalue, newvalue, tds);
 	}
 
-	public static void log(@Nonnull Regions region, String changetype, String oldvalue, String newvalue, int tds) {
+	public static void log(@Nonnull final Regions region, final String changetype, final String oldvalue, final String newvalue, final int tds) {
 		log(region.getId(), changetype, oldvalue, newvalue, tds);
 	}
 
-	public static void log(int region, String changetype, String oldvalue, String newvalue) {
+	public static void log(final int region, final String changetype, final String oldvalue, final String newvalue) {
 		log(region, changetype, oldvalue, newvalue, UnixTime.getUnixTime());
 	}
 
-	public static void log(@Nonnull Regions region, String changetype, String oldvalue, String newvalue) {
+	public static void log(@Nonnull final Regions region, final String changetype, final String oldvalue, final String newvalue) {
 		log(region.getId(), changetype, oldvalue, newvalue, UnixTime.getUnixTime());
 	}
 

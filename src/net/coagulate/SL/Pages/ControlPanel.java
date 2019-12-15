@@ -29,7 +29,7 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 	public ControlPanel() {super();}
 
 	@Override
-	protected void run(@Nonnull State state, @Nonnull Page page) {
+	protected void run(@Nonnull final State state, @Nonnull final Page page) {
 		if (!state.user().superuser()) {
 			throw new SystemException("Unauthorised access to Control Panel from " + state.userNullable());
 		}
@@ -39,27 +39,27 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 			page.paragraph("Sending mail");
 			try {
 				MailTools.mail("CL Cluster " + Config.getHostName(), "sl-cluster-alerts@predestined.net", "SL Mail Tester", "sl-cluster-alerts@predestined.net", "SL Cluster mail test", "Test OK");
-			} catch (MessagingException ex) {
+			} catch (final MessagingException ex) {
 				Logger.getLogger(ControlPanel.class.getName()).log(Level.SEVERE, null, ex);
 				page.add(new Raw(ExceptionTools.toHTML(ex)));
 			}
 			page.paragraph("Sent mail");
 		}
 		if ("Thread Info".equals(state.get("Thread Info"))) {
-			Table t=new Table();
+			final Table t=new Table();
 			page.add(t);
 			t.header("Name").header("Daemon").header("Stacktrace");
-			Map<Thread, StackTraceElement[]> threads = Thread.getAllStackTraces();
-			for (Map.Entry<Thread, StackTraceElement[]> entry : threads.entrySet()) {
-				Thread thread = entry.getKey();
+			final Map<Thread, StackTraceElement[]> threads = Thread.getAllStackTraces();
+			for (final Map.Entry<Thread, StackTraceElement[]> entry : threads.entrySet()) {
+				final Thread thread = entry.getKey();
 				t.openRow();
 				t.add(thread.getName());
 				t.add(thread.isDaemon()+"");
-				StackTraceElement[] stack= entry.getValue();
-				StringBuilder stacktrace= new StringBuilder();
-				for (StackTraceElement element:stack) {
+				final StackTraceElement[] stack= entry.getValue();
+				final StringBuilder stacktrace= new StringBuilder();
+				for (final StackTraceElement element:stack) {
 					if (stacktrace.length() > 0) { stacktrace.append("<br>"); }
-					String classname=element.getClassName();
+					final String classname=element.getClassName();
 					if (classname.startsWith("net.coagulate.")) {
 						stacktrace.append(classname).append("/").append(element.getMethodName()).append(":").append(element.getLineNumber());
 					}

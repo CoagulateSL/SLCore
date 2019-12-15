@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
  */
 public class Form extends Container {
 	@Nonnull
-	public String toHtml(State st) {
+	public String toHtml(final State st) {
 		return
 				"<form method=post>" +
 						super.toHtml(st) +
@@ -15,13 +15,13 @@ public class Form extends Container {
 	}
 
 	@Nonnull
-	public Form submit(String s) {
+	public Form submit(final String s) {
 		add(new Submit(s));
 		return this;
 	}
 
 	@Nonnull
-	public Form submit(Element e) {
+	public Form submit(final Element e) {
 		add(e);
 		return this;
 	}

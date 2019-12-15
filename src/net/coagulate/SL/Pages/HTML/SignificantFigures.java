@@ -7,13 +7,13 @@ import javax.annotation.Nullable;
  */
 public class SignificantFigures extends Renderer {
 
-	int sf = 0;
+	int sf;
 
-	public SignificantFigures(int sf) { this.sf = sf; }
+	public SignificantFigures(final int sf) { this.sf = sf; }
 
 	@Nullable
 	@Override
-	public String render(State st, @Nullable String value) {
+	public String render(final State st, @Nullable final String value) {
 		if (value == null || value.isEmpty()) { return ""; }
 		if (value.length() <= (sf)) { return value; }
 		if (!value.contains(".")) { return value; }

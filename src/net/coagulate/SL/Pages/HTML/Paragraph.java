@@ -10,19 +10,19 @@ public class Paragraph extends Container {
 
 	public Paragraph() {}
 
-	public Paragraph(String s) { add(new Raw(s)); }
+	public Paragraph(final String s) { add(new Raw(s)); }
 
 	@Nonnull
-	public Paragraph add(Element e) {
+	public Paragraph add(final Element e) {
 		super.add(e);
 		return this;
 	}
 
 	@Nonnull
-	public Paragraph add(String s) { return add(new Raw(s)); }
+	public Paragraph add(final String s) { return add(new Raw(s)); }
 
 	@Nonnull
-	public String toHtml(State st) {
+	public String toHtml(final State st) {
 		return
 				"<p" + renderAlignment() + ">" +
 						super.toHtml(st) +
@@ -36,7 +36,7 @@ public class Paragraph extends Container {
 	}
 
 	@Nonnull
-	public Paragraph align(ALIGNMENT alignment) {
+	public Paragraph align(final ALIGNMENT alignment) {
 		this.alignment = alignment;
 		return this;
 	}

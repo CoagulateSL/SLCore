@@ -13,26 +13,26 @@ public class TRColorGenerator extends TRGenerator {
 	private final String defaultcolor;
 	final Map<String, String> valuemap = new HashMap<>();
 
-	public TRColorGenerator(String columnname, String defaultcolor) {
+	public TRColorGenerator(final String columnname, final String defaultcolor) {
 		this.columnname = columnname;
 		this.defaultcolor = defaultcolor;
 	}
 
 	@Nonnull
-	public TRColorGenerator map(String value, String color) {
+	public TRColorGenerator map(final String value, final String color) {
 		valuemap.put(value, color);
 		return this;
 	}
 
 	@Nonnull
 	@Override
-	public String render(State st, @Nonnull Map<String, String> row) {
+	public String render(final State st, @Nonnull final Map<String, String> row) {
 		return "<tr bgcolor=\"#" + getColor(st, row) + "\">";
 	}
 
-	private String getColor(State st, @Nonnull Map<String, String> row) {
+	private String getColor(final State st, @Nonnull final Map<String, String> row) {
 		if (!row.containsKey(columnname)) { return defaultcolor; }
-		String value = row.get(columnname);
+		final String value = row.get(columnname);
 		if (!valuemap.containsKey(value)) { return defaultcolor; }
 		return valuemap.get(value);
 	}

@@ -9,15 +9,15 @@ public class Raw implements Element {
 
 	private final String content;
 
-	public Raw(String content) { this.content = content; }
+	public Raw(final String content) { this.content = content; }
 
 	@Override
-	public String toHtml(State st) { return content; }
+	public String toHtml(final State st) { return content; }
 
 	@Override
-	public String toString(State st) { return content; }
+	public String toString(final State st) { return content; }
 
 	@Override
-	public void load(Map<String, String> map) {}
+	public void load(final Map<String, String> map) {}
 
 }

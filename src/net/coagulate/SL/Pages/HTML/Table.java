@@ -12,13 +12,13 @@ import java.util.Map;
  */
 public class Table extends Container {
 	@Nullable
-	protected TRGenerator trgen = null;
+	protected TRGenerator trgen;
 	// a table is ...
 	@Nonnull
 	final List<List<Element>> table;
 	final List<Element> headers = new ArrayList<>();
 	@Nullable
-	List<Element> row = null;
+	List<Element> row;
 
 	public Table() {
 		table = new ArrayList<>();
@@ -38,41 +38,41 @@ public class Table extends Container {
 	}
 
 	@Nonnull
-	public Table add(Element e) {
+	public Table add(final Element e) {
 		checkRow();
 		row.add(e);
 		return this;
 	}
 
 	@Nonnull
-	public Table add(String s) {
+	public Table add(final String s) {
 		checkRow();
 		row.add(new Raw(s));
 		return this;
 	}
 
 	@Nonnull
-	public Table header(Element e) {
+	public Table header(final Element e) {
 		headers.add(e);
 		return this;
 	}
 
 	@Nonnull
-	public Table header(String s) {
+	public Table header(final String s) {
 		headers.add(new Raw(s));
 		return this;
 	}
 
-	public void load(Map<String,String> map) {
-		for (List<Element> list : table) {
-			for (Element ele : list) {
+	public void load(final Map<String,String> map) {
+		for (final List<Element> list : table) {
+			for (final Element ele : list) {
 				ele.load(map);
 			}
 		}
 	}
 
 	@Nonnull
-	public String toHtml(State st) {
+	public String toHtml(final State st) {
 		return
 				"<table>" +
 						headerRow(st) +
@@ -81,10 +81,10 @@ public class Table extends Container {
 	}
 
 	@Nonnull
-	protected String headerRow(State st) {
+	protected String headerRow(final State st) {
 		if (headers.isEmpty()) { return ""; }
-		StringBuilder r = new StringBuilder("<tr>");
-		for (Element e : headers) {
+		final StringBuilder r = new StringBuilder("<tr>");
+		for (final Element e : headers) {
 			r.append("<th>").append(e.toHtml(st)).append("</th>");
 		}
 		r.append("</tr>");
@@ -92,18 +92,18 @@ public class Table extends Container {
 	}
 
 	@Nonnull
-	protected String contentRows(State st) {
-		StringBuilder r = new StringBuilder();
-		for (List<Element> row : table) {
-			Map<String, String> stringrow = new HashMap<>();
-			for (Element cell : row) {
-				int pos = row.indexOf(cell);
+	protected String contentRows(final State st) {
+		final StringBuilder r = new StringBuilder();
+		for (final List<Element> row : table) {
+			final Map<String, String> stringrow = new HashMap<>();
+			for (final Element cell : row) {
+				final int pos = row.indexOf(cell);
 				if (pos < headers.size()) {
 					stringrow.put(headers.get(pos).toString(st), cell.toString(st));
 				}
 			}
 			r.append(openRow(st, stringrow));
-			for (Element cell : row) {
+			for (final Element cell : row) {
 				r.append("<td>");
 				r.append(cell.toHtml(st));
 				r.append("</td>");
@@ -114,13 +114,13 @@ public class Table extends Container {
 	}
 
 	@Nonnull
-	protected String openRow(State st, Map<String, String> row) {
+	protected String openRow(final State st, final Map<String, String> row) {
 		if (trgen == null) { return "<tr>"; }
 		return trgen.render(st, row);
 	}
 
 	@Nonnull
-	public Table rowGenerator(TRGenerator generator) {
+	public Table rowGenerator(final TRGenerator generator) {
 		trgen = generator;
 		return this;
 	}

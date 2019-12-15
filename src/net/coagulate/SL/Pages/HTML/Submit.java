@@ -11,22 +11,22 @@ public class Submit extends Container {
 
 	final String name;
 	@Nullable
-	String value = null;
+	String value;
 
-	public Submit(@Nullable String name) {
+	public Submit(@Nullable final String name) {
 		this.name = name;
-		this.value = name;
+		value = name;
 		super.add(new Raw(name));
 	}
 
-	public Submit(String name, @Nullable String value) {
+	public Submit(final String name, @Nullable final String value) {
 		this.name = name;
 		this.value = value;
 	}
 
 	@Nonnull
 	@Override
-	public String toHtml(State st) {
+	public String toHtml(final State st) {
 		String v = value;
 		if (v == null) { v = ""; }
 		return "<button type=submit name=\"" + name + "\" value=\"" + v + "\">" +
@@ -35,7 +35,7 @@ public class Submit extends Container {
 	}
 
 	@Override
-	public void load(@Nonnull Map<String, String> map) {
+	public void load(@Nonnull final Map<String, String> map) {
 		if (value == null) {
 			if (map.containsKey(name)) {
 				value = map.get(name);

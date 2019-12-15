@@ -9,20 +9,20 @@ import javax.annotation.Nullable;
 public class Header1 extends Container {
 
 	@Nullable
-	public String name = null;
+	public String name;
 
-	public Header1(Element e) { add(e); }
+	public Header1(final Element e) { add(e); }
 
-	public Header1(String s) { add(new Raw(s)); }
+	public Header1(final String s) { add(new Raw(s)); }
 
 	@Nonnull
-	public Header1 add(Element e) {
+	public Header1 add(final Element e) {
 		super.add(e);
 		return this;
 	}
 
 	@Nonnull
-	public String toHtml(State st) {
+	public String toHtml(final State st) {
 		return
 				"<h1" +
 						(name == null ? "" : " name=\"" + name + "\"") +
@@ -32,7 +32,7 @@ public class Header1 extends Container {
 	}
 
 	@Nonnull
-	public Header1 name(String name) {
+	public Header1 name(final String name) {
 		this.name = name;
 		return this;
 	}

@@ -17,7 +17,7 @@ public class ClusterInfo extends ContainerHandler {
 	public ClusterInfo() {super();}
 
 	@Override
-	protected void run(State state, @Nonnull Page page) {
+	protected void run(final State state, @Nonnull final Page page) {
 		page.layout(Page.PAGELAYOUT.CENTERCOLUMN);
 		page.header("Architecture Generations");
 		page.paragraph().add("For the latest generation, please see ").add(new Anchor("generation3", "Generation Three")).add(" The rest of this document is purely historical record, and mostly tracks the evolution of a Rental Box piece of software.");

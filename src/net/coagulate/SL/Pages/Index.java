@@ -17,7 +17,7 @@ public class Index extends AuthenticatedContainerHandler {
 	public Index() {}
 
 	@Override
-	protected void run(State state, @Nonnull Page page) {
+	protected void run(final State state, @Nonnull final Page page) {
 		page.layout(Page.PAGELAYOUT.CENTERCOLUMN);
 		page.paragraph("Welcome to Coagulate Second Life services, select a service for more information.").align(Paragraph.ALIGNMENT.CENTER);
 		//raw("<table style=\"max-width: 900px;\" align=center>");

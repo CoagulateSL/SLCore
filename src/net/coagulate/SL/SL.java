@@ -3,6 +3,7 @@ package net.coagulate.SL;
 import net.coagulate.Core.Database.DB;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Database.MariaDBConnection;
+import net.coagulate.Core.Exceptions.SystemException;
 import net.coagulate.Core.HTTP.HTTPListener;
 import net.coagulate.Core.Tools.*;
 import net.coagulate.GPHUD.GPHUD;

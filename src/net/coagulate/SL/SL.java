@@ -3,7 +3,8 @@ package net.coagulate.SL;
 import net.coagulate.Core.Database.DB;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Database.MariaDBConnection;
-import net.coagulate.Core.Exceptions.SystemException;
+import net.coagulate.Core.Exceptions.System.SystemInitialisationException;
+import net.coagulate.Core.Exceptions.System.SystemRemoteFailureException;
 import net.coagulate.Core.HTTP.HTTPListener;
 import net.coagulate.Core.Tools.*;
 import net.coagulate.GPHUD.GPHUD;
@@ -35,7 +36,7 @@ public class SL extends Thread {
 	private static JSLBot bot;
 	@Nonnull
 	public static JSLBot bot() {
-		if (bot==null) { throw new SystemException("Access to bot before it is set up"); }
+		if (bot==null) { throw new SystemInitialisationException("Access to bot before it is set up"); }
 		return bot;
 	}
 	@Nullable
@@ -57,7 +58,7 @@ public class SL extends Thread {
 
 	@Nonnull
 	public static Logger getLogger() {
-		if (log==null) { throw new SystemException("Logger not yet initialised"); }
+		if (log==null) { throw new SystemInitialisationException("Logger not yet initialised"); }
 		return log;
 	}
 
@@ -133,7 +134,7 @@ public class SL extends Thread {
 	private static void startLSLR() {
 		if (!DEV) {
 			log.config("Starting LSLR submodule for Quiet Life Rentals services");
-			try { LSLR.initialise(); } catch (final SQLException e) { throw new SystemException("LSLR startup failed", e); }
+			try { LSLR.initialise(); } catch (final SQLException e) { throw new SystemInitialisationException("LSLR startup failed", e); }
 			log.config("Started LSLR submodule");
 		}
 	}
@@ -144,7 +145,7 @@ public class SL extends Thread {
 			bot.shutdown("Failed to connect");
 			shutdown = true;
 			errored = true;
-			throw new SystemException("Unable to connect to Second Life");
+			throw new SystemRemoteFailureException("Unable to connect to Second Life");
 		}
 		getLogger().config("Primary Second Life automated agent has started");
 	}
@@ -182,7 +183,7 @@ public class SL extends Thread {
 
 	@Nonnull
 	public static DBConnection getDB() {
-		if (db==null) { throw new SystemException("DB access before DB is initialised"); }
+		if (db==null) { throw new SystemInitialisationException("DB access before DB is initialised"); }
 		return db;
 	}
 

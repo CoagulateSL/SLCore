@@ -1,7 +1,7 @@
 package net.coagulate.SL.HTTPPipelines;
 
 import net.coagulate.Core.Tools.ClassTools;
-import net.coagulate.Core.Tools.SystemException;
+import net.coagulate.Core.Exceptions.SystemException;
 import net.coagulate.SL.Pages.FourZeroFour;
 import org.apache.http.HttpRequest;
 import org.apache.http.protocol.HttpRequestHandler;

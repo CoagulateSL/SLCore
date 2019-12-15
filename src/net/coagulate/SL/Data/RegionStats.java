@@ -5,7 +5,7 @@ import net.coagulate.Core.Database.NoDataException;
 import net.coagulate.Core.Database.Results;
 import net.coagulate.Core.Database.ResultsRow;
 import net.coagulate.Core.Tools.UnixTime;
-import net.coagulate.Core.Tools.UserException;
+import net.coagulate.Core.Exceptions.UserException;
 import net.coagulate.SL.SL;
 
 import javax.annotation.Nonnull;

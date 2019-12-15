@@ -1,6 +1,6 @@
 package net.coagulate.SL.HTTPPipelines;
 
-import net.coagulate.Core.Tools.UserException;
+import net.coagulate.Core.Exceptions.UserException;
 import net.coagulate.SL.Pages.HTML.State;
 import net.coagulate.SL.SL;
 import org.apache.http.HttpStatus;

@@ -1,6 +1,6 @@
 package net.coagulate.SL.HTTPPipelines;
 
-import net.coagulate.Core.Tools.SystemException;
+import net.coagulate.Core.Exceptions.SystemException;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.Pages.HTML.*;
 import net.coagulate.SL.SL;

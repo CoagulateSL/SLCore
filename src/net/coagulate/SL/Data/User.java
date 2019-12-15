@@ -1,6 +1,8 @@
 package net.coagulate.SL.Data;
 
 import net.coagulate.Core.Database.*;
+import net.coagulate.Core.Exceptions.SystemException;
+import net.coagulate.Core.Exceptions.UserException;
 import net.coagulate.Core.Tools.*;
 import net.coagulate.GPHUD.Data.Instance;
 import net.coagulate.GPHUD.Data.TableRow;

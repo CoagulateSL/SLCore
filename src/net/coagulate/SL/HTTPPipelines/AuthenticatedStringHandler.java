@@ -1,7 +1,7 @@
 package net.coagulate.SL.HTTPPipelines;
 
 import net.coagulate.Core.Database.NoDataException;
-import net.coagulate.Core.Tools.UserException;
+import net.coagulate.Core.Exceptions.UserException;
 import net.coagulate.JSLBot.Packets.Types.LLUUID;
 import net.coagulate.SL.Data.User;
 import net.coagulate.SL.Pages.HTML.Raw;

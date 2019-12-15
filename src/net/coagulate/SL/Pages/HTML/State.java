@@ -1,7 +1,7 @@
 package net.coagulate.SL.Pages.HTML;
 
+import net.coagulate.Core.Exceptions.System.SystemConsistencyException;
 import net.coagulate.Core.Tools.DumpableState;
-import net.coagulate.Core.Exceptions.SystemException;
 import net.coagulate.SL.Data.Session;
 import net.coagulate.SL.Data.User;
 import net.coagulate.SL.SL;
@@ -62,7 +62,7 @@ public class State extends DumpableState {
 
 	@Nonnull
 	public String sessionId() {
-		if (sessionid==null) { throw new SystemException("Session ID is null"); }
+		if (sessionid==null) { throw new SystemConsistencyException("Session ID is null"); }
 		return sessionid;
 	}
 
@@ -99,7 +99,7 @@ public class State extends DumpableState {
 
 	@Nonnull
 	public User user() {
-		if (user==null) { throw new SystemException("There is no user in the SL HTML State"); }
+		if (user==null) { throw new SystemConsistencyException("There is no user in the SL HTML State"); }
 		return user;
 	}
 

@@ -1,9 +1,10 @@
 package net.coagulate.SL.Pages;
 
+import net.coagulate.Core.Exceptions.System.SystemImplementationException;
+import net.coagulate.Core.Exceptions.User.UserAccessDeniedException;
+import net.coagulate.Core.Exceptions.User.UserInputStateException;
 import net.coagulate.Core.Tools.ExceptionTools;
 import net.coagulate.Core.Tools.MailTools;
-import net.coagulate.Core.Exceptions.SystemException;
-import net.coagulate.Core.Exceptions.UserException;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.HTTPPipelines.AuthenticatedContainerHandler;
 import net.coagulate.SL.HTTPPipelines.Page;
@@ -31,7 +32,7 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 	@Override
 	protected void run(@Nonnull final State state, @Nonnull final Page page) {
 		if (!state.user().superuser()) {
-			throw new SystemException("Unauthorised access to Control Panel from " + state.userNullable());
+			throw new UserAccessDeniedException("Unauthorised access to Control Panel from " + state.userNullable());
 		}
 		page.layout(Page.PAGELAYOUT.CENTERCOLUMN);
 		page.header("Control Panel");
@@ -68,10 +69,10 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 			}
 		}
 		if ("UserException".equals(state.get("UserException"))) {
-			throw new UserException("Manually triggered user exception");
+			throw new UserInputStateException("Manually triggered user exception");
 		}
 		if ("SystemException".equals(state.get("SystemException"))) {
-			throw new SystemException("Manually triggered system exception");
+			throw new SystemImplementationException("Manually triggered system exception");
 		}
 		if ("Region Stats Archival".equals(state.get("Region Stats Archival"))) {
 			page.paragraph("Running Region State");

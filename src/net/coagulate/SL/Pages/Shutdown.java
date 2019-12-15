@@ -1,6 +1,6 @@
 package net.coagulate.SL.Pages;
 
-import net.coagulate.Core.Exceptions.SystemException;
+import net.coagulate.Core.Exceptions.User.UserAccessDeniedException;
 import net.coagulate.SL.HTTPPipelines.ContainerHandler;
 import net.coagulate.SL.HTTPPipelines.Page;
 import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
@@ -25,7 +25,7 @@ public class Shutdown extends ContainerHandler {
 			SL.shutdown();
 			page.add(new Paragraph("SHUTDOWN INITIATED"));
 		} else {
-			throw new SystemException("Unauthorised access to shutdown from "+state.getClientIP());
+			throw new UserAccessDeniedException("Unauthorised access to shutdown from "+state.getClientIP());
 		}
 	}
 

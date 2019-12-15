@@ -1,11 +1,13 @@
 package net.coagulate.SL.Pages.HTML;
 
 import net.coagulate.Core.Tools.DumpableState;
+import net.coagulate.Core.Tools.SystemException;
 import net.coagulate.SL.Data.Session;
 import net.coagulate.SL.Data.User;
 import net.coagulate.SL.SL;
 import org.apache.http.*;
-import org.apache.http.protocol.*;
+import org.apache.http.protocol.ExecutionContext;
+import org.apache.http.protocol.HttpContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -58,8 +60,11 @@ public class State extends DumpableState {
 		loadSession();
 	}
 
-	@Nullable
-	public String sessionId() { return sessionid; }
+	@Nonnull
+	public String sessionId() {
+		if (sessionid==null) { throw new SystemException("Session ID is null"); }
+		return sessionid;
+	}
 
 	private Map<String, String> getMap(String mapname) {
 		if (!maps.containsKey(mapname)) {
@@ -90,7 +95,13 @@ public class State extends DumpableState {
 	public void put(String key, String value) { put("parameters", key, value); }
 
 	@Nullable
-	public User user() { return user; }
+	public User userNullable() { return user; }
+
+	@Nonnull
+	public User user() {
+		if (user==null) { throw new SystemException("There is no user in the SL HTML State"); }
+		return user;
+	}
 
 	public void user(@Nonnull User user) {
 		// got a session?

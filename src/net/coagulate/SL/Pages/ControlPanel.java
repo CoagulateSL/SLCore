@@ -4,13 +4,6 @@ import net.coagulate.Core.Tools.ExceptionTools;
 import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.SystemException;
 import net.coagulate.Core.Tools.UserException;
-import net.coagulate.GPHUD.Modules.Scripting.Language.ByteCode.ByteCode;
-import net.coagulate.GPHUD.Modules.Scripting.Language.ByteCode.ByteCodeDataType;
-import net.coagulate.GPHUD.Modules.Scripting.Language.GSCompiler;
-import net.coagulate.GPHUD.Modules.Scripting.Language.GSVM;
-import net.coagulate.GPHUD.Modules.Scripting.Language.Generated.GSParser;
-import net.coagulate.GPHUD.Modules.Scripting.Language.Generated.GSStart;
-import net.coagulate.GPHUD.Modules.Scripting.Language.Generated.ParseException;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.HTTPPipelines.AuthenticatedContainerHandler;
 import net.coagulate.SL.HTTPPipelines.Page;
@@ -23,9 +16,6 @@ import net.coagulate.SL.SL;
 
 import javax.annotation.Nonnull;
 import javax.mail.MessagingException;
-import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,7 +31,7 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 	@Override
 	protected void run(@Nonnull State state, @Nonnull Page page) {
 		if (!state.user().superuser()) {
-			throw new SystemException("Unauthorised access to Control Panel from " + state.user());
+			throw new SystemException("Unauthorised access to Control Panel from " + state.userNullable());
 		}
 		page.layout(Page.PAGELAYOUT.CENTERCOLUMN);
 		page.header("Control Panel");
@@ -90,6 +80,7 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 		if ("Shutdown".equals(state.get("Shutdown"))) {
 			SL.shutdown();
 		}
+		/*
 		if ("GS Test".equals(state.get("GS Test"))) {
 			String script=state.get("script");
 			ByteArrayInputStream bais=new ByteArrayInputStream(script.getBytes());
@@ -166,6 +157,7 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 				} catch (Throwable e) { page.paragraph("<b>Compilation failed : "+e.toString()+"</b>"); page.paragraph(ExceptionTools.toHTML(e));}
 			}
 		}
+		 */
 		page.form().
 				submit("GS Test").
 				submit("Thread Info").
@@ -173,8 +165,8 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 				submit("Region Stats Archival").
 				submit("UserException").
 				submit("SystemException").
-				submit("Shutdown").
-				add(new Raw("<br><textarea rows=10 cols=80 name=script>"+(state.get("script")!=null?state.get("script"):"")+"</textarea>"));
+				submit("Shutdown")
+				/*add(new Raw("<br><textarea rows=10 cols=80 name=script>"+(state.get("script")!=null?state.get("script"):"")+"</textarea>"))*/;
 	}
 
 

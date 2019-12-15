@@ -30,30 +30,30 @@ import static net.coagulate.SL.Config.LOCK_NUMBER_GPHUD_MAINTENANCE;
  */
 public class SL extends Thread {
 	public static final String VERSION = "v0.02.00";
-	public static boolean DEV = false;
+	public static boolean DEV;
 	@Nullable
-	private static JSLBot bot = null;
+	private static JSLBot bot;
 	@Nonnull
 	public static JSLBot bot() {
 		if (bot==null) { throw new SystemException("Access to bot before it is set up"); }
 		return bot;
 	}
 	@Nullable
-	private static Logger log = null;
-	private static boolean shutdown = false;
-	private static boolean errored = false;
+	private static Logger log;
+	private static boolean shutdown;
+	private static boolean errored;
 	@Nullable
-	private static DBConnection db = null;
+	private static DBConnection db;
 	@Nullable
-	private static HTTPListener listener = null;
-	private static int watchdogcycle = 0;
+	private static HTTPListener listener;
+	private static int watchdogcycle;
 	private static long laststats = new Date().getTime();
 	private static long nextarchival = new Date().getTime() + ((int) ((Math.random() * 60.0 * 45.0 * 1000.0)));
-	private static int gphudoffset = 0;
+	private static int gphudoffset;
 
 	private SL() {}
 
-	public static Logger getLogger(String subspace) { return Logger.getLogger(log.getName() + "." + subspace); }
+	public static Logger getLogger(final String subspace) { return Logger.getLogger(log.getName() + "." + subspace); }
 
 	@Nonnull
 	public static Logger getLogger() {
@@ -63,12 +63,12 @@ public class SL extends Thread {
 
 	public static void shutdown() { shutdown = true; }
 
-	public static void main(@Nonnull String[] args) {
+	public static void main(@Nonnull final String[] args) {
 		if (args.length > 0 && "DEV".equalsIgnoreCase(args[0])) { DEV = true; }
 		try {
 			try { startup(); }
 			// print stack trace is discouraged, but the log handler may not be ready yet.
-			catch (Throwable e) {
+			catch (final Throwable e) {
 				errored = true;
 				e.printStackTrace();
 				log.log(SEVERE, "Startup failed: " + e.getLocalizedMessage(), e);
@@ -79,11 +79,11 @@ public class SL extends Thread {
 				watchdog();
 				if (!shutdown) { Maintenance.maintenance(); }
 			}
-		} catch (Throwable t) {
+		} catch (final Throwable t) {
 			System.out.println("Main loop crashed: " + t);
 			t.printStackTrace();
 		}
-		try { _shutdown(); } catch (Throwable t) {
+		try { _shutdown(); } catch (final Throwable t) {
 			System.out.println("Shutdown crashed: " + t);
 			t.printStackTrace();
 		}
@@ -133,13 +133,13 @@ public class SL extends Thread {
 	private static void startLSLR() {
 		if (!DEV) {
 			log.config("Starting LSLR submodule for Quiet Life Rentals services");
-			try { LSLR.initialise(); } catch (SQLException e) { throw new SystemException("LSLR startup failed", e); }
+			try { LSLR.initialise(); } catch (final SQLException e) { throw new SystemException("LSLR startup failed", e); }
 			log.config("Started LSLR submodule");
 		}
 	}
 
 	private static void waitBot() {
-		try { bot.waitConnection(30000); } catch (IllegalStateException e) {}
+		try { bot.waitConnection(30000); } catch (final IllegalStateException e) {}
 		if (!bot.connected()) {
 			bot.shutdown("Failed to connect");
 			shutdown = true;
@@ -156,7 +156,7 @@ public class SL extends Thread {
 	}
 
 	public static void watchdog() {
-		try { Thread.sleep(1000); } catch (InterruptedException e) {}
+		try { Thread.sleep(1000); } catch (final InterruptedException e) {}
 		if (shutdown) return;
 		if (!DB.test()) {
 			log.log(SEVERE, "Database failed connectivity test, shutting down.");
@@ -196,12 +196,12 @@ public class SL extends Thread {
 		return "<img src=\"" + getBannerURL() + "\">";
 	}
 
-	public static void report(String header, @Nonnull Throwable t, @Nonnull DumpableState state) {
-		String output = ExceptionTools.dumpException(t) + "<br><hr><br>" + state.toHTML();
+	public static void report(final String header, @Nonnull final Throwable t, @Nonnull final DumpableState state) {
+		final String output = ExceptionTools.dumpException(t) + "<br><hr><br>" + state.toHTML();
 		LogHandler.alreadyMailed(t);
 		try {
 			MailTools.mail((DEV ? "Dev" : "PROD") + " EX : " + header + " - " + t.getLocalizedMessage(), output);
-		} catch (MessagingException e) { getLogger().log(SEVERE, "Exception mailing out about exception", e); }
+		} catch (final MessagingException e) { getLogger().log(SEVERE, "Exception mailing out about exception", e); }
 	}
 
 	@Override

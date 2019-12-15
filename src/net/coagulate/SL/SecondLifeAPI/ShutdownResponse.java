@@ -7,9 +7,9 @@ import org.json.JSONObject;
  */
 public class ShutdownResponse extends JSONObject {
 
-	public ShutdownResponse(String reason) {
+	public ShutdownResponse(final String reason) {
 		super();
-		this.put("reason", reason);
-		this.put("command", "SHUTDOWN");
+		put("reason", reason);
+		put("command", "SHUTDOWN");
 	}
 }

@@ -27,37 +27,37 @@ import static java.util.logging.Level.WARNING;
 public abstract class SLAPI implements HttpRequestHandler {
 
 	public Logger getLogger() {
-		String classname = this.getClass().getSimpleName();
+		final String classname = getClass().getSimpleName();
 		return SL.getLogger("SLAPI." + classname);
 	}
 
 	@Override
-	public void handle(HttpRequest req, @Nonnull HttpResponse resp, HttpContext hc) {
+	public void handle(final HttpRequest req, @Nonnull final HttpResponse resp, final HttpContext hc) {
 		try {
 			JSONObject content = new JSONObject();
 			if (req instanceof HttpEntityEnclosingRequest) {
-				HttpEntityEnclosingRequest r = (HttpEntityEnclosingRequest) req;
+				final HttpEntityEnclosingRequest r = (HttpEntityEnclosingRequest) req;
 				content = new JSONObject(ByteTools.convertStreamToString(r.getEntity().getContent()));
 			}
-			State st = new State(req, resp, hc);
-			String shard = req.getHeaders("X-SecondLife-Shard")[0].getValue();
+			final State st = new State(req, resp, hc);
+			final String shard = req.getHeaders("X-SecondLife-Shard")[0].getValue();
 			st.put("slapi_shard", shard);
 			st.put("slapi_region", req.getHeaders("X-SecondLife-Region")[0].getValue());
 			st.put("slapi_ownername", req.getHeaders("X-SecondLife-Owner-Name")[0].getValue());
 			st.put("slapi_ownerkey", req.getHeaders("X-SecondLife-Owner-Key")[0].getValue());
 			st.put("slapi_objectname", req.getHeaders("X-SecondLife-Object-Name")[0].getValue());
-			String objectkey = req.getHeaders("X-SecondLife-Object-Key")[0].getValue();
+			final String objectkey = req.getHeaders("X-SecondLife-Object-Key")[0].getValue();
 			st.put("slapi_objectkey", objectkey);
 			st.put("slapi_objectvelocity", req.getHeaders("X-SecondLife-Local-Velocity")[0].getValue());
 			st.put("slapi_objectrotation", req.getHeaders("X-SecondLife-Local-Rotation")[0].getValue());
 			st.put("slapi_objectposition", req.getHeaders("X-SecondLife-Local-Position")[0].getValue());
 			if (!"Production".equalsIgnoreCase(shard)) {
-				SL.getLogger(this.getClass().getSimpleName()).severe("INCORRECT SHARD : " + objectDump(st));
+				SL.getLogger(getClass().getSimpleName()).severe("INCORRECT SHARD : " + objectDump(st));
 				resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
 				return;
 			}
 			if (needsDigest()) {
-				String digest = content.optString("digest");
+				final String digest = content.optString("digest");
 				if (objectkey == null) {
 					SL.getLogger().log(SEVERE, "No object owner key provided to Second Life API");
 					resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
@@ -68,7 +68,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 					resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
 					return;
 				}
-				String timestamp = content.optString("timestamp");
+				final String timestamp = content.optString("timestamp");
 				if (timestamp == null) {
 					SL.getLogger().log(SEVERE, "No timestamp provided to Second Life API");
 					resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
@@ -82,32 +82,32 @@ public abstract class SLAPI implements HttpRequestHandler {
 					resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
 					return;
 				}
-				String targetdigest = Crypto.SHA1(objectkey + timestamp + "***REMOVED***");
+				final String targetdigest = Crypto.SHA1(objectkey + timestamp + "***REMOVED***");
 				if (!targetdigest.equalsIgnoreCase(digest)) {
 					SL.getLogger().log(SEVERE, "Incorrect digest provided to Second Life API");
 					resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
 					return;
 				}
 			}
-			JSONObject response = handleJSON(content, st);
+			final JSONObject response = handleJSON(content, st);
 			resp.setEntity(new StringEntity(response.toString(), ContentType.APPLICATION_JSON));
 			resp.setStatusCode(HttpStatus.SC_OK);
-		} catch (Exception ex) {
+		} catch (final Exception ex) {
 			SL.getLogger().log(WARNING, "Unexpected exception thrown in page handler", ex);
 			resp.setStatusCode(HttpStatus.SC_OK);
-			JSONObject object = new JSONObject();
-			object.put("error", "Internal error: " + ex.toString());
+			final JSONObject object = new JSONObject();
+			object.put("error", "Internal error: " + ex);
 			resp.setEntity(new StringEntity(object.toString(), ContentType.APPLICATION_JSON));
 		}
 	}
 
-	protected void checkVersion(@Nonnull JSONObject object, @Nonnull String match, @Nonnull State st) {
+	protected void checkVersion(@Nonnull final JSONObject object, @Nonnull final String match, @Nonnull final State st) {
 		String version = "NULL";
 		if (object.has("version")) {
 			version = object.getString("version");
 			if (match.equals(version)) { return; }
 		}
-		SL.getLogger(this.getClass().getSimpleName()).fine("Version mismatch : " + match + ">" + version + " : " + objectDump(st));
+		SL.getLogger(getClass().getSimpleName()).fine("Version mismatch : " + match + ">" + version + " : " + objectDump(st));
 	}
 
 
@@ -117,7 +117,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 	protected boolean needsDigest() { return true; }
 
 	@Nonnull
-	String objectDump(@Nonnull State st) {
+	String objectDump(@Nonnull final State st) {
 		return "'" + st.get("slapi_objectname") + "' [" + st.get("slapi_objectkey") + "] owned by " + st.get("slapi_ownername") + " [" + st.get("slapi_ownerkey") + "] at " + st.get("slapi_region") + " " + st.get("slapi_objectposition");
 	}
 }

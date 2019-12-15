@@ -19,19 +19,19 @@ import static java.util.logging.Level.*;
  * @author Iain Price <gphud@predestined.net>
  */
 public class Transmit extends Thread {
-	public static boolean debugspawn = false;
+	public static boolean debugspawn;
 	final String url;
 	@Nullable
-	JSONObject json = null;
+	JSONObject json;
 	@Nullable
-	JSONObject jsonresponse = null;
-	int delay = 0;
-	public Transmit(@Nullable JSONObject json, String url) {
+	JSONObject jsonresponse;
+	int delay;
+	public Transmit(@Nullable final JSONObject json, final String url) {
 		this.url = url;
 		this.json = json;
 	}
 
-	public Transmit(@Nullable JSONObject json, String url, int delay) {
+	public Transmit(@Nullable final JSONObject json, final String url, final int delay) {
 		this.url = url;
 		this.json = json;
 		this.delay = delay;
@@ -45,9 +45,9 @@ public class Transmit extends Thread {
 	// can call .start() to background run this, or .run() to async run inline/inthread
 	@Override
 	public void run() {
-		boolean debug = false;
+		final boolean debug = false;
 		if (delay > 0) {
-			try { Thread.sleep(delay * 1000); } catch (InterruptedException e) {}
+			try { Thread.sleep(delay * 1000); } catch (final InterruptedException e) {}
 		}
 		int retries = 5;
 		String response = null;
@@ -55,24 +55,24 @@ public class Transmit extends Thread {
 		while (response == null && retries > 0) {
 			try {
 				response = sendAttempt();
-			} catch (FileNotFoundException e) {
-				getLogger().log(FINE, "404 on url, revoked connection while sending " + json.toString());
+			} catch (final FileNotFoundException e) {
+				getLogger().log(FINE, "404 on url, revoked connection while sending " + json);
 				return;
-			} catch (MalformedURLException ex) {
-				getLogger().log(WARNING, "MALFORMED URL: " + url + ", revoked connection while sending " + json.toString());
+			} catch (final MalformedURLException ex) {
+				getLogger().log(WARNING, "MALFORMED URL: " + url + ", revoked connection while sending " + json);
 				return;
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				retries--;
 				getLogger().log(INFO, "IOException " + e.getMessage() + " retries=" + retries + " left");
-				try { Thread.sleep(5 * 1000); } catch (InterruptedException ee) {}
+				try { Thread.sleep(5 * 1000); } catch (final InterruptedException ee) {}
 			}
 		}
-		if (response == null) { getLogger().log(WARNING, "Failed all retransmission attempts for " + json.toString()); }
+		if (response == null) { getLogger().log(WARNING, "Failed all retransmission attempts for " + json); }
 		if (response != null && !response.isEmpty()) {
 			try {
 				jsonresponse = new JSONObject(response);
 				// process response?
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				getLogger().log(WARNING, "Exception in response parser", e);
 			}
 		}
@@ -80,8 +80,8 @@ public class Transmit extends Thread {
 
 	@Nonnull
 	private String sendAttempt() throws IOException {
-		boolean debug = false;
-		URLConnection transmission = new URL(url).openConnection();
+		final boolean debug = false;
+		final URLConnection transmission = new URL(url).openConnection();
 		transmission.setDoOutput(true);
 		transmission.setAllowUserInteraction(false);
 		transmission.setDoInput(true);
@@ -89,13 +89,13 @@ public class Transmit extends Thread {
 		transmission.setReadTimeout(35000);
 		transmission.connect();
 
-		OutputStreamWriter out = new OutputStreamWriter(transmission.getOutputStream());
-		out.write(json.toString() + "\n");
+		final OutputStreamWriter out = new OutputStreamWriter(transmission.getOutputStream());
+		out.write(json + "\n");
 		out.flush();
 		out.close();
-		BufferedReader rd = new BufferedReader(new InputStreamReader(transmission.getInputStream()));
+		final BufferedReader rd = new BufferedReader(new InputStreamReader(transmission.getInputStream()));
 		String line;
-		StringBuilder response = new StringBuilder();
+		final StringBuilder response = new StringBuilder();
 		while ((line = rd.readLine()) != null) {
 			response.append(line).append("\n");
 		}

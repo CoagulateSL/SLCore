@@ -16,7 +16,7 @@ public class RegisterURL extends SLAPI {
 
 	@Nonnull
 	@Override
-	protected JSONObject handleJSON(JSONObject object, State st) {
+	protected JSONObject handleJSON(final JSONObject object, final State st) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 

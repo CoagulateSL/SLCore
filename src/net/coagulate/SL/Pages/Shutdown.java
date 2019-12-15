@@ -1,6 +1,6 @@
 package net.coagulate.SL.Pages;
 
-import net.coagulate.Core.Tools.SystemException;
+import net.coagulate.Core.Exceptions.SystemException;
 import net.coagulate.SL.HTTPPipelines.ContainerHandler;
 import net.coagulate.SL.HTTPPipelines.Page;
 import net.coagulate.SL.HTTPPipelines.PageMapper.Url;

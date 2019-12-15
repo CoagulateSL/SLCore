@@ -2,8 +2,8 @@ package net.coagulate.SL.Pages;
 
 import net.coagulate.Core.Tools.ExceptionTools;
 import net.coagulate.Core.Tools.MailTools;
-import net.coagulate.Core.Tools.SystemException;
-import net.coagulate.Core.Tools.UserException;
+import net.coagulate.Core.Exceptions.SystemException;
+import net.coagulate.Core.Exceptions.UserException;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.HTTPPipelines.AuthenticatedContainerHandler;
 import net.coagulate.SL.HTTPPipelines.Page;

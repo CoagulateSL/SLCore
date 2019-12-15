@@ -1,7 +1,7 @@
 package net.coagulate.SL.Pages.HTML;
 
 import net.coagulate.Core.Tools.DumpableState;
-import net.coagulate.Core.Tools.SystemException;
+import net.coagulate.Core.Exceptions.SystemException;
 import net.coagulate.SL.Data.Session;
 import net.coagulate.SL.Data.User;
 import net.coagulate.SL.SL;

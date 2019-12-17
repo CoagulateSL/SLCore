@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
  */
 public class SignificantFigures extends Renderer {
 
-	int sf;
+	final int sf;
 
 	public SignificantFigures(final int sf) { this.sf = sf; }
 

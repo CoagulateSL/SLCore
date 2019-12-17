@@ -40,7 +40,7 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 			page.paragraph("Sending mail");
 			try {
 				MailTools.mail("CL Cluster " + Config.getHostName(), "sl-cluster-alerts@predestined.net", "SL Mail Tester", "sl-cluster-alerts@predestined.net", "SL Cluster mail test", "Test OK");
-			} catch (final MessagingException ex) {
+			} catch (@Nonnull final MessagingException ex) {
 				Logger.getLogger(ControlPanel.class.getName()).log(Level.SEVERE, null, ex);
 				page.add(new Raw(ExceptionTools.toHTML(ex)));
 			}

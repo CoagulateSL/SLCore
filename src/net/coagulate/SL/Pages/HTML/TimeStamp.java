@@ -16,7 +16,7 @@ public class TimeStamp extends Renderer {
 		if (value == null || value.isEmpty() || Integer.parseInt(value) == 0) { return "-"; }
 		String timezone = "America/Los_Angeles";
 		if (st.userNullable() != null) {
-			timezone = st.userNullable().getTimeZone();
+			timezone = st.user().getTimeZone();
 		}
 		return UnixTime.fromUnixTime(Integer.parseInt(value), timezone);
 	}

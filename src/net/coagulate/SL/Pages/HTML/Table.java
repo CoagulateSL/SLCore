@@ -40,6 +40,7 @@ public class Table extends Container {
 	@Nonnull
 	public Table add(final Element e) {
 		checkRow();
+		if (row==null) { openRow(); }
 		row.add(e);
 		return this;
 	}
@@ -47,6 +48,7 @@ public class Table extends Container {
 	@Nonnull
 	public Table add(final String s) {
 		checkRow();
+		if (row==null) { openRow(); }
 		row.add(new Raw(s));
 		return this;
 	}

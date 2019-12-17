@@ -6,7 +6,6 @@ import net.coagulate.SL.Data.Session;
 import net.coagulate.SL.Data.User;
 import net.coagulate.SL.SL;
 import org.apache.http.*;
-import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 
 import javax.annotation.Nonnull;
@@ -121,10 +120,10 @@ public class State extends DumpableState {
 		final Header[] headers = request.getHeaders("X-Forwarded-For");
 		if (headers.length == 0) {
 			try {
-				final HttpInetConnection connection = (HttpInetConnection) httpcontext.getAttribute(ExecutionContext.HTTP_CONNECTION);
+				final HttpInetConnection connection = (HttpInetConnection) httpcontext.getAttribute(org.apache.http.protocol.ExecutionContext.HTTP_CONNECTION);
 				final InetAddress ia = connection.getRemoteAddress();
 				return "DIRECT:" + ia.getHostAddress();
-			} catch (final Exception e) { SL.getLogger().log(Level.WARNING,"Exception getting client address",e); return "UNKNOWN"; }
+			} catch (@Nonnull final Exception e) { SL.getLogger().log(Level.WARNING,"Exception getting client address",e); return "UNKNOWN"; }
 		}
 		if (headers.length > 1) { return "MULTIPLE?:" + headers[0].getValue(); }
 		return headers[0].getValue();
@@ -132,7 +131,8 @@ public class State extends DumpableState {
 
 	public void logout() {
 		if (sessionid != null) {
-			Session.get(sessionid).logout();
+			final Session logoutsession = Session.get(sessionid);
+			if (logoutsession!=null) { logoutsession.logout(); }
 		}
 		sessionid = null;
 		user = null;

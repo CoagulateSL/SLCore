@@ -9,6 +9,7 @@ import java.util.Map;
  */
 public class Submit extends Container {
 
+	@Nullable
 	final String name;
 	@Nullable
 	String value;
@@ -19,7 +20,7 @@ public class Submit extends Container {
 		super.add(new Raw(name));
 	}
 
-	public Submit(final String name, @Nullable final String value) {
+	public Submit(@Nullable final String name, @Nullable final String value) {
 		this.name = name;
 		this.value = value;
 	}

@@ -81,12 +81,12 @@ public abstract class Handler implements HttpRequestHandler {
 			}
 			resp.setStatusCode(state.status());
 
-		} catch (final URISyntaxException use) { // dont log the exception because we don't want the mail.  this is probably a script kiddie hack attempt that doesn't work
-			SL.getLogger().log(WARNING, "Unexpected exception thrown in page handler");
+		} catch (@Nonnull final URISyntaxException use) { // dont log the exception because we don't want the mail.  this is probably a script kiddie hack attempt that doesn't work
+			SL.getLogger().log(WARNING, "PageHandler");
 			resp.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
 			resp.setEntity(new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Whatever you're trying to do is illegal.</p></body></html>", ContentType.TEXT_HTML));
-		} catch (final Exception ex) {
-			SL.getLogger().log(SEVERE, "Unexpected exception thrown in page handler", ex);
+		} catch (@Nonnull final Exception ex) {
+			SL.getLogger().log(SEVERE, "PageHandler", ex);
 			resp.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
 			resp.setEntity(new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>", ContentType.TEXT_HTML));
 		}

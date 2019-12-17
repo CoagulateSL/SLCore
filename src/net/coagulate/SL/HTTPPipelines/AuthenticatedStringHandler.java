@@ -50,7 +50,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
 	@Override
 	public StringEntity handleContent(@Nonnull final State state) {
 		try {
-			String content = "<p><b>WEIRD INTERNAL LOGIC ERROR</b></p>";
+			String content;
 			final String username = state.get("login_username");
 			final String password = state.get("login_password");
 			if (!checkAuth(state)) {
@@ -75,14 +75,14 @@ public abstract class AuthenticatedStringHandler extends Handler {
 					return new StringEntity(new Page().add(new Raw(failPage())).toHtml(state), ContentType.TEXT_HTML);
 				}
 			}
-			try { content = handleString(state); } catch (final UserException ue) {
+			try { content = handleString(state); } catch (@Nonnull final UserException ue) {
 				SL.report("AuthenticatedStringHandler caught exception", ue, state);
 				SL.getLogger().log(WARNING, "User exception propagated to handler", ue);
 				content = "<p>Exception: " + ue.getLocalizedMessage() + "</p>";
 			}
 			return new StringEntity(content, ContentType.TEXT_HTML);
-		} catch (final Exception ex) {
-			SL.getLogger().log(SEVERE, "Unexpected exception thrown in page handler", ex);
+		} catch (@Nonnull final Exception ex) {
+			SL.getLogger().log(SEVERE, "PageHandler", ex);
 			state.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
 			return new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>", ContentType.TEXT_HTML);
 		}
@@ -97,7 +97,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
 		state.put("parameters", "login_password", "OBSCURED FROM DEEPER CODE");
 		if ("Login".equals(state.get("Login")) && !username.isEmpty() && !password.isEmpty()) {
 			User u = null;
-			try { u = User.get(username, false); } catch (final NoDataException ignore) {}
+			try { u = User.get(username, false); } catch (@Nonnull final NoDataException ignore) {}
 			if (u == null) {
 				SL.getLogger().warning("Attempt to authenticate as invalid user '" + username + "' from " + state.getClientIP());
 				return false;

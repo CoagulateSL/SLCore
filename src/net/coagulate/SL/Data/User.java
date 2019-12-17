@@ -90,11 +90,11 @@ public class User extends LockableTable {
 	public static User get(String username, final boolean createifnecessary) {
 		username = formatUsername(username);
 		Integer id = null;
-		try { id=SL.getDB().dqi("select id from users where username=?", username); } catch (final NoDataException e) {}
+		try { id=SL.getDB().dqi("select id from users where username=?", username); } catch (@Nonnull final NoDataException e) {}
 		if (id != null) { return factory(id, username); }
 		if (!createifnecessary) { throw new NoDataException("Can not find existing user for "+username); }
 		SL.getDB().d("insert into users(username) values(?)", username);
-		try { id = SL.getDB().dqi( "select id from users where username=?", username); } catch (final NoDataException e) {}
+		try { id = SL.getDB().dqi( "select id from users where username=?", username); } catch (@Nonnull final NoDataException e) {}
 		if (id != null) { return factory(id, username); }
 		throw new SystemConsistencyException("Created user for " + username + " and then couldn't find its id");
 	}
@@ -112,9 +112,9 @@ public class User extends LockableTable {
 			return null;
 		}
 		try {
-			final Integer userid = SL.getDB().dqi("select id from users where developerkey=?", key);
+			final int userid = SL.getDB().dqinn("select id from users where developerkey=?", key);
 			return get(userid);
-		} catch (final NoDataException e) { return null; }
+		} catch (@Nonnull final NoDataException e) { return null; }
 	}
 
 	@Nullable
@@ -122,16 +122,16 @@ public class User extends LockableTable {
 		// purge old tokens
 		SL.getDB().d("update users set ssotoken=null,ssoexpires=null where ssoexpires<?", UnixTime.getUnixTime());
 		try {
-			final Integer match = SL.getDB().dqi("select id from users where ssotoken=?", token);
+			final int match = SL.getDB().dqinn("select id from users where ssotoken=?", token);
 			SL.getDB().d("update users set ssotoken=null,ssoexpires=null where id=?", match);
 			return get(match);
-		} catch (final NoDataException e) { return null; }
+		} catch (@Nonnull final NoDataException e) { return null; }
 	}
 
 	public static User findOrCreateAvatar(@Nullable String name, @Nonnull final String key) throws SystemException {
 		if (name == null || "".equals(name)) { name = ""; }
 		Integer userid = null;
-		try { userid=SL.getDB().dqi( "select id from users where (username=? or avatarkey=?)", name, key); } catch (final NoDataException e){}
+		try { userid=SL.getDB().dqi( "select id from users where (username=? or avatarkey=?)", name, key); } catch (@Nonnull final NoDataException e){}
 		if (userid == null) {
 			if (name.isEmpty()) { throw new SystemBadValueException("Empty avatar name blocks creation"); }
 			if (key.isEmpty()) { throw new SystemBadValueException("Empty avatar key blocks creation"); }
@@ -144,11 +144,11 @@ public class User extends LockableTable {
 					SL.getLogger("User").info("Creating new avatar entry for '" + name + "'");
 				}
 				SL.getDB().d("insert into users(username,lastactive,avatarkey) values(?,?,?)", name, getUnixTime(), key);
-			} catch (final DBException ex) {
+			} catch (@Nonnull final DBException ex) {
 				SL.getLogger("User").log(SEVERE, "Exception creating avatar " + name, ex);
 				throw ex;
 			}
-			try { userid = SL.getDB().dqi( "select id from users where avatarkey=?", key); } catch (final NoDataException e) {}
+			try { userid = SL.getDB().dqi( "select id from users where avatarkey=?", key); } catch (@Nonnull final NoDataException e) {}
 		}
 		if (userid == null) {
 			SL.getLogger("User").severe("Failed to find avatar '" + name + "' after creating it");
@@ -163,7 +163,7 @@ public class User extends LockableTable {
 		final Map<Integer, String> results = new TreeMap<>();
 		final Results rows = SL.getDB().dq("select id,username from users");
 		for (final ResultsRow r : rows) {
-			results.put(r.getIntNullable("id"), TableRow.getLink(r.getStringNullable("username"), "avatars", r.getIntNullable("id")));
+			results.put(r.getInt("id"), TableRow.getLink(r.getString("username"), "avatars", r.getInt("id")));
 		}
 		return results;
 	}
@@ -186,9 +186,9 @@ public class User extends LockableTable {
 	public static User findOptional(@Nullable final String nameorkey) {
 		if (nameorkey == null || "".equals(nameorkey)) { throw new UserInputEmptyException("Avatar name/key not supplied"); }
 		try {
-			final Integer userid = SL.getDB().dqi("select id from users where username=? or avatarkey=?", nameorkey, nameorkey);
+			final int userid = SL.getDB().dqinn("select id from users where username=? or avatarkey=?", nameorkey, nameorkey);
 			return get(userid);
-		} catch (final NoDataException e) { return null; }
+		} catch (@Nonnull final NoDataException e) { return null; }
 	}
 
 	@Nonnull
@@ -213,7 +213,7 @@ public class User extends LockableTable {
 			final String s = getDeveloperKey();
 			if (s == null || s.isEmpty()) { return false; }
 			return true;
-		} catch (final NoDataException e) { return false; }
+		} catch (@Nonnull final NoDataException e) { return false; }
 	}
 
 	@Nullable
@@ -222,7 +222,7 @@ public class User extends LockableTable {
 	}
 
 	public boolean isSuperAdmin() {
-		final Integer isadmin = dqi( "select superadmin from users where id=?", getId());
+		final int isadmin = dqinn( "select superadmin from users where id=?", getId());
 		return isadmin == 1;
 	}
 
@@ -251,13 +251,13 @@ public class User extends LockableTable {
 
 	public int balance() {
 		try {
-			return dqi("select sum(ammount) from journal where userid=?", getId());
-		} catch (final NoDataException e) { return 0; }
+			return dqinn("select sum(ammount) from journal where userid=?", getId());
+		} catch (@Nonnull final NoDataException e) { return 0; }
 	}
 
 	public void bill(final int ammount, final String description) throws UserException {
 		final int serial;
-		try {serial = lock();} catch (final LockException e) {
+		try {serial = lock();} catch (@Nonnull final LockException e) {
 			throw new UserInputStateException("Your balance is currently being updated elsewhere, please retry in a moment");
 		}
 		try {
@@ -283,7 +283,7 @@ public class User extends LockableTable {
 		}
 		final Set<Subscription> subs = new HashSet<>();
 		for (final ResultsRow r : res) {
-			subs.add(new Subscription(r.getIntNullable("id")));
+			subs.add(new Subscription(r.getInt("id")));
 		}
 		return subs;
 	}
@@ -311,7 +311,7 @@ public class User extends LockableTable {
 		final ResultsRow r = dqone( "select newemail,newemailtoken,newemailexpires from users where id=?", getId());
 		final String newemail = r.getStringNullable("newemail");
 		final String newtoken = r.getStringNullable("newemailtoken");
-		final int expires = r.getIntNullable("newemailexpires");
+		final int expires = r.getInt("newemailexpires");
 		if (token == null || token.isEmpty()) { throw new UserInputEmptyException("No token passed"); }
 		if (!token.equals(newtoken)) { throw new UserInputStateException("Email token does not match"); }
 		if (expires < UnixTime.getUnixTime()) {
@@ -357,9 +357,9 @@ public class User extends LockableTable {
 	 *
 	 * @return The last active time for an avatar, possibly null.
 	 */
-	@Nullable
+	@Nonnull
 	public Integer getLastActive() {
-		return dqi( "select lastactive from users where id=?", getId());
+		return dqinn( "select lastactive from users where id=?", getId());
 	}
 
 

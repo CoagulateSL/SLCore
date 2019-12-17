@@ -24,19 +24,19 @@ public class RegionStats extends Table {
 	@Nullable
 	public static Float getAverage(@Nonnull final Regions reg, final String stattype, final int time) {
 		try { return SL.getDB().dqf( "select avg(statavg) from regionstats where regionid=? and timestamp>? and stattype=?", reg.getId(), UnixTime.getUnixTime() - time, stattype); }
-		catch (final NoDataException e) { return null; }
+		catch (@Nonnull final NoDataException e) { return null; }
 	}
 
 	@Nullable
 	public static Float getMin(@Nonnull final Regions reg, final String stattype, final int time) {
 		try { return SL.getDB().dqf( "select min(statavg) from regionstats where regionid=? and timestamp>? and stattype=?", reg.getId(), UnixTime.getUnixTime() - time, stattype); }
-		catch (final NoDataException e) { return null; }
+		catch (@Nonnull final NoDataException e) { return null; }
 	}
 
 	@Nullable
 	public static Float getMax(@Nonnull final Regions reg, final String stattype, final int time) {
 		try { return SL.getDB().dqf( "select max(statavg) from regionstats where regionid=? and timestamp>? and stattype=?", reg.getId(), UnixTime.getUnixTime() - time, stattype); }
-		catch (final NoDataException e) { return null; }
+		catch (@Nonnull final NoDataException e) { return null; }
 	}
 
 	@Nonnull
@@ -99,8 +99,8 @@ public class RegionStats extends Table {
 				log.fine("Stopping incomplete archival run due to runtime>30 seconds");
 				return;
 			}
-			final int regionid = r.getIntNullable("regionid");
-			int basetime = r.getIntNullable("basetime");
+			final int regionid = r.getInt("regionid");
+			int basetime = r.getInt("basetime");
 			final String stattype = r.getStringNullable("stattype");
 			final float min = r.getFloat("newmin");
 			final float max = r.getFloat("newmax");
@@ -121,8 +121,8 @@ public class RegionStats extends Table {
 				log.fine("Stopping incomplete archival run due to runtime>30 seconds");
 				return;
 			}
-			final int regionid = r.getIntNullable("regionid");
-			int basetime = r.getIntNullable("basetime");
+			final int regionid = r.getInt("regionid");
+			int basetime = r.getInt("basetime");
 			final String stattype = r.getStringNullable("stattype");
 			final float min = r.getFloat("newmin");
 			final float max = r.getFloat("newmax");

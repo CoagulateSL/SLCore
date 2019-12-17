@@ -41,8 +41,8 @@ public class SSOExchange implements HttpRequestHandler {
 			resp.addHeader("Set-Cookie", "coagulateslsessionid=" + session.token() + "; HttpOnly; Path=/; Secure;");
 			resp.addHeader("Location", "/");
 			resp.setStatusCode(HttpStatus.SC_SEE_OTHER);
-		} catch (final Exception ex) {
-			SL.getLogger().log(SEVERE, "Unexpected exception thrown in SSO page handler", ex);
+		} catch (@Nonnull final Exception ex) {
+			SL.getLogger().log(SEVERE, "SSO?", ex);
 			resp.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
 			resp.setEntity(new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>", ContentType.TEXT_HTML));
 		}

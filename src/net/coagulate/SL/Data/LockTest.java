@@ -11,7 +11,7 @@ public class LockTest extends LockableTable {
 
 	public LockTest(final int id) {
 		super(id);
-		final Integer count = dqi( "select count(*) from locktest where id=?", id);
+		final int count = dqinn( "select count(*) from locktest where id=?", id);
 		if (count == 0) { throw new NoDataException("Lock test row " + id + " does not exist"); }
 	}
 

@@ -5,14 +5,13 @@ import net.coagulate.Core.Tools.UnixTime;
 import net.coagulate.SL.SL;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * @author Iain Price
  */
 public class RegionLog extends Table {
 
-	@Nullable
+	@Nonnull
 	public static Results getLast(@Nonnull final Regions region) {
 		return SL.getDB().dq("select tds,changetype,oldvalue,newvalue from regionlog where regionid=? order by tds desc limit 0,100", region.getId());
 	}

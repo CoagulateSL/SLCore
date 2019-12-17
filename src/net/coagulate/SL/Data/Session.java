@@ -27,21 +27,21 @@ public class Session extends Table {
 	public static Session get(final String sessionid) {
 		try {
 			final ResultsRow user = SL.getDB().dqone("select userid,expires from sessions where cookie=? and expires>?", sessionid, UnixTime.getUnixTime());
-			final int userid = user.getIntNullable("userid");
-			final int expires = user.getIntNullable("expires");
+			final int userid = user.getInt("userid");
+			final int expires = user.getInt("expires");
 			final int expiresin = expires - UnixTime.getUnixTime();
 			if (expiresin < (Config.SESSIONLIFESPANSECONDS / 2)) {
 				// refresh
 				SL.getDB().d("update sessions set expires=? where cookie=?", UnixTime.getUnixTime() + Config.SESSIONLIFESPANSECONDS, sessionid);
 			}
 			return new Session(sessionid, User.get(userid));
-		} catch (final NoDataException e) { return null; }
+		} catch (@Nonnull final NoDataException e) { return null; }
 	}
 
 	@Nonnull
 	public static Session create(@Nonnull final User user) {
 		// we abuse this "pipeline" to purge old sessions
-		try { SL.getDB().d("delete from sessions where expires<?", UnixTime.getUnixTime()); } catch (final Exception e) {}
+		try { SL.getDB().d("delete from sessions where expires<?", UnixTime.getUnixTime()); } catch (@Nonnull final Exception e) {}
 		final int userid = user.getId();
 		final String sessionid = Tokens.generateToken();
 		final int expires = UnixTime.getUnixTime() + Config.SESSIONLIFESPANSECONDS;

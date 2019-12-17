@@ -289,10 +289,10 @@ public class User extends LockableTable {
 	}
 
 	@Nullable
-	public String getEmail() { return getString("email"); }
+	public String getEmail() { return getStringNullable("email"); }
 
 	@Nullable
-	public String getNewEmail() { return getString("newemail"); }
+	public String getNewEmail() { return getStringNullable("newemail"); }
 
 	/**
 	 * Sets the new email address, returning the token that must be used to validate it.
@@ -327,15 +327,15 @@ public class User extends LockableTable {
 	 *
 	 * @return UUID (Avatar Key)
 	 */
-	@Nullable
+	@Nonnull
 	public String getUUID() {
 		return getString("avatarkey");
 	}
 
 
-	@Nullable
+	@Nonnull
 	public String getTimeZone() {
-		final String s = getString("timezone");
+		final String s = getStringNullable("timezone");
 		if (s == null) { return "America/Los_Angeles"; }
 		if ("SLT".equals(s)) { return "America/Los_Angeles"; }
 		return s;

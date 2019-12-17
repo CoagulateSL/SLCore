@@ -36,7 +36,7 @@ public class Regions extends LockableTable {
 	public String getTableName() { return "regions"; }
 
 	@Nullable
-	public String getStatus() { return getString("status"); }
+	public String getStatus() { return getStringNullable("status"); }
 
 	public int getLastUpdate() {
 		final Integer lu = getIntNullable("lastperf");
@@ -63,6 +63,6 @@ public class Regions extends LockableTable {
 
 	@Nullable
 	public String getName() {
-		return getString("region");
+		return getStringNullable("region");
 	}
 }

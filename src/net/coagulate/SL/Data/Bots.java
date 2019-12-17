@@ -19,13 +19,13 @@ public class Bots extends LockableTable {
 	}
 
 	@Nullable
-	public String getFirstName() { return getString("firstname"); }
+	public String getFirstName() { return getStringNullable("firstname"); }
 
 	@Nullable
-	public String getLastName() { return getString("lastname"); }
+	public String getLastName() { return getStringNullable("lastname"); }
 
 	@Nullable
-	public String getPassword() { return getString("password"); }
+	public String getPassword() { return getStringNullable("password"); }
 
 	@Nonnull
 	public User getOwner() { return User.get(getInt("ownerid")); }

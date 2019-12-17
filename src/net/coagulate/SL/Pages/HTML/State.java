@@ -59,9 +59,13 @@ public class State extends DumpableState {
 		loadSession();
 	}
 
+	@Nullable
+	public String sessionIdNullable() {
+		return sessionid;
+	}
 	@Nonnull
 	public String sessionId() {
-		if (sessionid==null) { throw new SystemConsistencyException("Session ID is null"); }
+		if (sessionid == null) { throw new SystemConsistencyException("Session ID is null"); }
 		return sessionid;
 	}
 

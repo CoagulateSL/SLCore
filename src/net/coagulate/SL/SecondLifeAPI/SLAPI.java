@@ -92,8 +92,8 @@ public abstract class SLAPI implements HttpRequestHandler {
 			final JSONObject response = handleJSON(content, st);
 			resp.setEntity(new StringEntity(response.toString(), ContentType.APPLICATION_JSON));
 			resp.setStatusCode(HttpStatus.SC_OK);
-		} catch (final Exception ex) {
-			SL.getLogger().log(WARNING, "Unexpected exception thrown in page handler", ex);
+		} catch (@Nonnull final Exception ex) {
+			SL.getLogger().log(WARNING, "PageHandler", ex);
 			resp.setStatusCode(HttpStatus.SC_OK);
 			final JSONObject object = new JSONObject();
 			object.put("error", "Internal error: " + ex);

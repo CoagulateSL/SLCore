@@ -22,6 +22,7 @@ public class Transmit extends Thread {
 	public static boolean debugspawn;
 	final String url;
 	@Nullable
+	final
 	JSONObject json;
 	@Nullable
 	JSONObject jsonresponse;
@@ -47,7 +48,7 @@ public class Transmit extends Thread {
 	public void run() {
 		final boolean debug = false;
 		if (delay > 0) {
-			try { Thread.sleep(delay * 1000); } catch (final InterruptedException e) {}
+			try { Thread.sleep(delay * 1000); } catch (@Nonnull final InterruptedException e) {}
 		}
 		int retries = 5;
 		String response = null;
@@ -55,16 +56,16 @@ public class Transmit extends Thread {
 		while (response == null && retries > 0) {
 			try {
 				response = sendAttempt();
-			} catch (final FileNotFoundException e) {
+			} catch (@Nonnull final FileNotFoundException e) {
 				getLogger().log(FINE, "404 on url, revoked connection while sending " + json);
 				return;
-			} catch (final MalformedURLException ex) {
+			} catch (@Nonnull final MalformedURLException ex) {
 				getLogger().log(WARNING, "MALFORMED URL: " + url + ", revoked connection while sending " + json);
 				return;
-			} catch (final IOException e) {
+			} catch (@Nonnull final IOException e) {
 				retries--;
 				getLogger().log(INFO, "IOException " + e.getMessage() + " retries=" + retries + " left");
-				try { Thread.sleep(5 * 1000); } catch (final InterruptedException ee) {}
+				try { Thread.sleep(5 * 1000); } catch (@Nonnull final InterruptedException ee) {}
 			}
 		}
 		if (response == null) { getLogger().log(WARNING, "Failed all retransmission attempts for " + json); }
@@ -72,7 +73,7 @@ public class Transmit extends Thread {
 			try {
 				jsonresponse = new JSONObject(response);
 				// process response?
-			} catch (final Exception e) {
+			} catch (@Nonnull final Exception e) {
 				getLogger().log(WARNING, "Exception in response parser", e);
 			}
 		}

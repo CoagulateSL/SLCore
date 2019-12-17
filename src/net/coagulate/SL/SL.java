@@ -54,12 +54,13 @@ public class SL extends Thread {
 
 	private SL() {}
 
-	public static Logger getLogger(final String subspace) { return Logger.getLogger(log.getName() + "." + subspace); }
+	@Nonnull
+	public static Logger getLogger(final String subspace) { return Logger.getLogger("SL." + subspace); }
 
 	@Nonnull
 	public static Logger getLogger() {
-		if (log==null) { throw new SystemInitialisationException("Logger not yet initialised"); }
-		return log;
+		//if (log() ==null) { throw new SystemInitialisationException("Logger not yet initialised"); }
+		return log();
 	}
 
 	public static void shutdown() { shutdown = true; }
@@ -69,10 +70,10 @@ public class SL extends Thread {
 		try {
 			try { startup(); }
 			// print stack trace is discouraged, but the log handler may not be ready yet.
-			catch (final Throwable e) {
+			catch (@Nonnull final Throwable e) {
 				errored = true;
 				e.printStackTrace();
-				log.log(SEVERE, "Startup failed: " + e.getLocalizedMessage(), e);
+				log().log(SEVERE, "Startup failed: " + e.getLocalizedMessage(), e);
 				shutdown = true;
 			}
 			Runtime.getRuntime().addShutdownHook(new SL());
@@ -80,11 +81,11 @@ public class SL extends Thread {
 				watchdog();
 				if (!shutdown) { Maintenance.maintenance(); }
 			}
-		} catch (final Throwable t) {
+		} catch (@Nonnull final Throwable t) {
 			System.out.println("Main loop crashed: " + t);
 			t.printStackTrace();
 		}
-		try { _shutdown(); } catch (final Throwable t) {
+		try { _shutdown(); } catch (@Nonnull final Throwable t) {
 			System.out.println("Shutdown crashed: " + t);
 			t.printStackTrace();
 		}
@@ -95,9 +96,9 @@ public class SL extends Thread {
 		loggingInitialise();
 		configureMailTarget(); // mails are gonna be messed up coming from logging init
 		if (!DEV) {
-			log.config("SL Services starting up on " + Config.getNodeName() + " (#" + Config.getNode() + ")");
+			log().config("SL Services starting up on " + Config.getNodeName() + " (#" + Config.getNode() + ")");
 		} else {
-			log.config("SL DEVELOPMENT Services starting up on " + Config.getNodeName() + " (#" + Config.getNode() + ")");
+			log().config("SL DEVELOPMENT Services starting up on " + Config.getNodeName() + " (#" + Config.getNode() + ")");
 		}
 		//startGPHUD(); if (1==1) { System.exit(0); }
 		LLCATruster.doNotUse(); // as in we use our own truster later on
@@ -111,15 +112,15 @@ public class SL extends Thread {
 		if (!DEV) { startLSLR(); } // never in dev
 		if (!DEV) { waitBot(); } // makes dev restart faster to ignore this
 		listener = new HTTPListener(Config.getPort(), Config.getKeyMaterialFile(), new PageMapper());
-		log.info("=====[ Coagulate " + (DEV ? "DEVELOPMENT " : "") + "Second Life Services {JavaCore, JSLBot, GPHUD, LSLR} version " + VERSION + ", startup is fully complete ]=====");
+		log().info("=====[ Coagulate " + (DEV ? "DEVELOPMENT " : "") + "Second Life Services {JavaCore, JSLBot, GPHUD, LSLR} version " + VERSION + ", startup is fully complete ]=====");
 	}
 
 	private static void _shutdown() {
-		log.config("SL Services shutting down");
+		log().config("SL Services shutting down");
 		if (listener != null) { listener.blockingShutdown(); }
 		if (bot != null) { bot.shutdown("SL System is shutting down"); }
 		DB.shutdown();
-		log.config("SL Services shutdown is complete, exiting.");
+		log().config("SL Services shutdown is complete, exiting.");
 		if (errored) { System.exit(1); }
 		System.exit(0);
 	}
@@ -133,16 +134,16 @@ public class SL extends Thread {
 
 	private static void startLSLR() {
 		if (!DEV) {
-			log.config("Starting LSLR submodule for Quiet Life Rentals services");
-			try { LSLR.initialise(); } catch (final SQLException e) { throw new SystemInitialisationException("LSLR startup failed", e); }
-			log.config("Started LSLR submodule");
+			log().config("Starting LSLR submodule for Quiet Life Rentals services");
+			try { LSLR.initialise(); } catch (@Nonnull final SQLException e) { throw new SystemInitialisationException("LSLR startup failed", e); }
+			log().config("Started LSLR submodule");
 		}
 	}
 
 	private static void waitBot() {
-		try { bot.waitConnection(30000); } catch (final IllegalStateException e) {}
-		if (!bot.connected()) {
-			bot.shutdown("Failed to connect");
+		try { bot().waitConnection(30000); } catch (@Nonnull final IllegalStateException e) {}
+		if (!bot().connected()) {
+			bot().shutdown("Failed to connect");
 			shutdown = true;
 			errored = true;
 			throw new SystemRemoteFailureException("Unable to connect to Second Life");
@@ -157,10 +158,10 @@ public class SL extends Thread {
 	}
 
 	public static void watchdog() {
-		try { Thread.sleep(1000); } catch (final InterruptedException e) {}
+		try { Thread.sleep(1000); } catch (@Nonnull final InterruptedException e) {}
 		if (shutdown) return;
 		if (!DB.test()) {
-			log.log(SEVERE, "Database failed connectivity test, shutting down.");
+			log().log(SEVERE, "Database failed connectivity test, shutting down.");
 			shutdown = true;
 			errored = true;
 		}
@@ -170,7 +171,7 @@ public class SL extends Thread {
 	private static void loggingInitialise() {
 		LogHandler.initialise();
 		log = Logger.getLogger("net.coagulate.SL");
-		LogHandler.mailprefix = "EXCEPTION: " + (DEV ? "Dev/" : "PRODUCTION/") + Config.getHostName();
+		LogHandler.mailprefix = "E:" + (DEV ? "(DEV) " : " ");
 	}
 
 	private static void configureMailTarget() {
@@ -202,12 +203,18 @@ public class SL extends Thread {
 		LogHandler.alreadyMailed(t);
 		try {
 			MailTools.mail((DEV ? "Dev" : "PROD") + " EX : " + header + " - " + t.getLocalizedMessage(), output);
-		} catch (final MessagingException e) { getLogger().log(SEVERE, "Exception mailing out about exception", e); }
+		} catch (@Nonnull final MessagingException e) { getLogger().log(SEVERE, "Exception mailing out about exception", e); }
+	}
+
+	@Nonnull
+	public static Logger log() {
+		if (log==null) { throw new SystemInitialisationException("Logger is null"); }
+		return log;
 	}
 
 	@Override
 	public void run() {
-		if (!SL.shutdown) { log.severe("JVM Shutdown Hook invoked"); }
+		if (!SL.shutdown) { log().severe("JVM Shutdown Hook invoked"); }
 		SL.shutdown = true;
 	}
 

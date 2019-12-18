@@ -5,9 +5,7 @@ import net.coagulate.Core.Exceptions.System.SystemBadValueException;
 import net.coagulate.Core.Exceptions.System.SystemConsistencyException;
 import net.coagulate.Core.Exceptions.System.SystemImplementationException;
 import net.coagulate.Core.Exceptions.System.SystemRemoteFailureException;
-import net.coagulate.Core.Exceptions.SystemException;
 import net.coagulate.Core.Exceptions.User.*;
-import net.coagulate.Core.Exceptions.UserException;
 import net.coagulate.Core.Tools.Passwords;
 import net.coagulate.Core.Tools.Tokens;
 import net.coagulate.Core.Tools.UnixTime;
@@ -128,7 +126,7 @@ public class User extends LockableTable {
 		} catch (@Nonnull final NoDataException e) { return null; }
 	}
 
-	public static User findOrCreateAvatar(@Nullable String name, @Nonnull final String key) throws SystemException {
+	public static User findOrCreateAvatar(@Nullable String name, @Nonnull final String key) {
 		if (name == null || "".equals(name)) { name = ""; }
 		Integer userid = null;
 		try { userid=SL.getDB().dqi( "select id from users where (username=? or avatarkey=?)", name, key); } catch (@Nonnull final NoDataException e){}
@@ -234,7 +232,7 @@ public class User extends LockableTable {
 		return token;
 	}
 
-	public void setPassword(@Nonnull final String password, final String clientip) throws UserException {
+	public void setPassword(@Nonnull final String password, final String clientip) {
 		if (password.length() < 6) { throw new UserInputTooShortException("Password not long enough"); }
 		d("update users set password=? where id=?", Passwords.createHash(password), getId());
 		SL.getLogger().info("User " + getUsername() + " has set password from " + clientip);
@@ -255,7 +253,7 @@ public class User extends LockableTable {
 		} catch (@Nonnull final NoDataException e) { return 0; }
 	}
 
-	public void bill(final int ammount, final String description) throws UserException {
+	public void bill(final int ammount, final String description) {
 		final int serial;
 		try {serial = lock();} catch (@Nonnull final LockException e) {
 			throw new UserInputStateException("Your balance is currently being updated elsewhere, please retry in a moment");

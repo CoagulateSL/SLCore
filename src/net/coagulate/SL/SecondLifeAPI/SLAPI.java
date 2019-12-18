@@ -27,97 +27,105 @@ import static java.util.logging.Level.WARNING;
 public abstract class SLAPI implements HttpRequestHandler {
 
 	public Logger getLogger() {
-		final String classname = getClass().getSimpleName();
-		return SL.getLogger("SLAPI." + classname);
+		final String classname=getClass().getSimpleName();
+		return SL.getLogger("SLAPI."+classname);
 	}
 
 	@Override
-	public void handle(final HttpRequest req, @Nonnull final HttpResponse resp, final HttpContext hc) {
+	public void handle(final HttpRequest req,
+	                   @Nonnull final HttpResponse resp,
+	                   final HttpContext hc)
+	{
 		try {
-			JSONObject content = new JSONObject();
+			JSONObject content=new JSONObject();
 			if (req instanceof HttpEntityEnclosingRequest) {
-				final HttpEntityEnclosingRequest r = (HttpEntityEnclosingRequest) req;
-				content = new JSONObject(ByteTools.convertStreamToString(r.getEntity().getContent()));
+				final HttpEntityEnclosingRequest r=(HttpEntityEnclosingRequest) req;
+				content=new JSONObject(ByteTools.convertStreamToString(r.getEntity().getContent()));
 			}
-			final State st = new State(req, resp, hc);
-			final String shard = req.getHeaders("X-SecondLife-Shard")[0].getValue();
-			st.put("slapi_shard", shard);
-			st.put("slapi_region", req.getHeaders("X-SecondLife-Region")[0].getValue());
-			st.put("slapi_ownername", req.getHeaders("X-SecondLife-Owner-Name")[0].getValue());
-			st.put("slapi_ownerkey", req.getHeaders("X-SecondLife-Owner-Key")[0].getValue());
-			st.put("slapi_objectname", req.getHeaders("X-SecondLife-Object-Name")[0].getValue());
-			final String objectkey = req.getHeaders("X-SecondLife-Object-Key")[0].getValue();
-			st.put("slapi_objectkey", objectkey);
-			st.put("slapi_objectvelocity", req.getHeaders("X-SecondLife-Local-Velocity")[0].getValue());
-			st.put("slapi_objectrotation", req.getHeaders("X-SecondLife-Local-Rotation")[0].getValue());
-			st.put("slapi_objectposition", req.getHeaders("X-SecondLife-Local-Position")[0].getValue());
+			final State st=new State(req,resp,hc);
+			final String shard=req.getHeaders("X-SecondLife-Shard")[0].getValue();
+			st.put("slapi_shard",shard);
+			st.put("slapi_region",req.getHeaders("X-SecondLife-Region")[0].getValue());
+			st.put("slapi_ownername",req.getHeaders("X-SecondLife-Owner-Name")[0].getValue());
+			st.put("slapi_ownerkey",req.getHeaders("X-SecondLife-Owner-Key")[0].getValue());
+			st.put("slapi_objectname",req.getHeaders("X-SecondLife-Object-Name")[0].getValue());
+			final String objectkey=req.getHeaders("X-SecondLife-Object-Key")[0].getValue();
+			st.put("slapi_objectkey",objectkey);
+			st.put("slapi_objectvelocity",req.getHeaders("X-SecondLife-Local-Velocity")[0].getValue());
+			st.put("slapi_objectrotation",req.getHeaders("X-SecondLife-Local-Rotation")[0].getValue());
+			st.put("slapi_objectposition",req.getHeaders("X-SecondLife-Local-Position")[0].getValue());
 			if (!"Production".equalsIgnoreCase(shard)) {
-				SL.getLogger(getClass().getSimpleName()).severe("INCORRECT SHARD : " + objectDump(st));
+				SL.getLogger(getClass().getSimpleName()).severe("INCORRECT SHARD : "+objectDump(st));
 				resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
 				return;
 			}
 			if (needsDigest()) {
-				final String digest = content.optString("digest");
-				if (objectkey == null) {
-					SL.getLogger().log(SEVERE, "No object owner key provided to Second Life API");
+				final String digest=content.optString("digest");
+				if (objectkey==null) {
+					SL.getLogger().log(SEVERE,"No object owner key provided to Second Life API");
 					resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
 					return;
 				}
-				if (digest == null) {
-					SL.getLogger().log(SEVERE, "No digest provided to Second Life API");
+				if (digest==null) {
+					SL.getLogger().log(SEVERE,"No digest provided to Second Life API");
 					resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
 					return;
 				}
-				final String timestamp = content.optString("timestamp");
-				if (timestamp == null) {
-					SL.getLogger().log(SEVERE, "No timestamp provided to Second Life API");
+				final String timestamp=content.optString("timestamp");
+				if (timestamp==null) {
+					SL.getLogger().log(SEVERE,"No timestamp provided to Second Life API");
 					resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
 					return;
 				}
 				// not replay attack proof :(  still, the wires are /reasonably/ secure.  maybe later.  hmm
-				int timestampoffset = UnixTime.getUnixTime() - Integer.parseInt(timestamp);
-				if (timestampoffset < 0) { timestampoffset = -timestampoffset; }
-				if (timestampoffset > 300) {
-					SL.getLogger().log(SEVERE, "Timestamp deviates by more than 300 seconds");
+				int timestampoffset=UnixTime.getUnixTime()-Integer.parseInt(timestamp);
+				if (timestampoffset<0) { timestampoffset=-timestampoffset; }
+				if (timestampoffset>300) {
+					SL.getLogger().log(SEVERE,"Timestamp deviates by more than 300 seconds");
 					resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
 					return;
 				}
-				final String targetdigest = Crypto.SHA1(objectkey + timestamp + "***REMOVED***");
+				final String targetdigest=Crypto.SHA1(objectkey+timestamp+"***REMOVED***");
 				if (!targetdigest.equalsIgnoreCase(digest)) {
-					SL.getLogger().log(SEVERE, "Incorrect digest provided to Second Life API");
+					SL.getLogger().log(SEVERE,"Incorrect digest provided to Second Life API");
 					resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
 					return;
 				}
 			}
-			final JSONObject response = handleJSON(content, st);
-			resp.setEntity(new StringEntity(response.toString(), ContentType.APPLICATION_JSON));
+			final JSONObject response=handleJSON(content,st);
+			resp.setEntity(new StringEntity(response.toString(),ContentType.APPLICATION_JSON));
 			resp.setStatusCode(HttpStatus.SC_OK);
 		} catch (@Nonnull final Exception ex) {
-			SL.getLogger().log(WARNING, "PageHandler", ex);
+			SL.getLogger().log(WARNING,"PageHandler",ex);
 			resp.setStatusCode(HttpStatus.SC_OK);
-			final JSONObject object = new JSONObject();
-			object.put("error", "Internal error: " + ex);
-			resp.setEntity(new StringEntity(object.toString(), ContentType.APPLICATION_JSON));
+			final JSONObject object=new JSONObject();
+			object.put("error","Internal error: "+ex);
+			resp.setEntity(new StringEntity(object.toString(),ContentType.APPLICATION_JSON));
 		}
 	}
 
-	protected void checkVersion(@Nonnull final JSONObject object, @Nonnull final String match, @Nonnull final State st) {
-		String version = "NULL";
+	protected void checkVersion(@Nonnull final JSONObject object,
+	                            @Nonnull final String match,
+	                            @Nonnull final State st)
+	{
+		String version="NULL";
 		if (object.has("version")) {
-			version = object.getString("version");
+			version=object.getString("version");
 			if (match.equals(version)) { return; }
 		}
-		SL.getLogger(getClass().getSimpleName()).fine("Version mismatch : " + match + ">" + version + " : " + objectDump(st));
+		SL.getLogger(getClass().getSimpleName()).fine("Version mismatch : "+match+">"+version+" : "+objectDump(st));
 	}
 
 
 	@Nonnull
-	protected abstract JSONObject handleJSON(JSONObject object, State st);
+	protected abstract JSONObject handleJSON(JSONObject object,
+	                                         State st);
 
 	protected boolean needsDigest() { return true; }
 
 	@Nonnull
 	String objectDump(@Nonnull final State st) {
-		return "'" + st.get("slapi_objectname") + "' [" + st.get("slapi_objectkey") + "] owned by " + st.get("slapi_ownername") + " [" + st.get("slapi_ownerkey") + "] at " + st.get("slapi_region") + " " + st.get("slapi_objectposition");
+		return "'"+st.get("slapi_objectname")+"' ["+st.get("slapi_objectkey")+"] owned by "+st.get("slapi_ownername")+" ["+st
+				.get("slapi_ownerkey")+"] at "+st.get("slapi_region")+" "+st.get("slapi_objectposition");
 	}
 }

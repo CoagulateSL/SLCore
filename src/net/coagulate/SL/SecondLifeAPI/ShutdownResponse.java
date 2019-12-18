@@ -9,7 +9,7 @@ public class ShutdownResponse extends JSONObject {
 
 	public ShutdownResponse(final String reason) {
 		super();
-		put("reason", reason);
-		put("command", "SHUTDOWN");
+		put("reason",reason);
+		put("command","SHUTDOWN");
 	}
 }

@@ -18,22 +18,25 @@ import static java.util.logging.Level.WARNING;
  * @author Iain Price
  */
 public abstract class StringHandler extends Handler {
-	private static final boolean DEBUG_PARAMS = false;
+	private static final boolean DEBUG_PARAMS=false;
 
 	@Nonnull
 	@Override
 	public StringEntity handleContent(@Nonnull final State state) {
 		try {
 			String content;
-			try { content = handleString(state); } catch (@Nonnull final UserException ue) {
-				SL.getLogger().log(WARNING, "PageHandlerCaught", ue);
-				content = "<p>Exception: " + ue.getLocalizedMessage() + "</p>";
+			try { content=handleString(state); } catch (@Nonnull final UserException ue) {
+				SL.getLogger().log(WARNING,"PageHandlerCaught",ue);
+				content="<p>Exception: "+ue.getLocalizedMessage()+"</p>";
 			}
-			return new StringEntity(content, ContentType.TEXT_HTML);
+			return new StringEntity(content,ContentType.TEXT_HTML);
 		} catch (@Nonnull final Exception ex) {
-			SL.getLogger().log(SEVERE, "PageHandler", ex);
+			SL.getLogger().log(SEVERE,"PageHandler",ex);
 			state.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
-			return new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>", ContentType.TEXT_HTML);
+			return new StringEntity(
+					"<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>",
+					ContentType.TEXT_HTML
+			);
 		}
 	}
 

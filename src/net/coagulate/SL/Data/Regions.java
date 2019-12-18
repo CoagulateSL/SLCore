@@ -19,15 +19,16 @@ public class Regions extends LockableTable {
 	@Nonnull
 	public static Regions getByName(final String name) {
 		try {
-			final int id = SL.getDB().dqinn("select id from regions where region like ?", name);
+			final int id=SL.getDB().dqinn("select id from regions where region like ?",name);
 			return new Regions(id);
 		} catch (@Nonnull final NoDataException e) {
-			SL.getDB().d("insert into regions(region) values(?)", name);
+			SL.getDB().d("insert into regions(region) values(?)",name);
 			try {
-				final int id = SL.getDB().dqinn("select id from regions where region like ?", name);
+				final int id=SL.getDB().dqinn("select id from regions where region like ?",name);
 				return new Regions(id);
+			} catch (@Nonnull final NoDataException f) {
+				throw new SystemConsistencyException("Failed to find inserted region in regions table",f);
 			}
-			catch (@Nonnull final NoDataException f) { throw new SystemConsistencyException("Failed to find inserted region in regions table",f); }
 		}
 	}
 
@@ -39,25 +40,25 @@ public class Regions extends LockableTable {
 	public String getStatus() { return getStringNullable("status"); }
 
 	public int getLastUpdate() {
-		final Integer lu = getIntNullable("lastperf");
-		if (lu == null) { return 0; }
+		final Integer lu=getIntNullable("lastperf");
+		if (lu==null) { return 0; }
 		return lu;
 	}
 
 	public void setLastUpdate() {
 		try {
-			set("lastupdate", UnixTime.getUnixTime());
+			set("lastupdate",UnixTime.getUnixTime());
 		} catch (@Nonnull final LockException e) {} // not that important here, something else is updating it...
 	}
 
 	public void setNewStatus(final String status) {
-		final int time = UnixTime.getUnixTime();
-		d("update regions set status=?, since=?, lastupdate=? where id=?", status, time, time, getId());
+		final int time=UnixTime.getUnixTime();
+		d("update regions set status=?, since=?, lastupdate=? where id=?",status,time,time,getId());
 	}
 
 	public int getSince() {
-		final Integer since = getIntNullable("since");
-		if (since == null) { return 0; }
+		final Integer since=getIntNullable("since");
+		if (since==null) { return 0; }
 		return since;
 	}
 

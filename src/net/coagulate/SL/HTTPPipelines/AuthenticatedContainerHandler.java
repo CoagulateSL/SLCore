@@ -12,11 +12,12 @@ public abstract class AuthenticatedContainerHandler extends AuthenticatedStringH
 	@Nonnull
 	@Override
 	public String handleString(@Nonnull final State state) {
-		final Page container = new Page();
-		run(state, container);
+		final Page container=new Page();
+		run(state,container);
 		return container.toHtml(state);
 	}
 
-	protected abstract void run(State state, Page page);
+	protected abstract void run(State state,
+	                            Page page);
 
 }

@@ -30,7 +30,7 @@ import static net.coagulate.SL.Config.LOCK_NUMBER_GPHUD_MAINTENANCE;
  * @author Iain Price
  */
 public class SL extends Thread {
-	public static final String VERSION = "v0.02.00";
+	public static final String VERSION = "v0.03.00";
 	public static boolean DEV;
 	@Nullable
 	private static JSLBot bot;

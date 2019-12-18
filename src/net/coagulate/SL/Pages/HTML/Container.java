@@ -10,26 +10,26 @@ import java.util.Map;
  */
 public class Container implements Element {
 
-	final List<Element> content = new ArrayList<>();
+	final List<Element> content=new ArrayList<>();
 
 	@Nonnull
 	@Override
 	public String toHtml(final State st) {
-		final StringBuilder ret = new StringBuilder();
-		for (final Element e : content) { ret.append(e.toHtml(st)); }
+		final StringBuilder ret=new StringBuilder();
+		for (final Element e: content) { ret.append(e.toHtml(st)); }
 		return ret.toString();
 	}
 
 	@Nonnull
 	public String toString(final State st) {
-		final StringBuilder ret = new StringBuilder();
-		for (final Element e : content) { ret.append(e.toString(st)).append("\n"); }
+		final StringBuilder ret=new StringBuilder();
+		for (final Element e: content) { ret.append(e.toString(st)).append("\n"); }
 		return ret.toString();
 	}
 
 	@Override
-	public void load(final Map<String, String> map) {
-		for (final Element e : content) { e.load(map); }
+	public void load(final Map<String,String> map) {
+		for (final Element e: content) { e.load(map); }
 	}
 
 	@Nonnull

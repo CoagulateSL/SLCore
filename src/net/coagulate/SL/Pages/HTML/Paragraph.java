@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
  * @author Iain Price
  */
 public class Paragraph extends Container {
-	private ALIGNMENT alignment = ALIGNMENT.NONE;
+	private ALIGNMENT alignment=ALIGNMENT.NONE;
 
 	public Paragraph() {}
 
@@ -23,23 +23,23 @@ public class Paragraph extends Container {
 
 	@Nonnull
 	public String toHtml(final State st) {
-		return
-				"<p" + renderAlignment() + ">" +
-						super.toHtml(st) +
-						"</p>";
+		return "<p"+renderAlignment()+">"+super.toHtml(st)+"</p>";
 	}
 
 	@Nonnull
 	private String renderAlignment() {
-		if (alignment == ALIGNMENT.CENTER) { return " align=\"center\""; }
+		if (alignment==ALIGNMENT.CENTER) { return " align=\"center\""; }
 		return "";
 	}
 
 	@Nonnull
 	public Paragraph align(final ALIGNMENT alignment) {
-		this.alignment = alignment;
+		this.alignment=alignment;
 		return this;
 	}
 
-	public enum ALIGNMENT {NONE, CENTER}
+	public enum ALIGNMENT {
+		NONE,
+		CENTER
+	}
 }

@@ -23,17 +23,12 @@ public class Header1 extends Container {
 
 	@Nonnull
 	public String toHtml(final State st) {
-		return
-				"<h1" +
-						(name == null ? "" : " name=\"" + name + "\"") +
-						">" +
-						super.toHtml(st) +
-						"</h1>";
+		return "<h1"+(name==null?"":" name=\""+name+"\"")+">"+super.toHtml(st)+"</h1>";
 	}
 
 	@Nonnull
 	public Header1 name(final String name) {
-		this.name = name;
+		this.name=name;
 		return this;
 	}
 }

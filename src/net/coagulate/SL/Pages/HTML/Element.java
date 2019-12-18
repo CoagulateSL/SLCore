@@ -23,6 +23,6 @@ public interface Element {
 	/**
 	 * Load key values from the map, for input elements
 	 */
-	void load(Map<String, String> map);
+	void load(Map<String,String> map);
 
 }

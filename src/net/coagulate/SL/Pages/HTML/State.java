@@ -27,8 +27,8 @@ public class State extends DumpableState {
 	private final HttpResponse response;
 	private final HttpContext httpcontext;
 	// We love general purpose KV maps.  more than one of them.
-	private final Map<String, Map<String, String>> maps = new HashMap<>();
-	private int returnstatus = HttpStatus.SC_OK;
+	private final Map<String,Map<String,String>> maps=new HashMap<>();
+	private int returnstatus=HttpStatus.SC_OK;
 	@Nullable
 	private String sessionid;
 	// hmm, getting a bit complex here
@@ -38,10 +38,13 @@ public class State extends DumpableState {
 	private Session session;
 
 	// We love HTTP :P
-	public State(final HttpRequest request, final HttpResponse response, final HttpContext httpcontext) {
-		this.request = request;
-		this.response = response;
-		this.httpcontext = httpcontext;
+	public State(final HttpRequest request,
+	             final HttpResponse response,
+	             final HttpContext httpcontext)
+	{
+		this.request=request;
+		this.response=response;
+		this.httpcontext=httpcontext;
 	}
 
 	public HttpRequest request() { return request; }
@@ -50,12 +53,12 @@ public class State extends DumpableState {
 
 	public HttpContext context() { return httpcontext; }
 
-	public void status(final int httpstatus) { returnstatus = httpstatus; }
+	public void status(final int httpstatus) { returnstatus=httpstatus; }
 
 	public int status() { return returnstatus; }
 
 	public void sessionId(final String set) {
-		sessionid = set;
+		sessionid=set;
 		loadSession();
 	}
 
@@ -63,39 +66,54 @@ public class State extends DumpableState {
 	public String sessionIdNullable() {
 		return sessionid;
 	}
+
 	@Nonnull
 	public String sessionId() {
-		if (sessionid == null) { throw new SystemConsistencyException("Session ID is null"); }
+		if (sessionid==null) { throw new SystemConsistencyException("Session ID is null"); }
 		return sessionid;
 	}
 
-	private Map<String, String> getMap(final String mapname) {
+	private Map<String,String> getMap(final String mapname) {
 		if (!maps.containsKey(mapname)) {
-			maps.put(mapname, new HashMap<>());
+			maps.put(mapname,new HashMap<>());
 		}
 		return maps.get(mapname);
 	}
 
-	public String get(final String mapname, final String key, final String defaultvalue) {
+	public String get(final String mapname,
+	                  final String key,
+	                  final String defaultvalue)
+	{
 		if (!getMap(mapname).containsKey(key)) { return defaultvalue; }
 		return getMap(mapname).get(key);
 	}
 
-	public String get(final String mapname, final String key) { return get(mapname, key, null); }
+	public String get(final String mapname,
+	                  final String key)
+	{ return get(mapname,key,null); }
 
-	public void delete(final String mapname, final String key) { getMap(mapname).remove(key); }
+	public void delete(final String mapname,
+	                   final String key)
+	{ getMap(mapname).remove(key); }
 
-	public void put(final String mapname, final String key, final String value) { getMap(mapname).put(key, value); }
+	public void put(final String mapname,
+	                final String key,
+	                final String value)
+	{ getMap(mapname).put(key,value); }
 
-	public void putMap(final String mapname, final Map<String, String> map) { maps.put(mapname, map); }
+	public void putMap(final String mapname,
+	                   final Map<String,String> map)
+	{ maps.put(mapname,map); }
 
 	// WELL KNOWN MAPS
 	// parameters - get/post data
 	// cookies - header cookie data
 	// parameters is assumed to be default :P legacy behaviour, kinda
-	public String get(final String key) { return get("parameters", key, ""); }
+	public String get(final String key) { return get("parameters",key,""); }
 
-	public void put(final String key, final String value) { put("parameters", key, value); }
+	public void put(final String key,
+	                final String value)
+	{ put("parameters",key,value); }
 
 	@Nullable
 	public User userNullable() { return user; }
@@ -108,12 +126,13 @@ public class State extends DumpableState {
 
 	public void user(@Nonnull final User user) {
 		// got a session?
-		if (session == null) {
-			session = Session.create(user);
-			sessionid = session.token();
+		if (session==null) {
+			session=Session.create(user);
+			sessionid=session.token();
 		} else { session.setUser(user); }
-		this.user = user;
+		this.user=user;
 	}
+
 	@SuppressWarnings("deprecation")
 	public String getClientIP() {
 		//try {
@@ -121,33 +140,36 @@ public class State extends DumpableState {
 		//InetAddress ia = connection.getRemoteAddress();
 		//return ia.getCanonicalHostName()+" / "+ia.getHostAddress();
 		//} catch (Exception e) { SL.getLogger().log(WARNING,"Exception getting client address",e); }
-		final Header[] headers = request.getHeaders("X-Forwarded-For");
-		if (headers.length == 0) {
+		final Header[] headers=request.getHeaders("X-Forwarded-For");
+		if (headers.length==0) {
 			try {
-				final HttpInetConnection connection = (HttpInetConnection) httpcontext.getAttribute(org.apache.http.protocol.ExecutionContext.HTTP_CONNECTION);
-				final InetAddress ia = connection.getRemoteAddress();
-				return "DIRECT:" + ia.getHostAddress();
-			} catch (@Nonnull final Exception e) { SL.getLogger().log(Level.WARNING,"Exception getting client address",e); return "UNKNOWN"; }
+				final HttpInetConnection connection=(HttpInetConnection) httpcontext.getAttribute(org.apache.http.protocol.ExecutionContext.HTTP_CONNECTION);
+				final InetAddress ia=connection.getRemoteAddress();
+				return "DIRECT:"+ia.getHostAddress();
+			} catch (@Nonnull final Exception e) {
+				SL.getLogger().log(Level.WARNING,"Exception getting client address",e);
+				return "UNKNOWN";
+			}
 		}
-		if (headers.length > 1) { return "MULTIPLE?:" + headers[0].getValue(); }
+		if (headers.length>1) { return "MULTIPLE?:"+headers[0].getValue(); }
 		return headers[0].getValue();
 	}
 
 	public void logout() {
-		if (sessionid != null) {
-			final Session logoutsession = Session.get(sessionid);
+		if (sessionid!=null) {
+			final Session logoutsession=Session.get(sessionid);
 			if (logoutsession!=null) { logoutsession.logout(); }
 		}
-		sessionid = null;
-		user = null;
+		sessionid=null;
+		user=null;
 	}
 
 	void loadSession() {
-		session = null;
-		if (sessionid == null || sessionid.isEmpty() || "none".equalsIgnoreCase(sessionid)) { return; }
-		session = Session.get(sessionid);
+		session=null;
+		if (sessionid==null || sessionid.isEmpty() || "none".equalsIgnoreCase(sessionid)) { return; }
+		session=Session.get(sessionid);
 		//System.out.println("Loaded session id "+sessionid+" and got "+session);
-		if (session != null) { user = session.user(); } else { sessionid = null; }
+		if (session!=null) { user=session.user(); } else { sessionid=null; }
 	}
 
 	@Nonnull

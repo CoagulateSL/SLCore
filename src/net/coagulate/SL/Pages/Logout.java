@@ -20,7 +20,9 @@ public class Logout extends StringHandler {
 	@Override
 	protected String handleString(@Nonnull final State state) {
 		state.logout();
-		return new Page().add(new Raw("<br><br><h3 align=center>Your session has been ended</h3><br><br><br><p align=center><a href=\"/\">Click here to return to the login page</a></p>")).toHtml(state);
+		return new Page().add(new Raw(
+				"<br><br><h3 align=center>Your session has been ended</h3><br><br><br><p align=center><a href=\"/\">Click here to return to the login page</a></p>"))
+		                 .toHtml(state);
 	}
 
 }

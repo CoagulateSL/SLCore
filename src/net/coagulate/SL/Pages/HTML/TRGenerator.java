@@ -17,8 +17,9 @@ public abstract class TRGenerator implements Element {
 	public String toString(final State st) { return "<tr>"; }
 
 	@Override
-	public void load(final Map<String, String> map) {}
+	public void load(final Map<String,String> map) {}
 
 	@Nonnull
-	public abstract String render(State st, Map<String, String> row);
+	public abstract String render(State st,
+	                              Map<String,String> row);
 }

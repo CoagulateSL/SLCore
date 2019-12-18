@@ -19,7 +19,9 @@ public class Shutdown extends ContainerHandler {
 	public Shutdown() {super();}
 
 	@Override
-	protected void run(@Nonnull final State state, @Nonnull final Page page) {
+	protected void run(@Nonnull final State state,
+	                   @Nonnull final Page page)
+	{
 		final String ip=state.getClientIP();
 		if (ip.equals("DIRECT:0:0:0:0:0:0:0:1") || ip.equals("DIRECT:127.0.0.1")) {
 			SL.shutdown();

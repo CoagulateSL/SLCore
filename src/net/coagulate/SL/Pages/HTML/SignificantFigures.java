@@ -9,15 +9,17 @@ public class SignificantFigures extends Renderer {
 
 	final int sf;
 
-	public SignificantFigures(final int sf) { this.sf = sf; }
+	public SignificantFigures(final int sf) { this.sf=sf; }
 
 	@Nullable
 	@Override
-	public String render(final State st, @Nullable final String value) {
-		if (value == null || value.isEmpty()) { return ""; }
-		if (value.length() <= (sf)) { return value; }
+	public String render(final State st,
+	                     @Nullable final String value)
+	{
+		if (value==null || value.isEmpty()) { return ""; }
+		if (value.length()<=(sf)) { return value; }
 		if (!value.contains(".")) { return value; }
-		return value.substring(0, sf + 1);
+		return value.substring(0,sf+1);
 	}
 
 }

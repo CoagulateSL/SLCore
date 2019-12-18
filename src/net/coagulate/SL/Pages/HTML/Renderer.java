@@ -11,21 +11,22 @@ public abstract class Renderer implements Element {
 	@Nullable
 	protected String value;
 
-	public void set(final String value) { this.value = value; }
+	public void set(final String value) { this.value=value; }
 
 	@Nullable
 	public String get() { return value; }
 
 	@Nullable
 	@Override
-	public String toHtml(final State st) { return render(st, value); }
+	public String toHtml(final State st) { return render(st,value); }
 
 	@Nullable
 	public String toString(final State st) { return value; }
 
 	@Override
-	public void load(final Map<String, String> map) {}
+	public void load(final Map<String,String> map) {}
 
 	@Nullable
-	public abstract String render(State st, String value);
+	public abstract String render(State st,
+	                              String value);
 }

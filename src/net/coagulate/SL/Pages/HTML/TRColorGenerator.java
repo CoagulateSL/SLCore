@@ -9,30 +9,38 @@ import java.util.Map;
  */
 public class TRColorGenerator extends TRGenerator {
 
+	final Map<String,String> valuemap=new HashMap<>();
 	private final String columnname;
 	private final String defaultcolor;
-	final Map<String, String> valuemap = new HashMap<>();
 
-	public TRColorGenerator(final String columnname, final String defaultcolor) {
-		this.columnname = columnname;
-		this.defaultcolor = defaultcolor;
+	public TRColorGenerator(final String columnname,
+	                        final String defaultcolor)
+	{
+		this.columnname=columnname;
+		this.defaultcolor=defaultcolor;
 	}
 
 	@Nonnull
-	public TRColorGenerator map(final String value, final String color) {
-		valuemap.put(value, color);
+	public TRColorGenerator map(final String value,
+	                            final String color)
+	{
+		valuemap.put(value,color);
 		return this;
 	}
 
 	@Nonnull
 	@Override
-	public String render(final State st, @Nonnull final Map<String, String> row) {
-		return "<tr bgcolor=\"#" + getColor(st, row) + "\">";
+	public String render(final State st,
+	                     @Nonnull final Map<String,String> row)
+	{
+		return "<tr bgcolor=\"#"+getColor(st,row)+"\">";
 	}
 
-	private String getColor(final State st, @Nonnull final Map<String, String> row) {
+	private String getColor(final State st,
+	                        @Nonnull final Map<String,String> row)
+	{
 		if (!row.containsKey(columnname)) { return defaultcolor; }
-		final String value = row.get(columnname);
+		final String value=row.get(columnname);
 		if (!valuemap.containsKey(value)) { return defaultcolor; }
 		return valuemap.get(value);
 	}

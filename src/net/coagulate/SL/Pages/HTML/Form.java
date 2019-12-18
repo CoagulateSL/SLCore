@@ -8,10 +8,7 @@ import javax.annotation.Nonnull;
 public class Form extends Container {
 	@Nonnull
 	public String toHtml(final State st) {
-		return
-				"<form method=post>" +
-						super.toHtml(st) +
-						"</form>";
+		return "<form method=post>"+super.toHtml(st)+"</form>";
 	}
 
 	@Nonnull

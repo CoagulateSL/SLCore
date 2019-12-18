@@ -17,14 +17,20 @@ public class Index extends AuthenticatedContainerHandler {
 	public Index() {}
 
 	@Override
-	protected void run(final State state, @Nonnull final Page page) {
+	protected void run(final State state,
+	                   @Nonnull final Page page)
+	{
 		page.layout(Page.PAGELAYOUT.CENTERCOLUMN);
-		page.paragraph("Welcome to Coagulate Second Life services, select a service for more information.").align(Paragraph.ALIGNMENT.CENTER);
+		page.paragraph("Welcome to Coagulate Second Life services, select a service for more information.")
+		    .align(Paragraph.ALIGNMENT.CENTER);
 		//raw("<table style=\"max-width: 900px;\" align=center>");
 		//raw("<tr width=100%><td width=100%><ul style=\"white-space: nowrap;\">");
-		page.serviceCell("Region Monitoring", "/RegionMonitor").
-				add(new Paragraph("Region Monitoring monitors the status of specified regions, polling every minute and logging the data.")).
-				add(new Paragraph("Can also use scripted or bot services to collect performance metrics."));
+		page.serviceCell("Region Monitoring","/RegionMonitor")
+		    .
+				    add(new Paragraph(
+						    "Region Monitoring monitors the status of specified regions, polling every minute and logging the data."))
+		    .
+				    add(new Paragraph("Can also use scripted or bot services to collect performance metrics."));
         /*
         openServiceCell("Web Chat","/WebChat");
         p("[Placeholder note to self] Web Chat provides a simple interface to Second Life chat over a web page.");
@@ -37,9 +43,9 @@ public class Index extends AuthenticatedContainerHandler {
         raw("</ul></td></tr>");
         raw("<tr width=100%><td width=100%><ul style=\"white-space: nowrap;\">");
         */
-		page.serviceCell("<img src=\"/resources/serviceicon-gphud.png\">", "/GPHUD/").
+		page.serviceCell("<img src=\"/resources/serviceicon-gphud.png\">","/GPHUD/").
 				add(new Paragraph("GPHUD is the 2nd generation role-play HUD.")).
-				add(new Paragraph("This is used to implement various game modes at sims."));
+				    add(new Paragraph("This is used to implement various game modes at sims."));
 	}
 
 }

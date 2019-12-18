@@ -9,7 +9,7 @@ public class Raw implements Element {
 
 	private final String content;
 
-	public Raw(final String content) { this.content = content; }
+	public Raw(final String content) { this.content=content; }
 
 	@Override
 	public String toHtml(final State st) { return content; }
@@ -18,6 +18,6 @@ public class Raw implements Element {
 	public String toString(final State st) { return content; }
 
 	@Override
-	public void load(final Map<String, String> map) {}
+	public void load(final Map<String,String> map) {}
 
 }

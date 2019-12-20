@@ -22,8 +22,7 @@ public class SLPing extends SLAPI {
 	@Nonnull
 	@Override
 	protected JSONObject handleJSON(@Nonnull final JSONObject object,
-	                                final State st)
-	{
+	                                final State st) {
 		object.put("nodename",Config.getNodeName()); // sl1 sl2 sl3
 		object.put("node",Config.getNode()); // 0 1 2
 		object.put("hostname",Config.getHostName()); // saturn mars neptune

@@ -28,16 +28,14 @@ public class Transmit extends Thread {
 	int delay;
 
 	public Transmit(@Nullable final JSONObject json,
-	                final String url)
-	{
+	                final String url) {
 		this.url=url;
 		this.json=json;
 	}
 
 	public Transmit(@Nullable final JSONObject json,
 	                final String url,
-	                final int delay)
-	{
+	                final int delay) {
 		this.url=url;
 		this.json=json;
 		this.delay=delay;
@@ -61,13 +59,16 @@ public class Transmit extends Thread {
 		while (response==null && retries>0) {
 			try {
 				response=sendAttempt();
-			} catch (@Nonnull final FileNotFoundException e) {
+			}
+			catch (@Nonnull final FileNotFoundException e) {
 				getLogger().log(FINE,"404 on url, revoked connection while sending "+json);
 				return;
-			} catch (@Nonnull final MalformedURLException ex) {
+			}
+			catch (@Nonnull final MalformedURLException ex) {
 				getLogger().log(WARNING,"MALFORMED URL: "+url+", revoked connection while sending "+json);
 				return;
-			} catch (@Nonnull final IOException e) {
+			}
+			catch (@Nonnull final IOException e) {
 				retries--;
 				getLogger().log(INFO,"IOException "+e.getMessage()+" retries="+retries+" left");
 				try { Thread.sleep(5*1000); } catch (@Nonnull final InterruptedException ee) {}
@@ -78,7 +79,8 @@ public class Transmit extends Thread {
 			try {
 				jsonresponse=new JSONObject(response);
 				// process response?
-			} catch (@Nonnull final Exception e) {
+			}
+			catch (@Nonnull final Exception e) {
 				getLogger().log(WARNING,"Exception in response parser",e);
 			}
 		}

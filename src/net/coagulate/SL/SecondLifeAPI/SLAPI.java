@@ -34,8 +34,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 	@Override
 	public void handle(final HttpRequest req,
 	                   @Nonnull final HttpResponse resp,
-	                   final HttpContext hc)
-	{
+	                   final HttpContext hc) {
 		try {
 			JSONObject content=new JSONObject();
 			if (req instanceof HttpEntityEnclosingRequest) {
@@ -95,7 +94,8 @@ public abstract class SLAPI implements HttpRequestHandler {
 			final JSONObject response=handleJSON(content,st);
 			resp.setEntity(new StringEntity(response.toString(),ContentType.APPLICATION_JSON));
 			resp.setStatusCode(HttpStatus.SC_OK);
-		} catch (@Nonnull final Exception ex) {
+		}
+		catch (@Nonnull final Exception ex) {
 			SL.getLogger().log(WARNING,"PageHandler",ex);
 			resp.setStatusCode(HttpStatus.SC_OK);
 			final JSONObject object=new JSONObject();
@@ -106,8 +106,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 
 	protected void checkVersion(@Nonnull final JSONObject object,
 	                            @Nonnull final String match,
-	                            @Nonnull final State st)
-	{
+	                            @Nonnull final State st) {
 		String version="NULL";
 		if (object.has("version")) {
 			version=object.getString("version");
@@ -125,7 +124,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 
 	@Nonnull
 	String objectDump(@Nonnull final State st) {
-		return "'"+st.get("slapi_objectname")+"' ["+st.get("slapi_objectkey")+"] owned by "+st.get("slapi_ownername")+" ["+st
-				.get("slapi_ownerkey")+"] at "+st.get("slapi_region")+" "+st.get("slapi_objectposition");
+		return "'"+st.get("slapi_objectname")+"' ["+st.get("slapi_objectkey")+"] owned by "+st.get("slapi_ownername")+" ["+st.get("slapi_ownerkey")+"] at "+st.get(
+				"slapi_region")+" "+st.get("slapi_objectposition");
 	}
 }

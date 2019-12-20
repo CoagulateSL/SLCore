@@ -82,11 +82,13 @@ public class SL extends Thread {
 				watchdog();
 				if (!shutdown) { Maintenance.maintenance(); }
 			}
-		} catch (@Nonnull final Throwable t) {
+		}
+		catch (@Nonnull final Throwable t) {
 			System.out.println("Main loop crashed: "+t);
 			t.printStackTrace();
 		}
-		try { _shutdown(); } catch (@Nonnull final Throwable t) {
+		try { _shutdown(); }
+		catch (@Nonnull final Throwable t) {
 			System.out.println("Shutdown crashed: "+t);
 			t.printStackTrace();
 		}
@@ -98,7 +100,8 @@ public class SL extends Thread {
 		configureMailTarget(); // mails are gonna be messed up coming from logging init
 		if (!DEV) {
 			log().config("SL Services starting up on "+Config.getNodeName()+" (#"+Config.getNode()+")");
-		} else {
+		}
+		else {
 			log().config("SL DEVELOPMENT Services starting up on "+Config.getNodeName()+" (#"+Config.getNode()+")");
 		}
 		//startGPHUD(); if (1==1) { System.exit(0); }
@@ -136,7 +139,8 @@ public class SL extends Thread {
 	private static void startLSLR() {
 		if (!DEV) {
 			log().config("Starting LSLR submodule for Quiet Life Rentals services");
-			try { LSLR.initialise(); } catch (@Nonnull final SQLException e) {
+			try { LSLR.initialise(); }
+			catch (@Nonnull final SQLException e) {
 				throw new SystemInitialisationException("LSLR startup failed",e);
 			}
 			log().config("Started LSLR submodule");
@@ -162,7 +166,7 @@ public class SL extends Thread {
 
 	public static void watchdog() {
 		try { Thread.sleep(1000); } catch (@Nonnull final InterruptedException e) {}
-		if (shutdown) return;
+		if (shutdown) { return; }
 		if (!DB.test()) {
 			log().log(SEVERE,"Database failed connectivity test, shutting down.");
 			shutdown=true;
@@ -203,17 +207,16 @@ public class SL extends Thread {
 
 	public static void report(final String header,
 	                          @Nonnull final Throwable t,
-	                          @Nonnull final DumpableState state)
-	{
+	                          @Nonnull final DumpableState state) {
 		final String output=ExceptionTools.dumpException(t)+"<br><hr><br>"+state.toHTML();
 		LogHandler.alreadyMailed(t);
 		try {
 			if (LogHandler.suppress(t)) {
 				System.out.println("Exception Report Suppressed "+LogHandler.getCount(t)+"x"+LogHandler.getSignature(t));
 			}
-			else
-			{ MailTools.mail((DEV?"Dev":"PROD")+" EX : "+header+" - "+t.getLocalizedMessage(),output); }
-		} catch (@Nonnull final MessagingException e) {
+			else { MailTools.mail((DEV?"Dev":"PROD")+" EX : "+header+" - "+t.getLocalizedMessage(),output); }
+		}
+		catch (@Nonnull final MessagingException e) {
 			getLogger().log(SEVERE,"Exception mailing out about exception",e);
 		}
 	}

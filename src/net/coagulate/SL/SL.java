@@ -208,7 +208,11 @@ public class SL extends Thread {
 		final String output=ExceptionTools.dumpException(t)+"<br><hr><br>"+state.toHTML();
 		LogHandler.alreadyMailed(t);
 		try {
-			MailTools.mail((DEV?"Dev":"PROD")+" EX : "+header+" - "+t.getLocalizedMessage(),output);
+			if (LogHandler.suppress(t)) {
+				System.out.println("Exception Report Suppressed "+LogHandler.getCount(t)+"x";
+			}
+			else
+			{ MailTools.mail((DEV?"Dev":"PROD")+" EX : "+header+" - "+t.getLocalizedMessage(),output); }
 		} catch (@Nonnull final MessagingException e) {
 			getLogger().log(SEVERE,"Exception mailing out about exception",e);
 		}

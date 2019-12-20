@@ -24,58 +24,38 @@ public class RegionStats extends Table {
 	@Nullable
 	public static Float getAverage(@Nonnull final Regions reg,
 	                               final String stattype,
-	                               final int time)
-	{
+	                               final int time) {
 		try {
-			return SL.getDB()
-			         .dqf("select avg(statavg) from regionstats where regionid=? and timestamp>? and stattype=?",
-			              reg.getId(),
-			              UnixTime.getUnixTime()-time,
-			              stattype
-			             );
-		} catch (@Nonnull final NoDataException e) { return null; }
+			return SL.getDB().dqf("select avg(statavg) from regionstats where regionid=? and timestamp>? and stattype=?",reg.getId(),UnixTime.getUnixTime()-time,stattype);
+		}
+		catch (@Nonnull final NoDataException e) { return null; }
 	}
 
 	@Nullable
 	public static Float getMin(@Nonnull final Regions reg,
 	                           final String stattype,
-	                           final int time)
-	{
+	                           final int time) {
 		try {
-			return SL.getDB()
-			         .dqf("select min(statavg) from regionstats where regionid=? and timestamp>? and stattype=?",
-			              reg.getId(),
-			              UnixTime.getUnixTime()-time,
-			              stattype
-			             );
-		} catch (@Nonnull final NoDataException e) { return null; }
+			return SL.getDB().dqf("select min(statavg) from regionstats where regionid=? and timestamp>? and stattype=?",reg.getId(),UnixTime.getUnixTime()-time,stattype);
+		}
+		catch (@Nonnull final NoDataException e) { return null; }
 	}
 
 	@Nullable
 	public static Float getMax(@Nonnull final Regions reg,
 	                           final String stattype,
-	                           final int time)
-	{
+	                           final int time) {
 		try {
-			return SL.getDB()
-			         .dqf("select max(statavg) from regionstats where regionid=? and timestamp>? and stattype=?",
-			              reg.getId(),
-			              UnixTime.getUnixTime()-time,
-			              stattype
-			             );
-		} catch (@Nonnull final NoDataException e) { return null; }
+			return SL.getDB().dqf("select max(statavg) from regionstats where regionid=? and timestamp>? and stattype=?",reg.getId(),UnixTime.getUnixTime()-time,stattype);
+		}
+		catch (@Nonnull final NoDataException e) { return null; }
 	}
 
 	@Nonnull
 	public static Iterable<String> getStatTypes(@Nonnull final Regions region,
-	                                            final int time)
-	{
+	                                            final int time) {
 		final Set<String> stattypes=new HashSet<>();
-		for (final ResultsRow row: SL.getDB()
-		                             .dq("select distinct stattype from regionstats where regionid=? and timestamp>?",
-		                                 region.getId(),
-		                                 UnixTime.getUnixTime()-time
-		                                )) {
+		for (final ResultsRow row: SL.getDB().dq("select distinct stattype from regionstats where regionid=? and timestamp>?",region.getId(),UnixTime.getUnixTime()-time)) {
 			stattypes.add(row.getStringNullable());
 		}
 		return stattypes;
@@ -87,8 +67,7 @@ public class RegionStats extends Table {
 	                       final float min,
 	                       final float max,
 	                       final float avg,
-	                       final float sd)
-	{
+	                       final float sd) {
 		//SL.getLogger("RegionStas").fine("Region "+region+" has timestamp "+timestamp+" with stats "+statstype+"/"+min+"/"+max+"/"+avg+"/"+sd);
 		SL.getDB()
 		  .d("insert into regionstats(regionid,timestamp,stattype,statmin,statmax,statavg,statsd,samplesize) values(?,?,?,?,?,?,?,?)",
@@ -109,8 +88,7 @@ public class RegionStats extends Table {
 	                       final float min,
 	                       final float max,
 	                       final float avg,
-	                       final float sd)
-	{
+	                       final float sd) {
 		log(region.getId(),timestamp,statstype,min,max,avg,sd);
 	}
 
@@ -119,8 +97,7 @@ public class RegionStats extends Table {
 	                                    final String stattype,
 	                                    int from,
 	                                    int to,
-	                                    final int x)
-	{
+	                                    final int x) {
 		final DBConnection d=SL.getDB();
 		// 'x' defines how many 'slots' we have for data (horizontal pixels).  eventually borders and stuff so
 		int timerange=to-from;
@@ -134,7 +111,9 @@ public class RegionStats extends Table {
 
 
 		// range is "from" to "to", subtract the from, divide by the total range, scale to size
-		return d.dqSlow("select "+"round(?*((timestamp-?)/?)) as x,"+"timestamp,"+"min(statmin) as plotmin,"+"max(statmax) as plotmax,"+"avg(statavg) as plotavg,"+"avg(statsd) as plotsd,"+"samplesize "+"from regionstats "+"where timestamp>=? "+"and timestamp<=? "+"and stattype=? "+"and regionid=? "+"group by x "+"order by timestamp asc",
+		return d.dqSlow("select "+"round(?*((timestamp-?)/?)) as x,"+"timestamp,"+"min(statmin) as plotmin,"+"max(statmax) as plotmax,"+"avg(statavg) as plotavg,"+"avg"+
+				                "(statsd) as plotsd,"+"samplesize "+"from regionstats "+"where timestamp>=? "+"and timestamp<=? "+"and stattype=? "+"and regionid=? "+"group "
+				                +"by x "+"order by timestamp asc",
 		                x,
 		                from,
 		                timerange,
@@ -151,7 +130,8 @@ public class RegionStats extends Table {
 		final int start=UnixTime.getUnixTime();
 		int rollups=0;
 		for (final ResultsRow r: d.dq(
-				"select floor(timestamp/(60*60)) as basetime,regionid,stattype,min(statmin) as newmin,max(statmax) as newmax,avg(statavg) as newavg,avg(statsd) as newsd from regionstats where timestamp<? and samplesize='SINGLE' group by basetime,regionid,stattype",
+				"select floor(timestamp/(60*60)) as basetime,regionid,stattype,min(statmin) as newmin,max(statmax) as newmax,avg(statavg) as newavg,avg(statsd) as newsd "+
+						"from"+" regionstats where timestamp<? and samplesize='SINGLE' group by basetime,regionid,stattype",
 				start-(60*60*24*3)
 		                             )) {
 			if ((UnixTime.getUnixTime()-start)>30) {
@@ -178,7 +158,8 @@ public class RegionStats extends Table {
 			    "HOURLY"
 			   );
 			rollups++;
-			//log.finer("Rolling "+d.dqi(true,"select count(*) from regionstats where regionid=? and timestamp>=? and timestamp<? and stattype=? and samplesize='SINGLE'",regionid,basetime-(30*60),basetime+(30*60),stattype)+" records into one HOURLY record");
+			//log.finer("Rolling "+d.dqi(true,"select count(*) from regionstats where regionid=? and timestamp>=? and timestamp<? and stattype=? and samplesize='SINGLE'",
+			// regionid,basetime-(30*60),basetime+(30*60),stattype)+" records into one HOURLY record");
 			d.d("delete from regionstats where regionid=? and timestamp>=? and timestamp<? and stattype=? and samplesize='SINGLE'",
 			    regionid,
 			    basetime-(30*60),
@@ -190,7 +171,7 @@ public class RegionStats extends Table {
 		if (rollups>0) { log.fine("Completed region stats archiving, batched into "+rollups+" HOURLY samples"); }
 		rollups=0;
 		for (final ResultsRow r: d.dq(
-				"select floor(timestamp/(60*60*24)) as basetime,regionid,stattype,min(statmin) as newmin,max(statmax) as newmax,avg(statavg) as newavg,avg(statsd) as newsd from regionstats where timestamp<? and samplesize='HOURLY' group by basetime,regionid,stattype",
+				"select floor(timestamp/(60*60*24)) as basetime,regionid,stattype,min(statmin) as newmin,max(statmax) as newmax,avg(statavg) as newavg,avg(statsd) as newsd "+"from regionstats where timestamp<? and samplesize='HOURLY' group by basetime,regionid,stattype",
 				start-(60*60*24*7*2)
 		                             )) {
 			if ((UnixTime.getUnixTime()-start)>30) {
@@ -217,7 +198,8 @@ public class RegionStats extends Table {
 			    "DAILY"
 			   );
 			rollups++;
-			//log.finer("Rolling "+d.dqi(true,"select count(*) from regionstats where regionid=? and timestamp>=? and timestamp<? and stattype=? and samplesize='SINGLE'",regionid,basetime-(30*60),basetime+(30*60),stattype)+" records into one HOURLY record");
+			//log.finer("Rolling "+d.dqi(true,"select count(*) from regionstats where regionid=? and timestamp>=? and timestamp<? and stattype=? and samplesize='SINGLE'",
+			// regionid,basetime-(30*60),basetime+(30*60),stattype)+" records into one HOURLY record");
 			d.d("delete from regionstats where regionid=? and timestamp>=? and timestamp<? and stattype=? and samplesize='HOURLY'",
 			    regionid,
 			    basetime-(30*60*24),

@@ -32,8 +32,7 @@ public class User extends LockableTable {
 	final String username;
 
 	private User(final int id,
-	             final String username)
-	{
+	             final String username) {
 		super(id);
 		this.username=username;
 	}
@@ -49,8 +48,7 @@ public class User extends LockableTable {
 
 	@Nonnull
 	public static String getGPHUDLink(final String name,
-	                                  final int id)
-	{
+	                                  final int id) {
 		return new Link(name,"/GPHUD/avatars/view/"+id).asHtml(null,true);
 	}
 
@@ -81,8 +79,7 @@ public class User extends LockableTable {
 	}
 
 	private static User factory(final int id,
-	                            final String username)
-	{
+	                            final String username) {
 		synchronized (users) {
 			if (users.containsKey(id)) { return users.get(id); }
 			final User u=new User(id,username);
@@ -92,19 +89,20 @@ public class User extends LockableTable {
 	}
 
 	public static User get(String username,
-	                       final boolean createifnecessary)
-	{
+	                       final boolean createifnecessary) {
 		username=formatUsername(username);
 		Integer id=null;
 		try {
 			id=SL.getDB().dqi("select id from users where username=?",username);
-		} catch (@Nonnull final NoDataException e) {}
+		}
+		catch (@Nonnull final NoDataException e) {}
 		if (id!=null) { return factory(id,username); }
 		if (!createifnecessary) { throw new NoDataException("Can not find existing user for "+username); }
 		SL.getDB().d("insert into users(username) values(?)",username);
 		try {
 			id=SL.getDB().dqi("select id from users where username=?",username);
-		} catch (@Nonnull final NoDataException e) {}
+		}
+		catch (@Nonnull final NoDataException e) {}
 		if (id!=null) { return factory(id,username); }
 		throw new SystemConsistencyException("Created user for "+username+" and then couldn't find its id");
 	}
@@ -124,7 +122,8 @@ public class User extends LockableTable {
 		try {
 			final int userid=SL.getDB().dqinn("select id from users where developerkey=?",key);
 			return get(userid);
-		} catch (@Nonnull final NoDataException e) { return null; }
+		}
+		catch (@Nonnull final NoDataException e) { return null; }
 	}
 
 	@Nullable
@@ -135,23 +134,23 @@ public class User extends LockableTable {
 			final int match=SL.getDB().dqinn("select id from users where ssotoken=?",token);
 			SL.getDB().d("update users set ssotoken=null,ssoexpires=null where id=?",match);
 			return get(match);
-		} catch (@Nonnull final NoDataException e) { return null; }
+		}
+		catch (@Nonnull final NoDataException e) { return null; }
 	}
 
 	public static User findOrCreateAvatar(@Nullable String name,
-	                                      @Nonnull final String key)
-	{
+	                                      @Nonnull final String key) {
 		if (name==null || "".equals(name)) { name=""; }
 		Integer userid=null;
 		try {
 			userid=SL.getDB().dqi("select id from users where (username=? or avatarkey=?)",name,key);
-		} catch (@Nonnull final NoDataException e) {}
+		}
+		catch (@Nonnull final NoDataException e) {}
 		if (userid==null) {
 			if (name.isEmpty()) { throw new SystemBadValueException("Empty avatar name blocks creation"); }
 			if (key.isEmpty()) { throw new SystemBadValueException("Empty avatar key blocks creation"); }
 			if (name.contains("Loading...")) {
-				throw new SystemRemoteFailureException(
-						"No avatar name was sent with the key, can not create new avatar record");
+				throw new SystemRemoteFailureException("No avatar name was sent with the key, can not create new avatar record");
 			}
 			try {
 				// special key used by the SYSTEM avatar
@@ -159,13 +158,15 @@ public class User extends LockableTable {
 					SL.getLogger("User").info("Creating new avatar entry for '"+name+"'");
 				}
 				SL.getDB().d("insert into users(username,lastactive,avatarkey) values(?,?,?)",name,getUnixTime(),key);
-			} catch (@Nonnull final DBException ex) {
+			}
+			catch (@Nonnull final DBException ex) {
 				SL.getLogger("User").log(SEVERE,"Exception creating avatar "+name,ex);
 				throw ex;
 			}
 			try {
 				userid=SL.getDB().dqi("select id from users where avatarkey=?",key);
-			} catch (@Nonnull final NoDataException e) {}
+			}
+			catch (@Nonnull final NoDataException e) {}
 		}
 		if (userid==null) {
 			SL.getLogger("User").severe("Failed to find avatar '"+name+"' after creating it");
@@ -205,10 +206,10 @@ public class User extends LockableTable {
 			throw new UserInputEmptyException("Avatar name/key not supplied");
 		}
 		try {
-			final int userid=SL.getDB()
-			                   .dqinn("select id from users where username=? or avatarkey=?",nameorkey,nameorkey);
+			final int userid=SL.getDB().dqinn("select id from users where username=? or avatarkey=?",nameorkey,nameorkey);
 			return get(userid);
-		} catch (@Nonnull final NoDataException e) { return null; }
+		}
+		catch (@Nonnull final NoDataException e) { return null; }
 	}
 
 	@Nonnull
@@ -233,7 +234,8 @@ public class User extends LockableTable {
 			final String s=getDeveloperKey();
 			if (s==null || s.isEmpty()) { return false; }
 			return true;
-		} catch (@Nonnull final NoDataException e) { return false; }
+		}
+		catch (@Nonnull final NoDataException e) { return false; }
 	}
 
 	@Nullable
@@ -255,8 +257,7 @@ public class User extends LockableTable {
 	}
 
 	public void setPassword(@Nonnull final String password,
-	                        final String clientip)
-	{
+	                        final String clientip) {
 		if (password.length()<6) { throw new UserInputTooShortException("Password not long enough"); }
 		d("update users set password=? where id=?",Passwords.createHash(password),getId());
 		SL.getLogger().info("User "+getUsername()+" has set password from "+clientip);
@@ -274,52 +275,42 @@ public class User extends LockableTable {
 	public int balance() {
 		try {
 			return dqinn("select sum(ammount) from journal where userid=?",getId());
-		} catch (@Nonnull final NoDataException e) { return 0; }
+		}
+		catch (@Nonnull final NoDataException e) { return 0; }
 	}
 
 	public void bill(final int ammount,
-	                 final String description)
-	{
+	                 final String description) {
 		final int serial;
-		try {serial=lock();} catch (@Nonnull final LockException e) {
-			throw new UserInputStateException(
-					"Your balance is currently being updated elsewhere, please retry in a moment");
+		try {serial=lock();}
+		catch (@Nonnull final LockException e) {
+			throw new UserInputStateException("Your balance is currently being updated elsewhere, please retry in a moment");
 		}
 		try {
 			final int balance=balance();
 			if (balance<ammount) {
 				throw new UserInsufficientCreditException("Insufficient balance (L$"+balance+") to pay charge L$"+ammount);
 			}
-			d("insert into journal(tds,userid,ammount,description) values(?,?,?,?)",
-			  UnixTime.getUnixTime(),
-			  getId(),
-			  -ammount,
-			  description
-			 );
-		} finally { unlock(serial); }
+			d("insert into journal(tds,userid,ammount,description) values(?,?,?,?)",UnixTime.getUnixTime(),getId(),-ammount,description);
+		}
+		finally { unlock(serial); }
 	}
 
 	@Nonnull
 	public Set<Subscription> getSubscriptions(@Nullable final Pricing.SERVICE service,
 	                                          final boolean activeonly,
-	                                          final boolean paidonly)
-	{
+	                                          final boolean paidonly) {
 		final Results res;
 		int paiduntilfilter=UnixTime.getUnixTime();
 		if (!paidonly) { paiduntilfilter=0; }
 		final String activeonlysql;
-		if (activeonly) { activeonlysql=" and active=1"; } else { activeonlysql=""; }
+		if (activeonly) { activeonlysql=" and active=1"; }
+		else { activeonlysql=""; }
 		if (service!=null) {
-			res=dq("select id from subscriptions where ownerid=? and servicetype=? and paiduntil>?"+activeonlysql,
-			       getId(),
-			       service.getValue(),
-			       paiduntilfilter
-			      );
-		} else {
-			res=dq("select id from subscriptions where ownerid=? and paiduntil>?"+activeonlysql,
-			       getId(),
-			       paiduntilfilter
-			      );
+			res=dq("select id from subscriptions where ownerid=? and servicetype=? and paiduntil>?"+activeonlysql,getId(),service.getValue(),paiduntilfilter);
+		}
+		else {
+			res=dq("select id from subscriptions where ownerid=? and paiduntil>?"+activeonlysql,getId(),paiduntilfilter);
 		}
 		final Set<Subscription> subs=new HashSet<>();
 		for (final ResultsRow r: res) {

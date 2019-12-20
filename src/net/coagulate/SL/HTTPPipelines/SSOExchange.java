@@ -26,8 +26,7 @@ public class SSOExchange implements HttpRequestHandler {
 	@Override
 	public void handle(@Nonnull final HttpRequest req,
 	                   @Nonnull final HttpResponse resp,
-	                   final HttpContext hc)
-	{
+	                   final HttpContext hc) {
 		try {
 
 			final String token=req.getRequestLine().getUri().replaceFirst("/SSO/","");
@@ -44,12 +43,12 @@ public class SSOExchange implements HttpRequestHandler {
 			resp.addHeader("Set-Cookie","coagulateslsessionid="+session.token()+"; HttpOnly; Path=/; Secure;");
 			resp.addHeader("Location","/");
 			resp.setStatusCode(HttpStatus.SC_SEE_OTHER);
-		} catch (@Nonnull final Exception ex) {
+		}
+		catch (@Nonnull final Exception ex) {
 			SL.getLogger().log(SEVERE,"SSO?",ex);
 			resp.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
-			resp.setEntity(new StringEntity(
-					"<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>",
-					ContentType.TEXT_HTML
+			resp.setEntity(new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>",
+			                                ContentType.TEXT_HTML
 			));
 		}
 	}

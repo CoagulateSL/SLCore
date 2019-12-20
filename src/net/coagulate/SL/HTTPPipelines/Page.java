@@ -17,7 +17,8 @@ public class Page extends Container {
 	@Nonnull
 	public static String pageHeader(@Nonnull final State state) {
 		//new Exception().printStackTrace();
-		String r="<html><head><title>"+(SL.DEV?"DEV ":"")+"Coagulate SL</title>"+"<link rel=\"shortcut icon\" href=\"/resources/icon-cluster"+(SL.DEV?"-dev":"")+".png\">"+"</head><body>"+"<p align=center>"+SL
+		String r="<html><head><title>"+(SL.DEV?"DEV ":"")+"Coagulate SL</title>"+"<link rel=\"shortcut icon\" href=\"/resources/icon-cluster"+(SL.DEV?"-dev":"")+".png\">"+
+				"</head><body>"+"<p align=center>"+SL
 				.getBannerHREF()+"</p><p><hr>";
 		r+="<table width=100%><tr width=100%><td align=left width=400px>"+"Greetings";
 		if (state.userNullable()!=null) { r+=",&nbsp;"+state.user().getUsername().replaceAll(" ","&nbsp;"); }
@@ -27,7 +28,8 @@ public class Page extends Container {
 		r+="<a href=\"/Info\">[Info]</a>"+"&nbsp;&nbsp;&nbsp;";
 		if (state.userNullable()!=null) {
 			r+="<a href=\"/Billing\">[&nbsp;Billing&nbsp;(L$"+state.user()
-			                                                       .balance()+")&nbsp;]</a>"+"&nbsp;&nbsp;&nbsp;"+"<a href=\"/Account\">[&nbsp;Account&nbsp;]</a>"+"&nbsp;&nbsp;&nbsp;"+"<a href=\"/Logout\">[&nbsp;Logout&nbsp;]</a>"+"&nbsp;&nbsp;&nbsp;"+"</span>";
+			                                                       .balance()+")&nbsp;]</a>"+"&nbsp;&nbsp;&nbsp;"+"<a href=\"/Account\">[&nbsp;Account&nbsp;]</a>"+"&nbsp;"+
+					"&nbsp;&nbsp;"+"<a href=\"/Logout\">[&nbsp;Logout&nbsp;]</a>"+"&nbsp;&nbsp;&nbsp;"+"</span>";
 		}
 		r+="</td></tr></table>";
 		r+="<hr></p>";
@@ -89,8 +91,7 @@ public class Page extends Container {
 
 	@Nonnull
 	public ServiceCell serviceCell(final String title,
-	                               final String targeturl)
-	{
+	                               final String targeturl) {
 		final ServiceCell sc=new ServiceCell(title,targeturl);
 		add(sc);
 		return sc;
@@ -98,8 +99,7 @@ public class Page extends Container {
 
 	@Nonnull
 	public URLButton urlbutton(final String label,
-	                           final String url)
-	{
+	                           final String url) {
 		final URLButton ub=new URLButton(label,url);
 		add(ub);
 		return ub;
@@ -114,7 +114,8 @@ public class Page extends Container {
         String page=State.get().page;
         if (State.get().pagetype==PAGETYPE.NONE) { return page; }
         if (State.get().pagetype==PAGETYPE.CENTERPANEL) { 
-            return "<table style=\"margin-left: auto; margin-right: auto; min-width: 600px;vertical-align: top;\"><tr style=\"width: 100%;\"><td style=\"width: 100%;\">\n"+page+"</td></tr></table>\n";
+            return "<table style=\"margin-left: auto; margin-right: auto; min-width: 600px;vertical-align: top;\"><tr style=\"width: 100%;\"><td style=\"width: 100%;
+            \">\n"+page+"</td></tr></table>\n";
         }
         throw new AssertionError("Page Type must be one of the above? "+State.get().pagetype);
     }
@@ -152,7 +153,8 @@ public class Page extends Container {
     }
     public Page error(String errormessage) { return raw("<font color=red><b>"+errormessage+"</b></font>"); }
     public Page buttonGET(String buttonlabel,String url) { return raw("<a href=\""+url+"\"><button type=submit>"+buttonlabel+"</button></a>"); }
-    public Page errorBlock(String error) { return raw("<br><span style=\"margin: 10px; padding:5px; border-style: solid; border-width: 2; border-color: red;\">"+error+"</span><br><br>"); }
+    public Page errorBlock(String error) { return raw("<br><span style=\"margin: 10px; padding:5px; border-style: solid; border-width: 2; border-color: red;
+    \">"+error+"</span><br><br>"); }
 */
 
 	@Nonnull

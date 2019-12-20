@@ -21,12 +21,14 @@ public class Regions extends LockableTable {
 		try {
 			final int id=SL.getDB().dqinn("select id from regions where region like ?",name);
 			return new Regions(id);
-		} catch (@Nonnull final NoDataException e) {
+		}
+		catch (@Nonnull final NoDataException e) {
 			SL.getDB().d("insert into regions(region) values(?)",name);
 			try {
 				final int id=SL.getDB().dqinn("select id from regions where region like ?",name);
 				return new Regions(id);
-			} catch (@Nonnull final NoDataException f) {
+			}
+			catch (@Nonnull final NoDataException f) {
 				throw new SystemConsistencyException("Failed to find inserted region in regions table",f);
 			}
 		}
@@ -48,7 +50,8 @@ public class Regions extends LockableTable {
 	public void setLastUpdate() {
 		try {
 			set("lastupdate",UnixTime.getUnixTime());
-		} catch (@Nonnull final LockException e) {} // not that important here, something else is updating it...
+		}
+		catch (@Nonnull final LockException e) {} // not that important here, something else is updating it...
 	}
 
 	public void setNewStatus(final String status) {

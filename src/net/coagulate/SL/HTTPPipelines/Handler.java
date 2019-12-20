@@ -32,13 +32,10 @@ public abstract class Handler implements HttpRequestHandler {
 	@Override
 	public void handle(@Nonnull final HttpRequest req,
 	                   @Nonnull final HttpResponse resp,
-	                   final HttpContext hc)
-	{
+	                   final HttpContext hc) {
 		try {
 			final Map<String,String> parameters=new HashMap<>();
-			final List<NameValuePair> uriparams=URLEncodedUtils.parse(new URI(req.getRequestLine().getUri()),
-			                                                          StandardCharsets.UTF_8
-			                                                         );
+			final List<NameValuePair> uriparams=URLEncodedUtils.parse(new URI(req.getRequestLine().getUri()),StandardCharsets.UTF_8);
 			for (final NameValuePair up: uriparams) {
 				parameters.put(up.getName(),up.getValue());
 				if (DEBUG_PARAMS) {
@@ -64,11 +61,9 @@ public abstract class Handler implements HttpRequestHandler {
 				for (final String component: header.getValue().split(";")) {
 					final String[] kv=component.split("=");
 					if (kv.length!=2) {
-						SL.getLogger()
-						  .log(Level.WARNING,
-						       "Unusual cookie element to parse in line "+header.getValue()+" piece "+component
-						      );
-					} else {
+						SL.getLogger().log(Level.WARNING,"Unusual cookie element to parse in line "+header.getValue()+" piece "+component);
+					}
+					else {
 						//System.out.println(kv[0]+"="+kv[1]);
 						cookiemap.put(kv[0].trim(),kv[1].trim());
 					}
@@ -84,26 +79,26 @@ public abstract class Handler implements HttpRequestHandler {
 				if (!sessionid.equals(cookiemap.get("coagulateslsessionid"))) {
 					resp.addHeader("Set-Cookie","coagulateslsessionid="+sessionid+"; HttpOnly; Path=/; Secure;");
 				}
-			} else {
-				resp.addHeader("Set-Cookie",
-				               "coagulateslsessionid=none; HttpOnly; Path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure;"
-				              );
+			}
+			else {
+				resp.addHeader("Set-Cookie","coagulateslsessionid=none; HttpOnly; Path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure;");
 			}
 			resp.setStatusCode(state.status());
 
-		} catch (@Nonnull final URISyntaxException use) { // dont log the exception because we don't want the mail.  this is probably a script kiddie hack attempt that doesn't work
+		}
+		catch (@Nonnull
+		final URISyntaxException use) { // dont log the exception because we don't want the mail.  this is probably a script kiddie hack attempt that doesn't work
 			SL.getLogger().log(WARNING,"PageHandler");
 			resp.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
-			resp.setEntity(new StringEntity(
-					"<html><body><pre><b>500 - Internal Server Error</b></pre><p>Whatever you're trying to do is illegal.</p></body></html>",
-					ContentType.TEXT_HTML
+			resp.setEntity(new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Whatever you're trying to do is illegal.</p></body></html>",
+			                                ContentType.TEXT_HTML
 			));
-		} catch (@Nonnull final Exception ex) {
+		}
+		catch (@Nonnull final Exception ex) {
 			SL.getLogger().log(SEVERE,"PageHandler",ex);
 			resp.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
-			resp.setEntity(new StringEntity(
-					"<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>",
-					ContentType.TEXT_HTML
+			resp.setEntity(new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>",
+			                                ContentType.TEXT_HTML
 			));
 		}
 	}

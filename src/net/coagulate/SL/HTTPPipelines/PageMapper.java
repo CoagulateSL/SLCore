@@ -43,12 +43,9 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 			count++;
 			try {
 				exact(url,(HttpRequestHandler) c.newInstance());
-			} catch (@Nonnull final InstantiationException|IllegalAccessException|IllegalArgumentException|InvocationTargetException ex) {
-				logger.log(Level.SEVERE,
-				           "URL Annotated constructor in class "+c.getDeclaringClass()
-				                                                  .getCanonicalName()+" failed instansiation:"+ex.getLocalizedMessage(),
-				           ex
-				          );
+			}
+			catch (@Nonnull final InstantiationException|IllegalAccessException|IllegalArgumentException|InvocationTargetException ex) {
+				logger.log(Level.SEVERE,"URL Annotated constructor in class "+c.getDeclaringClass().getCanonicalName()+" failed instansiation:"+ex.getLocalizedMessage(),ex);
 			}
 		}
 		logger.log(Level.FINE,"Loaded "+count+" exact URI handlers");
@@ -58,11 +55,10 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 			count++;
 			try {
 				prefix(url,(HttpRequestHandler) c.newInstance());
-			} catch (@Nonnull final InstantiationException|IllegalAccessException|IllegalArgumentException|InvocationTargetException ex) {
+			}
+			catch (@Nonnull final InstantiationException|IllegalAccessException|IllegalArgumentException|InvocationTargetException ex) {
 				logger.log(Level.SEVERE,
-				           "Prefix URL Annotated constructor in class "+c.getDeclaringClass()
-				                                                         .getCanonicalName()+" failed instansiation:"+ex
-						           .getLocalizedMessage(),
+				           "Prefix URL Annotated constructor in class "+c.getDeclaringClass().getCanonicalName()+" failed instansiation:"+ex.getLocalizedMessage(),
 				           ex
 				          );
 			}
@@ -71,8 +67,7 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 	}
 
 	public void exact(@Nonnull final String url,
-	                  final HttpRequestHandler handler)
-	{
+	                  final HttpRequestHandler handler) {
 		if (DEBUG) { System.out.println("Registering exact '"+url+"'"); }
 		if (exact.containsKey(url.toLowerCase())) {
 			throw new SystemImplementationException("Duplicate EXACT URL registration for '"+url+"'");
@@ -81,8 +76,7 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 	}
 
 	public void prefix(@Nonnull final String url,
-	                   final HttpRequestHandler handler)
-	{
+	                   final HttpRequestHandler handler) {
 		if (DEBUG) { System.out.println("Registering prefix '"+url+"'"); }
 		if (prefixes.containsKey(url.toLowerCase())) {
 			throw new SystemImplementationException("Duplicate PREFIX URL registration for '"+url+"'");
@@ -98,7 +92,8 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 		if (exact.containsKey(line)) {
 			if (DEBUG) { System.out.println("Exact match "+exact.get(line).getClass().getCanonicalName()); }
 			return exact.get(line);
-		} else {
+		}
+		else {
 			if (DEBUG) { System.out.println("Exact match against "+exact.size()+" elements returned nothing"); }
 		}
 		for (final String s: exact.keySet()) {
@@ -117,7 +112,8 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 		if (DEBUG) {
 			if (matchedhandler!=null) {
 				System.out.println("Prefix match "+matchedhandler.getClass().getCanonicalName());
-			} else {System.out.println("Prefix match returned null match, this is now a 404");}
+			}
+			else {System.out.println("Prefix match returned null match, this is now a 404");}
 		}
 		if (matchedhandler==null) {
 			logger.log(Level.FINE,"Requested URI '{0}' was not mapped to a page - returning 404.",line);

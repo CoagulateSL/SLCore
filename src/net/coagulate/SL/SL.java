@@ -209,7 +209,7 @@ public class SL extends Thread {
 		LogHandler.alreadyMailed(t);
 		try {
 			if (LogHandler.suppress(t)) {
-				System.out.println("Exception Report Suppressed "+LogHandler.getCount(t)+"x";
+				System.out.println("Exception Report Suppressed "+LogHandler.getCount(t)+"x"+LogHandler.getSignature(t));
 			}
 			else
 			{ MailTools.mail((DEV?"Dev":"PROD")+" EX : "+header+" - "+t.getLocalizedMessage(),output); }

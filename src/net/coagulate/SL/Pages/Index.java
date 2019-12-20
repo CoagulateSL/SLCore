@@ -18,18 +18,13 @@ public class Index extends AuthenticatedContainerHandler {
 
 	@Override
 	protected void run(final State state,
-	                   @Nonnull final Page page)
-	{
+	                   @Nonnull final Page page) {
 		page.layout(Page.PAGELAYOUT.CENTERCOLUMN);
-		page.paragraph("Welcome to Coagulate Second Life services, select a service for more information.")
-		    .align(Paragraph.ALIGNMENT.CENTER);
+		page.paragraph("Welcome to Coagulate Second Life services, select a service for more information.").align(Paragraph.ALIGNMENT.CENTER);
 		//raw("<table style=\"max-width: 900px;\" align=center>");
 		//raw("<tr width=100%><td width=100%><ul style=\"white-space: nowrap;\">");
-		page.serviceCell("Region Monitoring","/RegionMonitor")
-		    .
-				    add(new Paragraph(
-						    "Region Monitoring monitors the status of specified regions, polling every minute and logging the data."))
-		    .
+		page.serviceCell("Region Monitoring","/RegionMonitor").
+				add(new Paragraph("Region Monitoring monitors the status of specified regions, polling every minute and logging the data.")).
 				    add(new Paragraph("Can also use scripted or bot services to collect performance metrics."));
         /*
         openServiceCell("Web Chat","/WebChat");

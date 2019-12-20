@@ -12,8 +12,7 @@ public class URLButton implements Element {
 	private final String url;
 
 	public URLButton(final String label,
-	                 final String url)
-	{
+	                 final String url) {
 		this.label=label;
 		this.url=url;
 	}

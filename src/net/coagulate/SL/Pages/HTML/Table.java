@@ -113,8 +113,7 @@ public class Table extends Container {
 
 	@Nonnull
 	protected String openRow(final State st,
-	                         final Map<String,String> row)
-	{
+	                         final Map<String,String> row) {
 		if (trgen==null) { return "<tr>"; }
 		return trgen.render(st,row);
 	}

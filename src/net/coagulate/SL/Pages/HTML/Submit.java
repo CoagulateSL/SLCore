@@ -21,8 +21,7 @@ public class Submit extends Container {
 	}
 
 	public Submit(@Nullable final String name,
-	              @Nullable final String value)
-	{
+	              @Nullable final String value) {
 		this.name=name;
 		this.value=value;
 	}

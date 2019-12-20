@@ -40,8 +40,7 @@ public class State extends DumpableState {
 	// We love HTTP :P
 	public State(final HttpRequest request,
 	             final HttpResponse response,
-	             final HttpContext httpcontext)
-	{
+	             final HttpContext httpcontext) {
 		this.request=request;
 		this.response=response;
 		this.httpcontext=httpcontext;
@@ -82,28 +81,23 @@ public class State extends DumpableState {
 
 	public String get(final String mapname,
 	                  final String key,
-	                  final String defaultvalue)
-	{
+	                  final String defaultvalue) {
 		if (!getMap(mapname).containsKey(key)) { return defaultvalue; }
 		return getMap(mapname).get(key);
 	}
 
 	public String get(final String mapname,
-	                  final String key)
-	{ return get(mapname,key,null); }
+	                  final String key) { return get(mapname,key,null); }
 
 	public void delete(final String mapname,
-	                   final String key)
-	{ getMap(mapname).remove(key); }
+	                   final String key) { getMap(mapname).remove(key); }
 
 	public void put(final String mapname,
 	                final String key,
-	                final String value)
-	{ getMap(mapname).put(key,value); }
+	                final String value) { getMap(mapname).put(key,value); }
 
 	public void putMap(final String mapname,
-	                   final Map<String,String> map)
-	{ maps.put(mapname,map); }
+	                   final Map<String,String> map) { maps.put(mapname,map); }
 
 	// WELL KNOWN MAPS
 	// parameters - get/post data
@@ -112,8 +106,7 @@ public class State extends DumpableState {
 	public String get(final String key) { return get("parameters",key,""); }
 
 	public void put(final String key,
-	                final String value)
-	{ put("parameters",key,value); }
+	                final String value) { put("parameters",key,value); }
 
 	@Nullable
 	public User userNullable() { return user; }
@@ -129,7 +122,8 @@ public class State extends DumpableState {
 		if (session==null) {
 			session=Session.create(user);
 			sessionid=session.token();
-		} else { session.setUser(user); }
+		}
+		else { session.setUser(user); }
 		this.user=user;
 	}
 
@@ -146,7 +140,8 @@ public class State extends DumpableState {
 				final HttpInetConnection connection=(HttpInetConnection) httpcontext.getAttribute(org.apache.http.protocol.ExecutionContext.HTTP_CONNECTION);
 				final InetAddress ia=connection.getRemoteAddress();
 				return "DIRECT:"+ia.getHostAddress();
-			} catch (@Nonnull final Exception e) {
+			}
+			catch (@Nonnull final Exception e) {
 				SL.getLogger().log(Level.WARNING,"Exception getting client address",e);
 				return "UNKNOWN";
 			}
@@ -169,7 +164,8 @@ public class State extends DumpableState {
 		if (sessionid==null || sessionid.isEmpty() || "none".equalsIgnoreCase(sessionid)) { return; }
 		session=Session.get(sessionid);
 		//System.out.println("Loaded session id "+sessionid+" and got "+session);
-		if (session!=null) { user=session.user(); } else { sessionid=null; }
+		if (session!=null) { user=session.user(); }
+		else { sessionid=null; }
 	}
 
 	@Nonnull

@@ -31,8 +31,7 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 
 	@Override
 	protected void run(@Nonnull final State state,
-	                   @Nonnull final Page page)
-	{
+	                   @Nonnull final Page page) {
 		if (!state.user().superuser()) {
 			throw new UserAccessDeniedException("Unauthorised access to Control Panel from "+state.userNullable());
 		}
@@ -48,7 +47,8 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 				               "SL Cluster mail test",
 				               "Test OK"
 				              );
-			} catch (@Nonnull final MessagingException ex) {
+			}
+			catch (@Nonnull final MessagingException ex) {
 				Logger.getLogger(ControlPanel.class.getName()).log(Level.SEVERE,null,ex);
 				page.add(new Raw(ExceptionTools.toHTML(ex)));
 			}
@@ -70,11 +70,7 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 					if (stacktrace.length()>0) { stacktrace.append("<br>"); }
 					final String classname=element.getClassName();
 					if (classname.startsWith("net.coagulate.")) {
-						stacktrace.append(classname)
-						          .append("/")
-						          .append(element.getMethodName())
-						          .append(":")
-						          .append(element.getLineNumber());
+						stacktrace.append(classname).append("/").append(element.getMethodName()).append(":").append(element.getLineNumber());
 					}
 				}
 				t.add(stacktrace.toString());

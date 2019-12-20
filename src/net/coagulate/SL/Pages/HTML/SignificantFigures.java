@@ -14,8 +14,7 @@ public class SignificantFigures extends Renderer {
 	@Nullable
 	@Override
 	public String render(final State st,
-	                     @Nullable final String value)
-	{
+	                     @Nullable final String value) {
 		if (value==null || value.isEmpty()) { return ""; }
 		if (value.length()<=(sf)) { return value; }
 		if (!value.contains(".")) { return value; }

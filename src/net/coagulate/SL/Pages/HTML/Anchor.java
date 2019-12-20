@@ -11,15 +11,13 @@ public class Anchor extends Container {
 	public Anchor(final String target) { this.target=target; }
 
 	public Anchor(final String target,
-	              final Element content)
-	{
+	              final Element content) {
 		this.target=target;
 		add(content);
 	}
 
 	public Anchor(final String target,
-	              final String content)
-	{
+	              final String content) {
 		this.target=target;
 		add(new Raw(content));
 	}

@@ -24,8 +24,7 @@ public class SQLTable extends Table {
 
 	public SQLTable(final DBConnection db,
 	                final String sql,
-	                final Object... params)
-	{
+	                final Object... params) {
 		this.db=db;
 		this.sql=sql;
 		this.params=params;
@@ -34,27 +33,23 @@ public class SQLTable extends Table {
 
 	@Nonnull
 	public SQLTable column(final String header,
-	                       final String columnname)
-	{ return column(header,columnname,null,Alignment.NONE); }
+	                       final String columnname) { return column(header,columnname,null,Alignment.NONE); }
 
 	@Nonnull
 	public SQLTable column(final String header,
 	                       final String columnname,
-	                       final Renderer renderer)
-	{ return column(header,columnname,renderer,Alignment.NONE); }
+	                       final Renderer renderer) { return column(header,columnname,renderer,Alignment.NONE); }
 
 	@Nonnull
 	public SQLTable column(final String header,
 	                       final String columnname,
-	                       final Alignment alignment)
-	{ return column(header,columnname,null,alignment); }
+	                       final Alignment alignment) { return column(header,columnname,null,alignment); }
 
 	@Nonnull
 	public SQLTable column(final String header,
 	                       final String columnname,
 	                       final Renderer renderer,
-	                       final Alignment alignment)
-	{
+	                       final Alignment alignment) {
 		columns.add(new Column(header,columnname,renderer,alignment));
 		header(header);
 		return this;
@@ -106,8 +101,7 @@ public class SQLTable extends Table {
 		Column(final String header,
 		       final String columnname,
 		       final Renderer renderer,
-		       final Alignment alignment)
-		{
+		       final Alignment alignment) {
 			this.header=header;
 			this.columnname=columnname;
 			this.renderer=renderer;
@@ -116,8 +110,7 @@ public class SQLTable extends Table {
 
 		@Nullable
 		public String render(final State state,
-		                     @Nullable final String value)
-		{
+		                     @Nullable final String value) {
 			if (renderer==null) {
 				if (value==null) { return ""; }
 				return value;

@@ -13,8 +13,7 @@ public class TimeStamp extends Renderer {
 	@Nullable
 	@Override
 	public String render(@Nonnull final State st,
-	                     @Nullable final String value)
-	{
+	                     @Nullable final String value) {
 		if (value==null || value.isEmpty() || Integer.parseInt(value)==0) { return "-"; }
 		String timezone="America/Los_Angeles";
 		if (st.userNullable()!=null) {

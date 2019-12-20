@@ -20,13 +20,13 @@ public class Shutdown extends ContainerHandler {
 
 	@Override
 	protected void run(@Nonnull final State state,
-	                   @Nonnull final Page page)
-	{
+	                   @Nonnull final Page page) {
 		final String ip=state.getClientIP();
 		if (ip.equals("DIRECT:0:0:0:0:0:0:0:1") || ip.equals("DIRECT:127.0.0.1")) {
 			SL.shutdown();
 			page.add(new Paragraph("SHUTDOWN INITIATED"));
-		} else {
+		}
+		else {
 			throw new UserAccessDeniedException("Unauthorised access to shutdown from "+state.getClientIP());
 		}
 	}

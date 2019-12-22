@@ -53,12 +53,12 @@ public abstract class AuthenticatedStringHandler extends Handler {
 							final String token=target.generateSSO();
 							final String message;
 							if (SL.DEV) {
-								message="\n\n===== DEVELOPMENT SSO ENTRY POINT =====\n\n\n[https://dev.coagulate.sl/SSO/"+token+" Log in to Coagulate SL DEVELOPMENT "+
+								message="\n\n===== DEVELOPMENT SSO ENTRY POINT =====\n\n\n[https://dev.sl.coagulate.net/SSO/"+token+" Log in to Coagulate SL DEVELOPMENT "+
 										"ENVIRONMENT]\n\n";
 							}
 							else {
 								message=
-										"\n\nPlease click the link below to log in to Coagulate SL Services\n\nThis link will be valid for 5 minutes only, and one use.\nIf "+"you wish to log in through the web page rather than via the bot, please 'Set Password' under 'Account' on the top right of the web "+"page after following the link below.\n\n[https://coagulate.sl/SSO/"+token+" Log in to Coagulate SL]\n\n";
+										"\n\nPlease click the link below to log in to Coagulate SL Services\n\nThis link will be valid for 5 minutes only, and one use.\nIf "+"you wish to log in through the web page rather than via the bot, please 'Set Password' under 'Account' on the top right of the web "+"page after following the link below.\n\n[https://sl.coagulate.net/SSO/"+token+" Log in to Coagulate SL]\n\n";
 							}
 
 							SL.bot().im(new LLUUID(target.getUUID()),message);

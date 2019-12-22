@@ -85,7 +85,7 @@ public class ClusterInfo extends ContainerHandler {
 		page.paragraph(
 				"At this point I have migrated ALL my previous services over to the Generation Three cluster and retired the previous solutions ; it's roughly backwards "+
 						"compatible with generation two solutions (the possibility of transaction rollback would only highlight design flaws in the original code), and can "+"even host Generation One services, though they don't particularly benefit from this level of design or resilience.  I've started to re-engineer and "+"tightly integrate previous services to maximally unify everything under a single 'Third Generation SL Networked Solution' (or fourth, if you like)");
-		page.paragraph("<b>Pros:</b> Resilient, consistent, synchronous database cluster with Object Orientated programming driving LSL frontends; able to solve all " +
+		page.paragraph("<b>Pros:</b> Resilient, consistent, synchronous database cluster with Object Orientated programming driving LSL frontends; able to solve all "+
 				               "previous"+" "+"generations requirements, and improve on them");
 		page.paragraph(
 				"<b>Cons:</b> Requires three servers.  Still requires some coding knowledge to avoid problems with parallelism (though even generation zero may not avoid "+

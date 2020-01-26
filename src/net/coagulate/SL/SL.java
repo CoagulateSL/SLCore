@@ -227,6 +227,10 @@ public class SL extends Thread {
 		return log;
 	}
 
+	public static String textureURL(String textureuuid) {
+		return "https://picture-service.secondlife.com/"+textureuuid+"/320x240.jpg";
+	}
+
 	@Override
 	public void run() {
 		if (!SL.shutdown) { log().severe("JVM Shutdown Hook invoked"); }

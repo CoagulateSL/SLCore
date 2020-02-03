@@ -24,6 +24,8 @@ public class Session extends Table {
 		this.user=user;
 	}
 
+	public String toString() { return "SLSession["+user+"]"; }
+
 	@Nullable
 	public static Session get(final String sessionid) {
 		try {

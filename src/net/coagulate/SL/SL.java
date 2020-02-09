@@ -227,7 +227,7 @@ public class SL extends Thread {
 		return log;
 	}
 
-	public static String textureURL(String textureuuid) {
+	public static String textureURL(final String textureuuid) {
 		return "https://picture-service.secondlife.com/"+textureuuid+"/320x240.jpg";
 	}
 

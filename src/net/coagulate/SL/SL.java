@@ -5,6 +5,8 @@ import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Database.MariaDBConnection;
 import net.coagulate.Core.Exceptions.System.SystemInitialisationException;
 import net.coagulate.Core.Exceptions.System.SystemRemoteFailureException;
+import net.coagulate.Core.Exceptions.SystemException;
+import net.coagulate.Core.Exceptions.UserException;
 import net.coagulate.Core.HTTP.HTTPListener;
 import net.coagulate.Core.Tools.*;
 import net.coagulate.GPHUD.GPHUD;
@@ -209,6 +211,9 @@ public class SL extends Thread {
 	                          @Nonnull final Throwable t,
 	                          @Nonnull final DumpableState state) {
 		final String output=ExceptionTools.dumpException(t)+"<br><hr><br>"+state.toHTML();
+
+		if (UserException.class.isAssignableFrom(t.getClass())) { if (((UserException)t).suppressed()) { return; }}
+		if (SystemException.class.isAssignableFrom(t.getClass())) { if (((SystemException)t).suppressed()) { return; }}
 		LogHandler.alreadyMailed(t);
 		try {
 			if (LogHandler.suppress(t)) {

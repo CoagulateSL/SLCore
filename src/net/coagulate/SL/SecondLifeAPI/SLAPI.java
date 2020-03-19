@@ -1,14 +1,12 @@
 package net.coagulate.SL.SecondLifeAPI;
 
+import net.coagulate.Core.Exceptions.System.SystemRemoteFailureException;
 import net.coagulate.Core.Tools.ByteTools;
 import net.coagulate.Core.Tools.Crypto;
 import net.coagulate.Core.Tools.UnixTime;
 import net.coagulate.SL.Pages.HTML.State;
 import net.coagulate.SL.SL;
-import org.apache.http.HttpEntityEnclosingRequest;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
+import org.apache.http.*;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
@@ -42,17 +40,17 @@ public abstract class SLAPI implements HttpRequestHandler {
 				content=new JSONObject(ByteTools.convertStreamToString(r.getEntity().getContent()));
 			}
 			final State st=new State(req,resp,hc);
-			final String shard=req.getHeaders("X-SecondLife-Shard")[0].getValue();
+			final String shard=requireHeader(req,"X-SecondLife-Shard");
 			st.put("slapi_shard",shard);
-			st.put("slapi_region",req.getHeaders("X-SecondLife-Region")[0].getValue());
-			st.put("slapi_ownername",req.getHeaders("X-SecondLife-Owner-Name")[0].getValue());
-			st.put("slapi_ownerkey",req.getHeaders("X-SecondLife-Owner-Key")[0].getValue());
-			st.put("slapi_objectname",req.getHeaders("X-SecondLife-Object-Name")[0].getValue());
-			final String objectkey=req.getHeaders("X-SecondLife-Object-Key")[0].getValue();
+			st.put("slapi_region",requireHeader(req,"X-SecondLife-Region"));
+			st.put("slapi_ownername",requireHeader(req,"X-SecondLife-Owner-Name"));
+			st.put("slapi_ownerkey",requireHeader(req,"X-SecondLife-Owner-Key"));
+			st.put("slapi_objectname",requireHeader(req,"X-SecondLife-Object-Name"));
+			final String objectkey=requireHeader(req,"X-SecondLife-Object-Key");
 			st.put("slapi_objectkey",objectkey);
-			st.put("slapi_objectvelocity",req.getHeaders("X-SecondLife-Local-Velocity")[0].getValue());
-			st.put("slapi_objectrotation",req.getHeaders("X-SecondLife-Local-Rotation")[0].getValue());
-			st.put("slapi_objectposition",req.getHeaders("X-SecondLife-Local-Position")[0].getValue());
+			st.put("slapi_objectvelocity",requireHeader(req,"X-SecondLife-Local-Velocity"));
+			st.put("slapi_objectrotation",requireHeader(req,"X-SecondLife-Local-Rotation"));
+			st.put("slapi_objectposition",requireHeader(req,"X-SecondLife-Local-Position"));
 			if (!"Production".equalsIgnoreCase(shard)) {
 				SL.getLogger(getClass().getSimpleName()).severe("INCORRECT SHARD : "+objectDump(st));
 				resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
@@ -99,7 +97,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 			SL.getLogger().log(WARNING,"PageHandler",ex);
 			resp.setStatusCode(HttpStatus.SC_OK);
 			final JSONObject object=new JSONObject();
-			object.put("error","Internal error: "+ex);
+			object.put("error","Internal error during SL API parser");
 			resp.setEntity(new StringEntity(object.toString(),ContentType.APPLICATION_JSON));
 		}
 	}
@@ -115,6 +113,13 @@ public abstract class SLAPI implements HttpRequestHandler {
 		SL.getLogger(getClass().getSimpleName()).fine("Version mismatch : "+match+">"+version+" : "+objectDump(st));
 	}
 
+	private String requireHeader(final HttpRequest req,
+	                             final String header) {
+		Header[] headerset=req.getHeaders("X-SecondLife-Shard");
+		if (headerset.length==0) { throw new SystemRemoteFailureException("Mandatory data was not supplied to SL API processor"); }
+		if (headerset.length>1) { throw new SystemRemoteFailureException("Too much mandatory data was supplied to SL API processor"); }
+		return headerset[0].getValue();
+	}
 
 	@Nonnull
 	protected abstract JSONObject handleJSON(JSONObject object,

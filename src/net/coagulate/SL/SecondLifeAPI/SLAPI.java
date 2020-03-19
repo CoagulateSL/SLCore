@@ -33,7 +33,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 	public void handle(final HttpRequest req,
 	                   @Nonnull final HttpResponse resp,
 	                   final HttpContext hc) {
-		final boolean debug=true;
+		final boolean debug=false;
 		try {
 			JSONObject content=new JSONObject();
 			if (req instanceof HttpEntityEnclosingRequest) {
@@ -92,7 +92,9 @@ public abstract class SLAPI implements HttpRequestHandler {
 				final String targetdigest=Crypto.SHA1(objectkey+timestamp+"***REMOVED***");
 				if (!targetdigest.equalsIgnoreCase(digest)) {
 					if (debug) { System.out.println("Digest failure for SHA1 ("+objectkey+timestamp+"***REMOVED***"+") = "+targetdigest); }
-					SL.getLogger().log(SEVERE,"Incorrect digest provided to Second Life API - we had "+targetdigest+" but they gave "+digest);
+					if (debug) { SL.getLogger().log(SEVERE,"Incorrect digest provided to Second Life API - we had "+targetdigest+" but they gave "+digest); }
+					else
+					{SL.getLogger().log(SEVERE,"Incorrect digest provided to Second Life API");}
 					resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
 					return;
 				}

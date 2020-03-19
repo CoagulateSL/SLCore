@@ -33,6 +33,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 	public void handle(final HttpRequest req,
 	                   @Nonnull final HttpResponse resp,
 	                   final HttpContext hc) {
+		final boolean debug=true;
 		try {
 			JSONObject content=new JSONObject();
 			if (req instanceof HttpEntityEnclosingRequest) {
@@ -82,9 +83,16 @@ public abstract class SLAPI implements HttpRequestHandler {
 					resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
 					return;
 				}
+				final String theirobjectkey=content.optString("objectkey");
+				if (theirobjectkey!=null && !theirobjectkey.isEmpty()) {
+					if (!theirobjectkey.equals(objectkey)) {
+						SL.getLogger().log(SEVERE,"Object key mismatch - headers generated "+objectkey+" but they think it's "+theirobjectkey);
+					}
+				}
 				final String targetdigest=Crypto.SHA1(objectkey+timestamp+"***REMOVED***");
 				if (!targetdigest.equalsIgnoreCase(digest)) {
-					SL.getLogger().log(SEVERE,"Incorrect digest provided to Second Life API");
+					if (debug) { System.out.println("Digest failure for SHA1 ("+objectkey+timestamp+"***REMOVED***"+") = "+targetdigest); }
+					SL.getLogger().log(SEVERE,"Incorrect digest provided to Second Life API - we had "+targetdigest+" but they gave "+digest);
 					resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
 					return;
 				}
@@ -115,7 +123,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 
 	private String requireHeader(final HttpRequest req,
 	                             final String header) {
-		Header[] headerset=req.getHeaders("X-SecondLife-Shard");
+		Header[] headerset=req.getHeaders(header);
 		if (headerset.length==0) { throw new SystemRemoteFailureException("Mandatory data was not supplied to SL API processor"); }
 		if (headerset.length>1) { throw new SystemRemoteFailureException("Too much mandatory data was supplied to SL API processor"); }
 		return headerset[0].getValue();

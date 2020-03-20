@@ -44,7 +44,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 			final String shard=requireHeader(req,"X-SecondLife-Shard",st);
 			st.put("slapi_shard",shard);
 			st.put("slapi_region",requireHeader(req,"X-SecondLife-Region",st));
-			st.put("slapi_ownername",requireHeader(req,"X-SecondLife-Owner-Name",st));
+			st.put("slapi_ownername",optionalHeader(req,"X-SecondLife-Owner-Name",st));
 			st.put("slapi_ownerkey",requireHeader(req,"X-SecondLife-Owner-Key",st));
 			st.put("slapi_objectname",requireHeader(req,"X-SecondLife-Object-Name",st));
 			final String objectkey=requireHeader(req,"X-SecondLife-Object-Key",st);
@@ -126,8 +126,20 @@ public abstract class SLAPI implements HttpRequestHandler {
 	private String requireHeader(final HttpRequest req,
 	                             final String header,
 	                             final State st) {
+		return getHeader(true,req,header,st);
+	}
+	private String optionalHeader(final HttpRequest req,
+	                             final String header,
+	                             final State st) {
+		return getHeader(false,req,header,st);
+	}
+	private String getHeader(boolean mandatory,
+								 final HttpRequest req,
+	                             final String header,
+	                             final State st) {
 		Header[] headerset=req.getHeaders(header);
 		if (headerset.length==0) {
+			if (!mandatory) { return null; }
 			SystemRemoteFailureException e=new SystemRemoteFailureException("Mandatory data was not supplied to SL API processor");
 			SL.report("Missing mandatory header "+header,e,st);
 			throw e;

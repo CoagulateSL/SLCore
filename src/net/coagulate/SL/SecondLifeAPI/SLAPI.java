@@ -41,17 +41,17 @@ public abstract class SLAPI implements HttpRequestHandler {
 				content=new JSONObject(ByteTools.convertStreamToString(r.getEntity().getContent()));
 			}
 			final State st=new State(req,resp,hc);
-			final String shard=requireHeader(req,"X-SecondLife-Shard");
+			final String shard=requireHeader(req,"X-SecondLife-Shard",st);
 			st.put("slapi_shard",shard);
-			st.put("slapi_region",requireHeader(req,"X-SecondLife-Region"));
-			st.put("slapi_ownername",requireHeader(req,"X-SecondLife-Owner-Name"));
-			st.put("slapi_ownerkey",requireHeader(req,"X-SecondLife-Owner-Key"));
-			st.put("slapi_objectname",requireHeader(req,"X-SecondLife-Object-Name"));
-			final String objectkey=requireHeader(req,"X-SecondLife-Object-Key");
+			st.put("slapi_region",requireHeader(req,"X-SecondLife-Region",st));
+			st.put("slapi_ownername",requireHeader(req,"X-SecondLife-Owner-Name",st));
+			st.put("slapi_ownerkey",requireHeader(req,"X-SecondLife-Owner-Key",st));
+			st.put("slapi_objectname",requireHeader(req,"X-SecondLife-Object-Name",st));
+			final String objectkey=requireHeader(req,"X-SecondLife-Object-Key",st);
 			st.put("slapi_objectkey",objectkey);
-			st.put("slapi_objectvelocity",requireHeader(req,"X-SecondLife-Local-Velocity"));
-			st.put("slapi_objectrotation",requireHeader(req,"X-SecondLife-Local-Rotation"));
-			st.put("slapi_objectposition",requireHeader(req,"X-SecondLife-Local-Position"));
+			st.put("slapi_objectvelocity",requireHeader(req,"X-SecondLife-Local-Velocity",st));
+			st.put("slapi_objectrotation",requireHeader(req,"X-SecondLife-Local-Rotation",st));
+			st.put("slapi_objectposition",requireHeader(req,"X-SecondLife-Local-Position",st));
 			if (!"Production".equalsIgnoreCase(shard)) {
 				SL.getLogger(getClass().getSimpleName()).severe("INCORRECT SHARD : "+objectDump(st));
 				resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
@@ -124,10 +124,19 @@ public abstract class SLAPI implements HttpRequestHandler {
 	}
 
 	private String requireHeader(final HttpRequest req,
-	                             final String header) {
+	                             final String header,
+	                             final State st) {
 		Header[] headerset=req.getHeaders(header);
-		if (headerset.length==0) { throw new SystemRemoteFailureException("Mandatory data was not supplied to SL API processor"); }
-		if (headerset.length>1) { throw new SystemRemoteFailureException("Too much mandatory data was supplied to SL API processor"); }
+		if (headerset.length==0) {
+			SystemRemoteFailureException e=new SystemRemoteFailureException("Mandatory data was not supplied to SL API processor");
+			SL.report("Missing mandatory header "+header,e,st);
+			throw e;
+		}
+		if (headerset.length>1) {
+			SystemRemoteFailureException e=new SystemRemoteFailureException("Too much mandatory data was supplied to SL API processor");
+			SL.report("Excessive mandatory header "+header,e,st);
+			throw e;
+		}
 		return headerset[0].getValue();
 	}
 

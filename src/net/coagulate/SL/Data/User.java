@@ -217,6 +217,7 @@ public class User extends LockableTable {
 
 	public String getUsername() { return username; }
 
+	/** Same as getUsername() */
 	public String getName() { return getUsername(); }
 
 	@Nonnull

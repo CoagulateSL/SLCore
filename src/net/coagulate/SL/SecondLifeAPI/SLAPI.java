@@ -4,6 +4,7 @@ import net.coagulate.Core.Exceptions.System.SystemRemoteFailureException;
 import net.coagulate.Core.Tools.ByteTools;
 import net.coagulate.Core.Tools.Crypto;
 import net.coagulate.Core.Tools.UnixTime;
+import net.coagulate.SL.Data.User;
 import net.coagulate.SL.Pages.HTML.State;
 import net.coagulate.SL.SL;
 import org.apache.http.*;
@@ -46,6 +47,10 @@ public abstract class SLAPI implements HttpRequestHandler {
 			st.put("slapi_region",requireHeader(req,"X-SecondLife-Region",st));
 			st.put("slapi_ownername",optionalHeader(req,"X-SecondLife-Owner-Name",st));
 			st.put("slapi_ownerkey",requireHeader(req,"X-SecondLife-Owner-Key",st));
+			if (st.get("slapi_ownername")==null || st.get("slapi_ownername").isEmpty()) {
+				String username=User.findOptional(st.get("slapi_ownerkey")).getName();
+				if (username!=null) { st.put("slapi_ownername",username); }
+			}
 			st.put("slapi_objectname",requireHeader(req,"X-SecondLife-Object-Name",st));
 			final String objectkey=requireHeader(req,"X-SecondLife-Object-Key",st);
 			st.put("slapi_objectkey",objectkey);

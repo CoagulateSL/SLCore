@@ -141,10 +141,10 @@ public class RegionStats extends Table {
 			final int regionid=r.getInt("regionid");
 			int basetime=r.getInt("basetime");
 			final String stattype=r.getStringNullable("stattype");
-			final float min=r.getFloat("newmin");
-			final float max=r.getFloat("newmax");
-			final float avg=r.getFloat("newavg");
-			final float sd=r.getFloat("newsd");
+			final float min=r.getFloatNullable("newmin");
+			final float max=r.getFloatNullable("newmax");
+			final float avg=r.getFloatNullable("newavg");
+			final float sd=r.getFloatNullable("newsd");
 			basetime=basetime*60*60; // we divided above, to split into hourly blocks, but we need a full time reference
 			basetime+=(30*60); // and push half an hour into the time period.
 			d.d("insert into regionstats(regionid,timestamp,stattype,statmin,statmax,statavg,statsd,samplesize) values(?,?,?,?,?,?,?,?)",
@@ -181,10 +181,10 @@ public class RegionStats extends Table {
 			final int regionid=r.getInt("regionid");
 			int basetime=r.getInt("basetime");
 			final String stattype=r.getStringNullable("stattype");
-			final float min=r.getFloat("newmin");
-			final float max=r.getFloat("newmax");
-			final float avg=r.getFloat("newavg");
-			final float sd=r.getFloat("newsd");
+			final float min=r.getFloatNullable("newmin");
+			final float max=r.getFloatNullable("newmax");
+			final float avg=r.getFloatNullable("newavg");
+			final float sd=r.getFloatNullable("newsd");
 			basetime=basetime*60*60*24; // we divided above, to split into hourly blocks, but we need a full time reference
 			basetime+=(30*60*24); // and push half an hour into the time period.
 			d.d("insert into regionstats(regionid,timestamp,stattype,statmin,statmax,statavg,statsd,samplesize) values(?,?,?,?,?,?,?,?)",

@@ -48,7 +48,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 			st.put("slapi_ownername",optionalHeader(req,"X-SecondLife-Owner-Name",st));
 			st.put("slapi_ownerkey",requireHeader(req,"X-SecondLife-Owner-Key",st));
 			if (st.get("slapi_ownername")==null || st.get("slapi_ownername").isEmpty()) {
-				String username=User.findOptional(st.get("slapi_ownerkey")).getName();
+				final String username=User.findOptional(st.get("slapi_ownerkey")).getName();
 				if (username!=null) { st.put("slapi_ownername",username); }
 			}
 			st.put("slapi_objectname",requireHeader(req,"X-SecondLife-Object-Name",st));
@@ -138,19 +138,19 @@ public abstract class SLAPI implements HttpRequestHandler {
 	                             final State st) {
 		return getHeader(false,req,header,st);
 	}
-	private String getHeader(boolean mandatory,
-								 final HttpRequest req,
-	                             final String header,
-	                             final State st) {
-		Header[] headerset=req.getHeaders(header);
+	private String getHeader(final boolean mandatory,
+	                         final HttpRequest req,
+	                         final String header,
+	                         final State st) {
+		final Header[] headerset=req.getHeaders(header);
 		if (headerset.length==0) {
 			if (!mandatory) { return null; }
-			SystemRemoteFailureException e=new SystemRemoteFailureException("Mandatory data was not supplied to SL API processor");
+			final SystemRemoteFailureException e=new SystemRemoteFailureException("Mandatory data was not supplied to SL API processor");
 			SL.report("Missing mandatory header "+header,e,st);
 			throw e;
 		}
 		if (headerset.length>1) {
-			SystemRemoteFailureException e=new SystemRemoteFailureException("Too much mandatory data was supplied to SL API processor");
+			final SystemRemoteFailureException e=new SystemRemoteFailureException("Too much mandatory data was supplied to SL API processor");
 			SL.report("Excessive mandatory header "+header,e,st);
 			throw e;
 		}

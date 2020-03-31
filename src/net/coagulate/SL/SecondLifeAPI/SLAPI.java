@@ -25,6 +25,7 @@ import static java.util.logging.Level.WARNING;
  */
 public abstract class SLAPI implements HttpRequestHandler {
 
+	// ---------- INSTANCE ----------
 	public Logger getLogger() {
 		final String classname=getClass().getSimpleName();
 		return SL.getLogger("SLAPI."+classname);
@@ -117,6 +118,13 @@ public abstract class SLAPI implements HttpRequestHandler {
 		}
 	}
 
+	// ----- Internal Instance -----
+	@Nonnull
+	String objectDump(@Nonnull final State st) {
+		return "'"+st.get("slapi_objectname")+"' ["+st.get("slapi_objectkey")+"] owned by "+st.get("slapi_ownername")+" ["+st.get("slapi_ownerkey")+"] at "+st.get(
+				"slapi_region")+" "+st.get("slapi_objectposition");
+	}
+
 	protected void checkVersion(@Nonnull final JSONObject object,
 	                            @Nonnull final String match,
 	                            @Nonnull final State st) {
@@ -128,16 +136,24 @@ public abstract class SLAPI implements HttpRequestHandler {
 		SL.getLogger(getClass().getSimpleName()).fine("Version mismatch : "+match+">"+version+" : "+objectDump(st));
 	}
 
+	@Nonnull
+	protected abstract JSONObject handleJSON(JSONObject object,
+	                                         State st);
+
+	protected boolean needsDigest() { return true; }
+
 	private String requireHeader(final HttpRequest req,
 	                             final String header,
 	                             final State st) {
 		return getHeader(true,req,header,st);
 	}
+
 	private String optionalHeader(final HttpRequest req,
-	                             final String header,
-	                             final State st) {
+	                              final String header,
+	                              final State st) {
 		return getHeader(false,req,header,st);
 	}
+
 	private String getHeader(final boolean mandatory,
 	                         final HttpRequest req,
 	                         final String header,
@@ -155,17 +171,5 @@ public abstract class SLAPI implements HttpRequestHandler {
 			throw e;
 		}
 		return headerset[0].getValue();
-	}
-
-	@Nonnull
-	protected abstract JSONObject handleJSON(JSONObject object,
-	                                         State st);
-
-	protected boolean needsDigest() { return true; }
-
-	@Nonnull
-	String objectDump(@Nonnull final State st) {
-		return "'"+st.get("slapi_objectname")+"' ["+st.get("slapi_objectkey")+"] owned by "+st.get("slapi_ownername")+" ["+st.get("slapi_ownerkey")+"] at "+st.get(
-				"slapi_region")+" "+st.get("slapi_objectposition");
 	}
 }

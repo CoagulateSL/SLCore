@@ -41,8 +41,7 @@ public class Transmit extends Thread {
 		this.delay=delay;
 	}
 
-	Logger getLogger() { return SL.getLogger("SLAPI.Transmit"); }
-
+	// ---------- INSTANCE ----------
 	@Nullable
 	public JSONObject getResponse() { return jsonresponse; }
 
@@ -85,6 +84,9 @@ public class Transmit extends Thread {
 			}
 		}
 	}
+
+	// ----- Internal Instance -----
+	Logger getLogger() { return SL.getLogger("SLAPI.Transmit"); }
 
 	@Nonnull
 	private String sendAttempt() throws IOException {

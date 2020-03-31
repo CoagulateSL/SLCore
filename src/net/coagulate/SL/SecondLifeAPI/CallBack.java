@@ -15,10 +15,12 @@ public class CallBack extends SLAPI {
 	@Url("/SecondLifeAPI/CallBack")
 	public CallBack() {super();}
 
+	// ---------- INSTANCE ----------
 	@Nonnull
 	@Override
 	public String toString() { return "CallBack"; }
 
+	// ----- Internal Instance -----
 	@Nonnull
 	@Override
 	protected JSONObject handleJSON(@Nonnull final JSONObject object,

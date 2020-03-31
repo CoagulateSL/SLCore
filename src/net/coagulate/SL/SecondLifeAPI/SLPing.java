@@ -15,10 +15,12 @@ public class SLPing extends SLAPI {
 	@Url("/SecondLifeAPI/Ping")
 	public SLPing() {super();}
 
+	// ---------- INSTANCE ----------
 	@Nonnull
 	@Override
 	public String toString() { return "SLPing"; }
 
+	// ----- Internal Instance -----
 	@Nonnull
 	@Override
 	protected JSONObject handleJSON(@Nonnull final JSONObject object,

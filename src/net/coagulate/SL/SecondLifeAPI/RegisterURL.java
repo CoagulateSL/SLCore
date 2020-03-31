@@ -14,6 +14,7 @@ public class RegisterURL extends SLAPI {
 	@Url("/SecondLifeAPI/RegisterURL")
 	public RegisterURL() {super();}
 
+	// ----- Internal Instance -----
 	@Nonnull
 	@Override
 	protected JSONObject handleJSON(final JSONObject object,

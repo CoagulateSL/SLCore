@@ -51,6 +51,7 @@ public class SL extends Thread {
 
 	private SL() {}
 
+	// ---------- STATICS ----------
 	@Nonnull
 	public static JSLBot bot() {
 		if (bot==null) { throw new SystemInitialisationException("Access to bot before it is set up"); }
@@ -97,6 +98,69 @@ public class SL extends Thread {
 		System.exit(0);
 	}
 
+	public static void startGPHUD() {
+		GPHUD.initialiseAsModule(SL.DEV,Config.getGPHUDJdbc(),Config.getHostName(),Config.getNode()+1);
+		// make sure the lock is ok
+		new LockTest(LOCK_NUMBER_GPHUD_MAINTENANCE);
+	}
+
+	public static void watchdog() {
+		try { Thread.sleep(1000); } catch (@Nonnull final InterruptedException e) {}
+		if (shutdown) { return; }
+		if (!DB.test()) {
+			log().log(SEVERE,"Database failed connectivity test, shutting down.");
+			shutdown=true;
+			errored=true;
+		}
+		// hmm //if (!listener.isAlive()) { log.log(SEVERE,"Primary listener thread is not alive"); shutdown=true; errored=true; return; }
+	}
+
+	@Nonnull
+	public static DBConnection getDB() {
+		if (db==null) { throw new SystemInitialisationException("DB access before DB is initialised"); }
+		return db;
+	}
+
+	@Nonnull
+	public static String getBannerURL() {
+		return "/resources/banner-coagulate"+(DEV?"-dev":"")+".png";
+	}
+
+	@Nonnull
+	public static String getBannerHREF() {
+		return "<img src=\""+getBannerURL()+"\">";
+	}
+
+	public static void report(final String header,
+	                          @Nonnull final Throwable t,
+	                          @Nonnull final DumpableState state) {
+		final String output=ExceptionTools.dumpException(t)+"<br><hr><br>"+state.toHTML();
+
+		if (UserException.class.isAssignableFrom(t.getClass())) { if (((UserException) t).suppressed()) { return; }}
+		if (SystemException.class.isAssignableFrom(t.getClass())) { if (((SystemException) t).suppressed()) { return; }}
+		LogHandler.alreadyMailed(t);
+		try {
+			if (LogHandler.suppress(t)) {
+				System.out.println("Exception Report Suppressed "+LogHandler.getCount(t)+"x"+LogHandler.getSignature(t));
+			}
+			else { MailTools.mail((DEV?"Dev":"PROD")+" EX : "+header+" - "+t.getLocalizedMessage(),output); }
+		}
+		catch (@Nonnull final MessagingException e) {
+			getLogger().log(SEVERE,"Exception mailing out about exception",e);
+		}
+	}
+
+	@Nonnull
+	public static Logger log() {
+		if (log==null) { throw new SystemInitialisationException("Logger is null"); }
+		return log;
+	}
+
+	public static String textureURL(final String textureuuid) {
+		return "https://picture-service.secondlife.com/"+textureuuid+"/320x240.jpg";
+	}
+
+	// ----- Internal Statics -----
 	private static void startup() {
 		loggingInitialise();
 		configureMailTarget(); // mails are gonna be messed up coming from logging init
@@ -160,23 +224,6 @@ public class SL extends Thread {
 		getLogger().config("Primary Second Life automated agent has started");
 	}
 
-	public static void startGPHUD() {
-		GPHUD.initialiseAsModule(SL.DEV,Config.getGPHUDJdbc(),Config.getHostName(),Config.getNode()+1);
-		// make sure the lock is ok
-		new LockTest(LOCK_NUMBER_GPHUD_MAINTENANCE);
-	}
-
-	public static void watchdog() {
-		try { Thread.sleep(1000); } catch (@Nonnull final InterruptedException e) {}
-		if (shutdown) { return; }
-		if (!DB.test()) {
-			log().log(SEVERE,"Database failed connectivity test, shutting down.");
-			shutdown=true;
-			errored=true;
-		}
-		// hmm //if (!listener.isAlive()) { log.log(SEVERE,"Primary listener thread is not alive"); shutdown=true; errored=true; return; }
-	}
-
 	private static void loggingInitialise() {
 		LogHandler.initialise();
 		log=Logger.getLogger("net.coagulate.SL");
@@ -191,51 +238,7 @@ public class SL extends Thread {
 		MailTools.defaultserver="127.0.0.1";
 	}
 
-	@Nonnull
-	public static DBConnection getDB() {
-		if (db==null) { throw new SystemInitialisationException("DB access before DB is initialised"); }
-		return db;
-	}
-
-	@Nonnull
-	public static String getBannerURL() {
-		return "/resources/banner-coagulate"+(DEV?"-dev":"")+".png";
-	}
-
-	@Nonnull
-	public static String getBannerHREF() {
-		return "<img src=\""+getBannerURL()+"\">";
-	}
-
-	public static void report(final String header,
-	                          @Nonnull final Throwable t,
-	                          @Nonnull final DumpableState state) {
-		final String output=ExceptionTools.dumpException(t)+"<br><hr><br>"+state.toHTML();
-
-		if (UserException.class.isAssignableFrom(t.getClass())) { if (((UserException)t).suppressed()) { return; }}
-		if (SystemException.class.isAssignableFrom(t.getClass())) { if (((SystemException)t).suppressed()) { return; }}
-		LogHandler.alreadyMailed(t);
-		try {
-			if (LogHandler.suppress(t)) {
-				System.out.println("Exception Report Suppressed "+LogHandler.getCount(t)+"x"+LogHandler.getSignature(t));
-			}
-			else { MailTools.mail((DEV?"Dev":"PROD")+" EX : "+header+" - "+t.getLocalizedMessage(),output); }
-		}
-		catch (@Nonnull final MessagingException e) {
-			getLogger().log(SEVERE,"Exception mailing out about exception",e);
-		}
-	}
-
-	@Nonnull
-	public static Logger log() {
-		if (log==null) { throw new SystemInitialisationException("Logger is null"); }
-		return log;
-	}
-
-	public static String textureURL(final String textureuuid) {
-		return "https://picture-service.secondlife.com/"+textureuuid+"/320x240.jpg";
-	}
-
+	// ---------- INSTANCE ----------
 	@Override
 	public void run() {
 		if (!SL.shutdown) { log().severe("JVM Shutdown Hook invoked"); }

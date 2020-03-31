@@ -12,12 +12,7 @@ public class Paragraph extends Container {
 
 	public Paragraph(final String s) { add(new Raw(s)); }
 
-	@Nonnull
-	public Paragraph add(final Element e) {
-		super.add(e);
-		return this;
-	}
-
+	// ---------- INSTANCE ----------
 	@Nonnull
 	public Paragraph add(final String s) { return add(new Raw(s)); }
 
@@ -27,15 +22,22 @@ public class Paragraph extends Container {
 	}
 
 	@Nonnull
-	private String renderAlignment() {
-		if (alignment==ALIGNMENT.CENTER) { return " align=\"center\""; }
-		return "";
+	public Paragraph add(final Element e) {
+		super.add(e);
+		return this;
 	}
 
 	@Nonnull
 	public Paragraph align(final ALIGNMENT alignment) {
 		this.alignment=alignment;
 		return this;
+	}
+
+	// ----- Internal Instance -----
+	@Nonnull
+	private String renderAlignment() {
+		if (alignment==ALIGNMENT.CENTER) { return " align=\"center\""; }
+		return "";
 	}
 
 	public enum ALIGNMENT {

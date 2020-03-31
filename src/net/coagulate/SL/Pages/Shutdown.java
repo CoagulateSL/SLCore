@@ -18,6 +18,7 @@ public class Shutdown extends ContainerHandler {
 	@Url("/shutdown")
 	public Shutdown() {super();}
 
+	// ----- Internal Instance -----
 	@Override
 	protected void run(@Nonnull final State state,
 	                   @Nonnull final Page page) {

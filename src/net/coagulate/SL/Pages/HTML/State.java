@@ -46,6 +46,7 @@ public class State extends DumpableState {
 		this.httpcontext=httpcontext;
 	}
 
+	// ---------- INSTANCE ----------
 	public HttpRequest request() { return request; }
 
 	public HttpResponse response() { return response; }
@@ -70,13 +71,6 @@ public class State extends DumpableState {
 	public String sessionId() {
 		if (sessionid==null) { throw new SystemConsistencyException("Session ID is null"); }
 		return sessionid;
-	}
-
-	private Map<String,String> getMap(final String mapname) {
-		if (!maps.containsKey(mapname)) {
-			maps.put(mapname,new HashMap<>());
-		}
-		return maps.get(mapname);
 	}
 
 	public String get(final String mapname,
@@ -159,6 +153,7 @@ public class State extends DumpableState {
 		user=null;
 	}
 
+	// ----- Internal Instance -----
 	void loadSession() {
 		session=null;
 		if (sessionid==null || sessionid.isEmpty() || "none".equalsIgnoreCase(sessionid)) { return; }
@@ -172,5 +167,12 @@ public class State extends DumpableState {
 	@Override
 	protected String dumpAdditionalStateToHtml() {
 		return "";
+	}
+
+	private Map<String,String> getMap(final String mapname) {
+		if (!maps.containsKey(mapname)) {
+			maps.put(mapname,new HashMap<>());
+		}
+		return maps.get(mapname);
 	}
 }

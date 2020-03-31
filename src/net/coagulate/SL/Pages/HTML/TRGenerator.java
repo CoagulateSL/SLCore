@@ -8,6 +8,7 @@ import java.util.Map;
  */
 public abstract class TRGenerator implements Element {
 
+	// ---------- INSTANCE ----------
 	@Nonnull
 	@Override
 	public String toHtml(final State st) { return "<tr>"; }

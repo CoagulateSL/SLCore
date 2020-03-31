@@ -16,6 +16,7 @@ public class ServiceCell extends Container {
 		this.title=title;
 	}
 
+	// ---------- INSTANCE ----------
 	@Nonnull
 	@Override
 	public String toHtml(final State st) {

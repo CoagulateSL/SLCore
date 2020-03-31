@@ -11,6 +11,7 @@ public abstract class Renderer implements Element {
 	@Nullable
 	protected String value;
 
+	// ---------- INSTANCE ----------
 	public void set(final String value) { this.value=value; }
 
 	@Nullable

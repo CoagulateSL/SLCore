@@ -19,6 +19,7 @@ public class TRColorGenerator extends TRGenerator {
 		this.defaultcolor=defaultcolor;
 	}
 
+	// ---------- INSTANCE ----------
 	@Nonnull
 	public TRColorGenerator map(final String value,
 	                            final String color) {
@@ -33,6 +34,7 @@ public class TRColorGenerator extends TRGenerator {
 		return "<tr bgcolor=\"#"+getColor(st,row)+"\">";
 	}
 
+	// ----- Internal Instance -----
 	private String getColor(final State st,
 	                        @Nonnull final Map<String,String> row) {
 		if (!row.containsKey(columnname)) { return defaultcolor; }

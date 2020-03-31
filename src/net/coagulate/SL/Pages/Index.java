@@ -16,6 +16,7 @@ public class Index extends AuthenticatedContainerHandler {
 	@Url("/")
 	public Index() {}
 
+	// ----- Internal Instance -----
 	@Override
 	protected void run(final State state,
 	                   @Nonnull final Page page) {

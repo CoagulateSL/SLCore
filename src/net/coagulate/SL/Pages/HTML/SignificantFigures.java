@@ -11,6 +11,7 @@ public class SignificantFigures extends Renderer {
 
 	public SignificantFigures(final int sf) { this.sf=sf; }
 
+	// ---------- INSTANCE ----------
 	@Nullable
 	@Override
 	public String render(final State st,

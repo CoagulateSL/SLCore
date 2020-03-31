@@ -24,6 +24,7 @@ public class Table extends Container {
 		table=new ArrayList<>();
 	}
 
+	// ---------- INSTANCE ----------
 	@Nonnull
 	public Table openRow() {
 		row=new ArrayList<>();
@@ -34,14 +35,6 @@ public class Table extends Container {
 	@Nonnull
 	public Table checkRow() {
 		if (row==null) { openRow(); }
-		return this;
-	}
-
-	@Nonnull
-	public Table add(final Element e) {
-		checkRow();
-		if (row==null) { openRow(); }
-		row.add(e);
 		return this;
 	}
 
@@ -65,6 +58,11 @@ public class Table extends Container {
 		return this;
 	}
 
+	@Nonnull
+	public String toHtml(final State st) {
+		return "<table>"+headerRow(st)+contentRows(st)+"</table>";
+	}
+
 	public void load(final Map<String,String> map) {
 		for (final List<Element> list: table) {
 			for (final Element ele: list) {
@@ -74,10 +72,20 @@ public class Table extends Container {
 	}
 
 	@Nonnull
-	public String toHtml(final State st) {
-		return "<table>"+headerRow(st)+contentRows(st)+"</table>";
+	public Table add(final Element e) {
+		checkRow();
+		if (row==null) { openRow(); }
+		row.add(e);
+		return this;
 	}
 
+	@Nonnull
+	public Table rowGenerator(final TRGenerator generator) {
+		trgen=generator;
+		return this;
+	}
+
+	// ----- Internal Instance -----
 	@Nonnull
 	protected String headerRow(final State st) {
 		if (headers.isEmpty()) { return ""; }
@@ -116,12 +124,6 @@ public class Table extends Container {
 	                         final Map<String,String> row) {
 		if (trgen==null) { return "<tr>"; }
 		return trgen.render(st,row);
-	}
-
-	@Nonnull
-	public Table rowGenerator(final TRGenerator generator) {
-		trgen=generator;
-		return this;
 	}
 
 }

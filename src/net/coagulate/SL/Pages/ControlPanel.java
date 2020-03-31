@@ -29,6 +29,7 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 	@Url("/ControlPanel")
 	public ControlPanel() {super();}
 
+	// ----- Internal Instance -----
 	@Override
 	protected void run(@Nonnull final State state,
 	                   @Nonnull final Page page) {

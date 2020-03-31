@@ -16,6 +16,7 @@ public class FourZeroFour extends StringHandler {
 
 	public FourZeroFour(final String uri) { FourZeroFour.uri=uri; }
 
+	// ----- Internal Instance -----
 	@Nonnull
 	@Override
 	protected String handleString(@Nonnull final State state) {

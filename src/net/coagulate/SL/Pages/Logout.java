@@ -16,6 +16,7 @@ public class Logout extends StringHandler {
 	@Url("/Logout")
 	public Logout() {super();}
 
+	// ----- Internal Instance -----
 	@Nonnull
 	@Override
 	protected String handleString(@Nonnull final State state) {

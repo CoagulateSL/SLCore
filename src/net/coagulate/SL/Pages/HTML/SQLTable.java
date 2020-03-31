@@ -31,6 +31,7 @@ public class SQLTable extends Table {
 		columns=new ArrayList<>();
 	}
 
+	// ---------- INSTANCE ----------
 	@Nonnull
 	public SQLTable column(final String header,
 	                       final String columnname) { return column(header,columnname,null,Alignment.NONE); }
@@ -56,6 +57,12 @@ public class SQLTable extends Table {
 	}
 
 	@Nonnull
+	public SQLTable rowGenerator(final TRGenerator generator) {
+		super.rowGenerator(generator);
+		return this;
+	}
+
+	@Nonnull
 	public String contentRows(final State st) {
 		final Results results=db.dq(sql,params);
 		final StringBuilder r=new StringBuilder();
@@ -77,12 +84,7 @@ public class SQLTable extends Table {
 		return r.toString();
 	}
 
-	@Nonnull
-	public SQLTable rowGenerator(final TRGenerator generator) {
-		super.rowGenerator(generator);
-		return this;
-	}
-
+	// ----- Internal Instance -----
 	@Nonnull
 	private String openCell(@Nonnull final Column column) {
 		if (column.alignment==Alignment.LEFT) { return "<td align=left>"; }
@@ -108,6 +110,7 @@ public class SQLTable extends Table {
 			this.alignment=alignment;
 		}
 
+		// ---------- INSTANCE ----------
 		@Nullable
 		public String render(final State state,
 		                     @Nullable final String value) {

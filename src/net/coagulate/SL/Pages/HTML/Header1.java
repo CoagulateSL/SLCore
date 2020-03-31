@@ -15,15 +15,16 @@ public class Header1 extends Container {
 
 	public Header1(final String s) { add(new Raw(s)); }
 
+	// ---------- INSTANCE ----------
+	@Nonnull
+	public String toHtml(final State st) {
+		return "<h1"+(name==null?"":" name=\""+name+"\"")+">"+super.toHtml(st)+"</h1>";
+	}
+
 	@Nonnull
 	public Header1 add(final Element e) {
 		super.add(e);
 		return this;
-	}
-
-	@Nonnull
-	public String toHtml(final State st) {
-		return "<h1"+(name==null?"":" name=\""+name+"\"")+">"+super.toHtml(st)+"</h1>";
 	}
 
 	@Nonnull

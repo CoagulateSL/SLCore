@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
  * @author Iain Price
  */
 public class TimeStampOrDuration extends TimeStamp {
+	// ---------- INSTANCE ----------
 	public String render(@Nonnull final State st,
 	                     @Nullable final String strvalue) {
 		if (strvalue==null || strvalue.isEmpty() || Integer.parseInt(strvalue)==0) { return "-"; }

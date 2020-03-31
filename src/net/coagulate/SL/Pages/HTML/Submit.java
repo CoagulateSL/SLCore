@@ -26,6 +26,7 @@ public class Submit extends Container {
 		this.value=value;
 	}
 
+	// ---------- INSTANCE ----------
 	@Nonnull
 	@Override
 	public String toHtml(final State st) {

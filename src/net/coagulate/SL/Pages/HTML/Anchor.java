@@ -22,6 +22,7 @@ public class Anchor extends Container {
 		add(new Raw(content));
 	}
 
+	// ---------- INSTANCE ----------
 	@Nonnull
 	public String toHtml(final State st) {
 		return "<a href=\"#"+target+"\">"+super.toHtml(st)+"</a>";

@@ -11,6 +11,7 @@ public class Raw implements Element {
 
 	public Raw(final String content) { this.content=content; }
 
+	// ---------- INSTANCE ----------
 	@Override
 	public String toHtml(final State st) { return content; }
 

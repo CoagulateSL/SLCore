@@ -18,6 +18,7 @@ public class Ping extends Handler {
 	@Url("/Ping")
 	public Ping() {super();}
 
+	// ----- Internal Instance -----
 	@Nonnull
 	@Override
 	protected HttpEntity handleContent(final State state) {

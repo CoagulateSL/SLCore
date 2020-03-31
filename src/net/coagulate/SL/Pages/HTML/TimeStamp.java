@@ -10,6 +10,12 @@ import javax.annotation.Nullable;
  */
 public class TimeStamp extends Renderer {
 
+	// ---------- INSTANCE ----------
+	@Nullable
+	public String toString(final State st) {
+		return value;
+	}
+
 	@Nullable
 	@Override
 	public String render(@Nonnull final State st,
@@ -20,10 +26,5 @@ public class TimeStamp extends Renderer {
 			timezone=st.user().getTimeZone();
 		}
 		return UnixTime.fromUnixTime(Integer.parseInt(value),timezone);
-	}
-
-	@Nullable
-	public String toString(final State st) {
-		return value;
 	}
 }

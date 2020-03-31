@@ -8,6 +8,8 @@ import java.util.Map;
  */
 public interface Element {
 
+	// ---------- INSTANCE ----------
+
 	/**
 	 * Render this element (and any children inline)
 	 */

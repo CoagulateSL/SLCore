@@ -48,8 +48,11 @@ public abstract class SLAPI implements HttpRequestHandler {
 			st.put("slapi_ownername",optionalHeader(req,"X-SecondLife-Owner-Name",st));
 			st.put("slapi_ownerkey",requireHeader(req,"X-SecondLife-Owner-Key",st));
 			if (st.get("slapi_ownername")==null || st.get("slapi_ownername").isEmpty()) {
-				final String username=User.findOptional(st.get("slapi_ownerkey")).getName();
-				if (username!=null) { st.put("slapi_ownername",username); }
+				final User userlookup=User.findOptional(st.get("slapi_ownerkey"));
+				if (userlookup!=null) {
+					final String username=userlookup.getName();
+					if (username!=null) { st.put("slapi_ownername",username); }
+				}
 			}
 			st.put("slapi_objectname",requireHeader(req,"X-SecondLife-Object-Name",st));
 			final String objectkey=requireHeader(req,"X-SecondLife-Object-Key",st);
@@ -96,10 +99,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 				}
 				final String targetdigest=Crypto.SHA1(objectkey+timestamp+"***REMOVED***");
 				if (!targetdigest.equalsIgnoreCase(digest)) {
-					if (debug) { System.out.println("Digest failure for SHA1 ("+objectkey+timestamp+"***REMOVED***"+") = "+targetdigest); }
-					if (debug) { SL.getLogger().log(SEVERE,"Incorrect digest provided to Second Life API - we had "+targetdigest+" but they gave "+digest); }
-					else
-					{SL.getLogger().log(SEVERE,"Incorrect digest provided to Second Life API");}
+					SL.getLogger().log(SEVERE,"Incorrect digest provided to Second Life API");
 					resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
 					return;
 				}

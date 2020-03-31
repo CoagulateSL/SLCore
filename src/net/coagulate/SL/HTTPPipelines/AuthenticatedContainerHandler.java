@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class AuthenticatedContainerHandler extends AuthenticatedStringHandler {
 
+	// ---------- INSTANCE ----------
 	@Nonnull
 	@Override
 	public String handleString(@Nonnull final State state) {
@@ -17,6 +18,7 @@ public abstract class AuthenticatedContainerHandler extends AuthenticatedStringH
 		return container.toHtml(state);
 	}
 
+	// ----- Internal Instance -----
 	protected abstract void run(State state,
 	                            Page page);
 

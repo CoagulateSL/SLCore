@@ -17,6 +17,7 @@ public abstract class LockableTable extends StandardLockableTableRow {
 
 	public LockableTable(final int id) { super(id); }
 
+	// ---------- INSTANCE ----------
 	@Override
 	public final int getNode() { return Config.getNode(); }
 

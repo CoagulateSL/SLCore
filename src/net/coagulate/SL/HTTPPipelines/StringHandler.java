@@ -20,6 +20,7 @@ import static java.util.logging.Level.WARNING;
 public abstract class StringHandler extends Handler {
 	private static final boolean DEBUG_PARAMS=false;
 
+	// ---------- INSTANCE ----------
 	@Nonnull
 	@Override
 	public StringEntity handleContent(@Nonnull final State state) {
@@ -39,6 +40,7 @@ public abstract class StringHandler extends Handler {
 		}
 	}
 
+	// ----- Internal Instance -----
 	@Nonnull
 	protected abstract String handleString(State state);
 

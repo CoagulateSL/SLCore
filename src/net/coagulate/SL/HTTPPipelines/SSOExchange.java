@@ -23,6 +23,7 @@ public class SSOExchange implements HttpRequestHandler {
 	@Prefix("/SSO/")
 	public SSOExchange() {super();}
 
+	// ---------- INSTANCE ----------
 	@Override
 	public void handle(@Nonnull final HttpRequest req,
 	                   @Nonnull final HttpResponse resp,

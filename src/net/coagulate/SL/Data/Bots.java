@@ -12,6 +12,7 @@ public class Bots extends LockableTable {
 		super(id);
 	}
 
+	// ---------- INSTANCE ----------
 	@Nonnull
 	@Override
 	public String getTableName() {

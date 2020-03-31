@@ -14,6 +14,7 @@ public class Page extends Container {
 
 	private PAGELAYOUT layout=PAGELAYOUT.NONE;
 
+	// ---------- STATICS ----------
 	@Nonnull
 	public static String pageHeader(@Nonnull final State state) {
 		//new Exception().printStackTrace();
@@ -45,6 +46,7 @@ public class Page extends Container {
 		return ret;
 	}
 
+	// ---------- INSTANCE ----------
 	public void layout(final PAGELAYOUT layout) { this.layout=layout; }
 
 	@Nonnull

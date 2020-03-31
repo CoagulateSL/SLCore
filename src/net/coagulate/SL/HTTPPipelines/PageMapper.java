@@ -66,6 +66,7 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 		logger.log(Level.FINE,"Loaded "+count+" prefix URI handlers");
 	}
 
+	// ---------- INSTANCE ----------
 	public void exact(@Nonnull final String url,
 	                  final HttpRequestHandler handler) {
 		if (DEBUG) { System.out.println("Registering exact '"+url+"'"); }
@@ -126,6 +127,7 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 	@Documented
 	@Target(ElementType.CONSTRUCTOR)
 	public @interface Url {
+		// ---------- INSTANCE ----------
 		@Nonnull String value();
 	}
 
@@ -134,6 +136,7 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 	@Documented
 	@Target(ElementType.CONSTRUCTOR)
 	public @interface Prefix {
+		// ---------- INSTANCE ----------
 		@Nonnull String value();
 	}
 

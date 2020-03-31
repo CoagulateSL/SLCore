@@ -16,6 +16,7 @@ public class Regions extends LockableTable {
 
 	public Regions(final int id) { super(id); }
 
+	// ---------- STATICS ----------
 	@Nonnull
 	public static Regions getByName(final String name) {
 		try {
@@ -34,6 +35,7 @@ public class Regions extends LockableTable {
 		}
 	}
 
+	// ---------- INSTANCE ----------
 	@Nonnull
 	@Override
 	public String getTableName() { return "regions"; }

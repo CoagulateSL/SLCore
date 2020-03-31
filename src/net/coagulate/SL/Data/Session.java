@@ -24,8 +24,7 @@ public class Session extends Table {
 		this.user=user;
 	}
 
-	public String toString() { return "SLSession["+user+"]"; }
-
+	// ---------- STATICS ----------
 	@Nullable
 	public static Session get(final String sessionid) {
 		try {
@@ -55,6 +54,9 @@ public class Session extends Table {
 		SL.getDB().d("insert into sessions(cookie,userid,expires) values(?,?,?)",sessionid,userid,expires);
 		return new Session(sessionid,user);
 	}
+
+	// ---------- INSTANCE ----------
+	public String toString() { return "SLSession["+user+"]"; }
 
 	public String token() { return id; }
 

@@ -15,6 +15,7 @@ public class LockTest extends LockableTable {
 		if (count==0) { throw new NoDataException("Lock test row "+id+" does not exist"); }
 	}
 
+	// ---------- INSTANCE ----------
 	@Nonnull
 	@Override
 	public String getTableName() { return "locktest"; }

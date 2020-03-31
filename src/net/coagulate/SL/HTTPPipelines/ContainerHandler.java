@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class ContainerHandler extends StringHandler {
 
+	// ----- Internal Instance -----
 	@Nonnull
 	@Override
 	protected String handleString(@Nonnull final State state) {

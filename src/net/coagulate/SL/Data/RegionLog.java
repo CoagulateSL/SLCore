@@ -11,6 +11,7 @@ import javax.annotation.Nonnull;
  */
 public class RegionLog extends Table {
 
+	// ---------- STATICS ----------
 	@Nonnull
 	public static Results getLast(@Nonnull final Regions region) {
 		return SL.getDB().dq("select tds,changetype,oldvalue,newvalue from regionlog where regionid=? order by tds desc limit 0,100",region.getId());
@@ -46,6 +47,7 @@ public class RegionLog extends Table {
 		log(region.getId(),changetype,oldvalue,newvalue,UnixTime.getUnixTime());
 	}
 
+	// ---------- INSTANCE ----------
 	@Nonnull
 	@Override
 	public String getTableName() { return "regionlog"; }

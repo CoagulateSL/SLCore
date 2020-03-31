@@ -10,6 +10,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class Table extends net.coagulate.Core.Database.Table {
 
+	// ---------- INSTANCE ----------
 	@Nonnull
 	@Override
 	public final DBConnection getDatabase() { return SL.getDB(); }

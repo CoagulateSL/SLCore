@@ -37,6 +37,8 @@ public class User extends LockableTable {
 		this.username=username;
 	}
 
+	// ---------- STATICS ----------
+
 	/**
 	 * Obtain a reference to the SYSTEM avatar, for auditing system functions.
 	 *
@@ -76,16 +78,6 @@ public class User extends LockableTable {
 		String output=firstname;
 		if (!"Resident".equalsIgnoreCase(lastname)) { output=output+" "+lastname; } // redundant ignores case
 		return output;
-	}
-
-	private static User factory(final int id,
-	                            final String username) {
-		synchronized (users) {
-			if (users.containsKey(id)) { return users.get(id); }
-			final User u=new User(id,username);
-			users.put(id,u);
-			return u;
-		}
 	}
 
 	public static User get(String username,
@@ -212,12 +204,26 @@ public class User extends LockableTable {
 		catch (@Nonnull final NoDataException e) { return null; }
 	}
 
+	// ----- Internal Statics -----
+	private static User factory(final int id,
+	                            final String username) {
+		synchronized (users) {
+			if (users.containsKey(id)) { return users.get(id); }
+			final User u=new User(id,username);
+			users.put(id,u);
+			return u;
+		}
+	}
+
+	// ---------- INSTANCE ----------
 	@Nonnull
 	public String getGPHUDLink() { return getGPHUDLink(getUsername(),getId()); }
 
 	public String getUsername() { return username; }
 
-	/** Same as getUsername() */
+	/**
+	 * Same as getUsername()
+	 */
 	public String getName() { return getUsername(); }
 
 	@Nonnull

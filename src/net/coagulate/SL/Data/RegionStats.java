@@ -21,6 +21,7 @@ public class RegionStats extends Table {
 	public static final int HOUR=60*60;
 	public static final int DAY=24*HOUR;
 
+	// ---------- STATICS ----------
 	@Nullable
 	public static Float getAverage(@Nonnull final Regions reg,
 	                               final String stattype,
@@ -211,6 +212,7 @@ public class RegionStats extends Table {
 		if (rollups>0) { log.fine("Completed region stats archiving, batched into "+rollups+" DAILY samples"); }
 	}
 
+	// ---------- INSTANCE ----------
 	@Nonnull
 	@Override
 	public String getTableName() { return "regionstats"; }

@@ -71,6 +71,7 @@ public class CATruster implements X509TrustManager, HostnameVerifier {
 		}
 	}
 
+	// ---------- STATICS ----------
 	public static synchronized void initialise() {
 		if (initialised) { return; }
 		final CATruster llcaTruster=new CATruster();
@@ -79,6 +80,7 @@ public class CATruster implements X509TrustManager, HostnameVerifier {
 		Logger.getLogger(CATruster.class.getCanonicalName()).log(CONFIG,"Trusted CA roots implemented");
 	}
 
+	// ---------- INSTANCE ----------
 	@Override
 	public boolean verify(final String string,
 	                      @Nonnull final SSLSession ssls) {

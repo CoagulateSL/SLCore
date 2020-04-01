@@ -112,9 +112,7 @@ public class RegionStats extends Table {
 
 
 		// range is "from" to "to", subtract the from, divide by the total range, scale to size
-		return d.dqSlow("select "+"round(?*((timestamp-?)/?)) as x,"+"timestamp,"+"min(statmin) as plotmin,"+"max(statmax) as plotmax,"+"avg(statavg) as plotavg,"+"avg"+
-				                "(statsd) as plotsd,"+"samplesize "+"from regionstats "+"where timestamp>=? "+"and timestamp<=? "+"and stattype=? "+"and regionid=? "+"group "
-				                +"by x "+"order by timestamp asc",
+		return d.dqSlow("select "+"round(?*((timestamp-?)/?)) as x,"+"timestamp,"+"min(statmin) as plotmin,"+"max(statmax) as plotmax,"+"avg(statavg) as plotavg,"+"avg"+"(statsd) as plotsd,"+"samplesize "+"from regionstats "+"where timestamp>=? "+"and timestamp<=? "+"and stattype=? "+"and regionid=? "+"group "+"by x "+"order by timestamp asc",
 		                x,
 		                from,
 		                timerange,
@@ -131,8 +129,7 @@ public class RegionStats extends Table {
 		final int start=UnixTime.getUnixTime();
 		int rollups=0;
 		for (final ResultsRow r: d.dq(
-				"select floor(timestamp/(60*60)) as basetime,regionid,stattype,min(statmin) as newmin,max(statmax) as newmax,avg(statavg) as newavg,avg(statsd) as newsd "+
-						"from"+" regionstats where timestamp<? and samplesize='SINGLE' group by basetime,regionid,stattype",
+				"select floor(timestamp/(60*60)) as basetime,regionid,stattype,min(statmin) as newmin,max(statmax) as newmax,avg(statavg) as newavg,avg(statsd) as newsd "+"from"+" regionstats where timestamp<? and samplesize='SINGLE' group by basetime,regionid,stattype",
 				start-(60*60*24*3)
 		                             )) {
 			if ((UnixTime.getUnixTime()-start)>30) {

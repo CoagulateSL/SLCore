@@ -18,8 +18,7 @@ public class Page extends Container {
 	@Nonnull
 	public static String pageHeader(@Nonnull final State state) {
 		//new Exception().printStackTrace();
-		String r="<html><head><title>"+(SL.DEV?"DEV ":"")+"Coagulate SL</title>"+"<link rel=\"shortcut icon\" href=\"/resources/icon-cluster"+(SL.DEV?"-dev":"")+".png\">"+
-				"</head><body>"+"<p align=center>"+SL
+		String r="<html><head><title>"+(SL.DEV?"DEV ":"")+"Coagulate SL</title>"+"<link rel=\"shortcut icon\" href=\"/resources/icon-cluster"+(SL.DEV?"-dev":"")+".png\">"+"</head><body>"+"<p align=center>"+SL
 				.getBannerHREF()+"</p><p><hr>";
 		r+="<table width=100%><tr width=100%><td align=left width=400px>"+"Greetings";
 		if (state.userNullable()!=null) { r+=",&nbsp;"+state.user().getUsername().replaceAll(" ","&nbsp;"); }
@@ -29,8 +28,7 @@ public class Page extends Container {
 		r+="<a href=\"/Info\">[Info]</a>"+"&nbsp;&nbsp;&nbsp;";
 		if (state.userNullable()!=null) {
 			r+="<a href=\"/Billing\">[&nbsp;Billing&nbsp;(L$"+state.user()
-			                                                       .balance()+")&nbsp;]</a>"+"&nbsp;&nbsp;&nbsp;"+"<a href=\"/Account\">[&nbsp;Account&nbsp;]</a>"+"&nbsp;"+
-					"&nbsp;&nbsp;"+"<a href=\"/Logout\">[&nbsp;Logout&nbsp;]</a>"+"&nbsp;&nbsp;&nbsp;"+"</span>";
+			                                                       .balance()+")&nbsp;]</a>"+"&nbsp;&nbsp;&nbsp;"+"<a href=\"/Account\">[&nbsp;Account&nbsp;]</a>"+"&nbsp;"+"&nbsp;&nbsp;"+"<a href=\"/Logout\">[&nbsp;Logout&nbsp;]</a>"+"&nbsp;&nbsp;&nbsp;"+"</span>";
 		}
 		r+="</td></tr></table>";
 		r+="<hr></p>";

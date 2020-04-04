@@ -15,6 +15,7 @@ import net.coagulate.GPHUD.Interfaces.Outputs.Link;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.Pricing;
 import net.coagulate.SL.SL;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -26,7 +27,7 @@ import static net.coagulate.Core.Tools.UnixTime.getUnixTime;
 /**
  * @author Iain Price
  */
-public class User extends LockableTable {
+public class User extends LockableTable implements Comparable<User> {
 
 	private static final Map<Integer,User> users=new HashMap<>();
 	final String username;
@@ -202,6 +203,14 @@ public class User extends LockableTable {
 			return get(userid);
 		}
 		catch (@Nonnull final NoDataException e) { return null; }
+	}
+
+	public static Set<User> getDevelopers() {
+		Set<User> ret=new TreeSet<>();
+		for (ResultsRow result: SL.getDB().dq("select id from users where developerkey is not null")) {
+			ret.add(User.get(result.getInt()));
+		}
+		return ret;
 	}
 
 	// ----- Internal Statics -----
@@ -401,4 +410,8 @@ public class User extends LockableTable {
 	}
 
 
+	@Override
+	public int compareTo(@NotNull User o) {
+		return getUsername().compareToIgnoreCase(o.getUsername());
+	}
 }

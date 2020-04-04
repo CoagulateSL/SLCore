@@ -23,7 +23,7 @@ public class Shutdown extends ContainerHandler {
 	protected void run(@Nonnull final State state,
 	                   @Nonnull final Page page) {
 		final String ip=state.getClientIP();
-		if (ip.equals("DIRECT:0:0:0:0:0:0:0:1") || ip.equals("DIRECT:127.0.0.1")) {
+		if (ip.equals("")) {
 			SL.shutdown();
 			page.add(new Paragraph("SHUTDOWN INITIATED"));
 		}

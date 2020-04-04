@@ -5,15 +5,15 @@ import net.coagulate.Core.Tools.DumpableState;
 import net.coagulate.SL.Data.Session;
 import net.coagulate.SL.Data.User;
 import net.coagulate.SL.SL;
-import org.apache.http.*;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 /**
  * General purpose state storage
@@ -123,25 +123,7 @@ public class State extends DumpableState {
 
 	@SuppressWarnings("deprecation")
 	public String getClientIP() {
-		//try {
-		//HttpInetConnection connection = (HttpInetConnection) httpcontext.getAttribute(ExecutionContext.HTTP_CONNECTION);
-		//InetAddress ia = connection.getRemoteAddress();
-		//return ia.getCanonicalHostName()+" / "+ia.getHostAddress();
-		//} catch (Exception e) { SL.getLogger().log(WARNING,"Exception getting client address",e); }
-		final Header[] headers=request.getHeaders("X-Forwarded-For");
-		if (headers.length==0) {
-			try {
-				final HttpInetConnection connection=(HttpInetConnection) httpcontext.getAttribute(org.apache.http.protocol.ExecutionContext.HTTP_CONNECTION);
-				final InetAddress ia=connection.getRemoteAddress();
-				return "DIRECT:"+ia.getHostAddress();
-			}
-			catch (@Nonnull final Exception e) {
-				SL.getLogger().log(Level.WARNING,"Exception getting client address",e);
-				return "UNKNOWN";
-			}
-		}
-		if (headers.length>1) { return "MULTIPLE?:"+headers[0].getValue(); }
-		return headers[0].getValue();
+		return SL.getClientIP(request,httpcontext);
 	}
 
 	public void logout() {

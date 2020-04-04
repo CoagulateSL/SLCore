@@ -15,12 +15,18 @@ import net.coagulate.JSLBot.LLCATruster;
 import net.coagulate.LSLR.LSLR;
 import net.coagulate.SL.Data.LockTest;
 import net.coagulate.SL.HTTPPipelines.PageMapper;
+import org.apache.http.Header;
+import org.apache.http.HttpInetConnection;
+import org.apache.http.HttpRequest;
+import org.apache.http.protocol.HttpContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.MessagingException;
+import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static java.util.logging.Level.SEVERE;
@@ -158,6 +164,32 @@ public class SL extends Thread {
 
 	public static String textureURL(final String textureuuid) {
 		return "https://picture-service.secondlife.com/"+textureuuid+"/320x240.jpg";
+	}
+
+	public static String getClientIP(HttpRequest req,
+	                                 HttpContext context) {
+
+		final Header[] headers=req.getHeaders("X-Forwarded-For");
+		try {
+			@SuppressWarnings("deprecation")
+			final HttpInetConnection connection=(HttpInetConnection) context.getAttribute(org.apache.http.protocol.ExecutionContext.HTTP_CONNECTION);
+			final InetAddress ia=connection.getRemoteAddress();
+			String ret="";
+			if (!ia.isLoopbackAddress()) { ret+="["+ia+"]"; }
+			for (Header header: headers) {
+				String value=header.getValue();
+				if (!(value.equals("127.0.0.1"))) {
+					if (!ret.isEmpty()) { ret+=", "; }
+					ret+=value;
+				}
+			}
+			return ret;
+		}
+		catch (@Nonnull final Exception e) {
+			SL.getLogger().log(Level.WARNING,"Exception getting client address",e);
+			return "UNKNOWN";
+		}
+
 	}
 
 	// ----- Internal Statics -----

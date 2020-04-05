@@ -259,6 +259,20 @@ public class User extends LockableTable implements Comparable<User> {
 		return dqs("select developerkey from users where id=?",getId());
 	}
 
+	/**
+	 * Set or remove a developer key
+	 *
+	 * @param developerkey New key, may be null to remove the key
+	 */
+	public void setDeveloperKey(@Nullable final String developerkey) {
+		if (developerkey==null) {
+			SL.getDB().d("update users set developerkey=null where id=?",getId());
+		}
+		else {
+			SL.getDB().d("update users set developerkey=? where id=?",developerkey,getId());
+		}
+	}
+
 	public boolean isSuperAdmin() {
 		final int isadmin=dqinn("select superadmin from users where id=?",getId());
 		return isadmin==1;
@@ -379,7 +393,6 @@ public class User extends LockableTable implements Comparable<User> {
 		return getString("avatarkey");
 	}
 
-
 	@Nonnull
 	public String getTimeZone() {
 		final String s=getStringNullable("timezone");
@@ -408,7 +421,6 @@ public class User extends LockableTable implements Comparable<User> {
 	public Integer getLastActive() {
 		return dqinn("select lastactive from users where id=?",getId());
 	}
-
 
 	@Override
 	public int compareTo(@NotNull User o) {

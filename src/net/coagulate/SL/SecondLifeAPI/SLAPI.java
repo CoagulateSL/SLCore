@@ -79,12 +79,12 @@ public abstract class SLAPI implements HttpRequestHandler {
 					return;
 				}
 				final String timestamp=content.optString("timestamp");
-				if (timestamp==null) {
+				if (timestamp==null || timestamp.isEmpty()) {
 					SL.getLogger().log(SEVERE,"No timestamp provided to Second Life API");
 					resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
 					return;
 				}
-				// not replay attack proof :(  still, the wires are /reasonably/ secure.  maybe later.  hmm
+				// not replay attack proof :(  still, the wires are /reasonably/ secure.  maybe later.  hmm)
 				int timestampoffset=UnixTime.getUnixTime()-Integer.parseInt(timestamp);
 				if (timestampoffset<0) { timestampoffset=-timestampoffset; }
 				if (timestampoffset>300) {
@@ -110,7 +110,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 			resp.setStatusCode(HttpStatus.SC_OK);
 		}
 		catch (@Nonnull final Exception ex) {
-			SL.getLogger().log(WARNING,"PageHandler",ex);
+			SL.getLogger().log(WARNING,"PageHandler at "+req.getRequestLine(),ex);
 			resp.setStatusCode(HttpStatus.SC_OK);
 			final JSONObject object=new JSONObject();
 			object.put("error","Internal error during SL API parser");

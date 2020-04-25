@@ -183,6 +183,9 @@ public class User extends LockableTable implements Comparable<User> {
 	public static User findMandatory(final String nameorkey) {
 		final User user=findOptional(nameorkey);
 		if (user==null) {
+			String resolvedname=SL.bot().
+		}
+		if (user==null) {
 			throw new UserInputLookupFailureException("Failed to find avatar object for name or key '"+nameorkey+"'");
 		}
 		return user;

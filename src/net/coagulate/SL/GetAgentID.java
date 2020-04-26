@@ -47,13 +47,13 @@ public class GetAgentID {
 		String firstname=name.replaceAll("\\."," ");
 		String lastname=null;
 		if (firstname.contains(" ")) {
-			String[] parts=firstname.split(" ");
+			final String[] parts=firstname.split(" ");
 			firstname=parts[0];
 			lastname=parts[1];
 		}
 
 		try {
-			final HttpURLConnection transmission=((HttpURLConnection)new URL(SERVICE_URL).openConnection());
+			final HttpURLConnection transmission=((HttpURLConnection) new URL(SERVICE_URL).openConnection());
 			transmission.setDoOutput(true);
 			transmission.setAllowUserInteraction(false);
 			transmission.setDoInput(true);
@@ -62,7 +62,7 @@ public class GetAgentID {
 			transmission.setRequestProperty("api-key",API_KEY);
 			transmission.connect();
 
-			JSONObject request=new JSONObject();
+			final JSONObject request=new JSONObject();
 			request.put("username",firstname);
 			if (lastname!=null) { request.put("lastname",lastname); }
 
@@ -71,15 +71,13 @@ public class GetAgentID {
 			out.flush();
 			out.close();
 
-			int responsecode=900;
+			final int responsecode;
 			responsecode=transmission.getResponseCode();
 
 			switch (responsecode) {
 				case 403: throw new SystemRemoteFailureException("SL Name API Rate Limited");
 				case 405: throw new SystemRemoteFailureException("SL Name API said Malformed Request");
 				case 500: throw new UserRemoteFailureException("SL Name API service errored");
-				case 900: throw new SystemRemoteFailureException("SL Name API utility didn't get a response code");
-				case 901: throw new SystemRemoteFailureException("SL Name API utility gave a non numeric response code");
 			}
 
 			final BufferedReader rd;
@@ -92,21 +90,18 @@ public class GetAgentID {
 				responsebuilder.append(line).append("\n");
 			}
 			final String response=responsebuilder.toString();
-			if (response==null) {
-				throw new UserRemoteFailureException("SL Name API gave no response");
-			}
 			if (response.isEmpty()) {
 				throw new UserRemoteFailureException("SL Name API gave empty response");
 			}
 
-			JSONObject json=new JSONObject(response);
+			final JSONObject json=new JSONObject(response);
 			if (responsecode==404) {
 				throw new UserRemoteFailureException("SL Name API - "+json.optString("error","???")+" - "+json.optString("message","NoErrorMessage"));
 			}
 
 			return json.getString("agent_id");
 		}
-		catch (IOException ex) {
+		catch (final IOException ex) {
 			SL.report("Name API IO Error",ex,null);
 			throw new UserRemoteFailureException("SL Name API IO Error: "+ex.getLocalizedMessage(),ex);
 		}

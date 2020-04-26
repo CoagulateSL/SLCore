@@ -32,7 +32,7 @@ import static net.coagulate.Core.Tools.UnixTime.getUnixTime;
 public class User extends LockableTable implements Comparable<User> {
 
 	private static final Map<Integer,User> users=new HashMap<>();
-	private String usernamecache=null;
+	private String usernamecache;
 
 	private User(final int id) {
 		super(id);
@@ -158,15 +158,15 @@ public class User extends LockableTable implements Comparable<User> {
 			SL.getLogger("User").severe("Failed to find avatar '"+name+"' after creating it");
 			throw new NoDataException("Failed to find avatar object for name '"+name+"' after we created it!");
 		}
-		User u=get(userid);
-		String currentusername=u.getUsername();
+		final User u=get(userid);
+		final String currentusername=u.getUsername();
 		System.out.println("Find or create for "+key+" -> "+userid+" current "+currentusername+" supplied "+name);
-		if (name!=null && !currentusername.equalsIgnoreCase(name)) {
+		if (!name.isEmpty() && !currentusername.equalsIgnoreCase(name)) {
 			u.setUsername(name);
 			try {
 				MailTools.mail("Namechange:"+currentusername+" -> "+name+" for "+key,"Namechange:"+currentusername+" -> "+name+" for "+key);
 			}
-			catch (MessagingException exception) {
+			catch (final MessagingException exception) {
 				SL.report("Exception during mailer (!)",exception,null);
 			}
 		}
@@ -185,7 +185,7 @@ public class User extends LockableTable implements Comparable<User> {
 
 	@Nonnull public static User findUsername(final String name) {
 		try { return User.get(SL.getDB().dqinn("select id from users where username=?",name)); }
-		catch (NoDataException e) {
+		catch (final NoDataException e) {
 			return createByName(name);
 		}
 	}
@@ -205,8 +205,8 @@ public class User extends LockableTable implements Comparable<User> {
 	}
 
 	public static Set<User> getDevelopers() {
-		Set<User> ret=new TreeSet<>();
-		for (ResultsRow result: SL.getDB().dq("select id from users where developerkey is not null")) {
+		final Set<User> ret=new TreeSet<>();
+		for (final ResultsRow result: SL.getDB().dq("select id from users where developerkey is not null")) {
 			ret.add(User.get(result.getInt()));
 		}
 		return ret;
@@ -218,7 +218,7 @@ public class User extends LockableTable implements Comparable<User> {
 
 	@Nullable public static User findUserKeyNullable(@Nonnull final String uuid) {
 		try { return findUserKey(uuid); }
-		catch (NoDataException e) { return null; }
+		catch (final NoDataException e) { return null; }
 	}
 
 	// ----- Internal Statics -----
@@ -233,10 +233,10 @@ public class User extends LockableTable implements Comparable<User> {
 
 	@Nonnull private static User createByName(@Nonnull final String name) {
 		try {
-			String uuid=GetAgentID.getAgentID(name);
+			final String uuid=GetAgentID.getAgentID(name);
 			return findOrCreate(name,uuid);
 		}
-		catch (Throwable t) {
+		catch (final Throwable t) {
 			throw new UserInputLookupFailureException("Failed to find avatar object for name or key '"+name+"' "+t.getLocalizedMessage(),t);
 		}
 	}
@@ -424,7 +424,7 @@ public class User extends LockableTable implements Comparable<User> {
 		return dqinn("select lastactive from users where id=?",getId());
 	}
 
-	@Override public int compareTo(@NotNull User o) {
+	@Override public int compareTo(@NotNull final User o) {
 		return getUsername().compareToIgnoreCase(o.getUsername());
 	}
 

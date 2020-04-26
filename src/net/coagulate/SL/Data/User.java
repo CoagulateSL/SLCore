@@ -3,7 +3,6 @@ package net.coagulate.SL.Data;
 import net.coagulate.Core.Database.*;
 import net.coagulate.Core.Exceptions.System.SystemBadValueException;
 import net.coagulate.Core.Exceptions.System.SystemImplementationException;
-import net.coagulate.Core.Exceptions.System.SystemRemoteFailureException;
 import net.coagulate.Core.Exceptions.User.*;
 import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.Passwords;
@@ -46,7 +45,7 @@ public class User extends LockableTable implements Comparable<User> {
 	 * @return Reference to the SYSTEM avatar
 	 */
 	public static User getSystem() {
-		return findOrCreate("SYSTEM","DEADBEEF");
+		return findOrCreate("SYSTEM","DEADBEEF",true);
 	}
 
 	@Nonnull public static String getGPHUDLink(final String name,final int id) {
@@ -125,19 +124,31 @@ public class User extends LockableTable implements Comparable<User> {
 		catch (@Nonnull final NoDataException e) { return null; }
 	}
 
-	public static User findOrCreate(@Nullable String name,@Nonnull final String key) {
-		if (name==null || "".equals(name) || "???".equals(name) || "(???)".equals(name)) { name=""; }
+	/**
+	 * Find or create a user entry in the database.
+	 *
+	 * Call will filter "usernames" of ??? (???) (Loading...) or Loading.. all of which seem to be garbage SL generates.
+	 * Note trustname should be set to false if the username is retrieved from HTTP headers from Objects which seem to update later than other methods.
+	 * For usernames retrieved from the new GetAgentID LL API this should be set to TRUE to update the database with the new name.
+	 *
+	 * @param name      Optional name of the avatar, creation will not proceed without this value, otherwise it may be null
+	 * @param key       Mandatory UUID string of the avatar
+	 * @param trustname Trust the username supplied to the point we will update our recorded username if it differs.
+	 *
+	 * @return The User object for this avatar
+	 *
+	 * @throws SystemBadValueException if it is necessary to create the user and both username and key are not presented
+	 */
+	public static User findOrCreate(@Nullable String name,@Nonnull final String key,@Nonnull final boolean trustname) {
+		if (name==null || "???".equals(name) || "(???)".equals(name) || "Loading...".equals(name) || "(Loading...)".equals(name)) { name=""; }
 		Integer userid=null;
 		try {
 			userid=SL.getDB().dqi("select id from users where (avatarkey=?)",key);
 		}
 		catch (@Nonnull final NoDataException e) {}
 		if (userid==null) {
-			if (name.isEmpty()) { throw new SystemBadValueException("Empty avatar name blocks creation"); }
 			if (key.isEmpty()) { throw new SystemBadValueException("Empty avatar key blocks creation"); }
-			if (name.contains("Loading...")) {
-				throw new SystemRemoteFailureException("No avatar name was sent with the key, can not create new avatar record");
-			}
+			if (name.isEmpty()) { throw new SystemBadValueException("Empty avatar name blocks creation (for key "+key+")"); }
 			try {
 				// special key used by the SYSTEM avatar
 				if (!"DEADBEEF".equals(key)) {
@@ -161,9 +172,10 @@ public class User extends LockableTable implements Comparable<User> {
 		final User u=get(userid);
 		final String currentusername=u.getUsername();
 		System.out.println("Find or create for "+key+" -> "+userid+" current "+currentusername+" supplied "+name);
-		if (!name.isEmpty() && !currentusername.equalsIgnoreCase(name)) {
+		if (trustname && !name.isEmpty() && !currentusername.equalsIgnoreCase(name)) {
 			u.setUsername(name);
 			try {
+				SL.report("Namechange:"+currentusername+" -> "+name+" for "+key,new Exception("Here "+currentusername+" -> "+name),null);
 				MailTools.mail("Namechange:"+currentusername+" -> "+name+" for "+key,"Namechange:"+currentusername+" -> "+name+" for "+key);
 			}
 			catch (final MessagingException exception) {
@@ -234,7 +246,7 @@ public class User extends LockableTable implements Comparable<User> {
 	@Nonnull private static User createByName(@Nonnull final String name) {
 		try {
 			final String uuid=GetAgentID.getAgentID(name);
-			return findOrCreate(name,uuid);
+			return findOrCreate(name,uuid,true);
 		}
 		catch (final Throwable t) {
 			throw new UserInputLookupFailureException("Failed to find avatar object for name or key '"+name+"' "+t.getLocalizedMessage(),t);

@@ -39,7 +39,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
 				}
 				else {
 					if ("Login".equals(state.get("Login")) && password.isEmpty()) {
-						final User target=User.findOptional(username);
+						final User target=User.findUsernameNullable(username);
 						if (target!=null) {
 							final String token=target.generateSSO();
 							final String message;
@@ -85,7 +85,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
 		state.put("parameters","login_password","OBSCURED FROM DEEPER CODE");
 		if ("Login".equals(state.get("Login")) && !username.isEmpty() && !password.isEmpty()) {
 			User u=null;
-			try { u=User.get(username,false); } catch (@Nonnull final NoDataException ignore) {}
+			try { u=User.findUsernameNullable(username); } catch (@Nonnull final NoDataException ignore) {}
 			if (u==null) {
 				SL.getLogger().warning("Attempt to authenticate as invalid user '"+username+"' from "+state.getClientIP());
 				return false;

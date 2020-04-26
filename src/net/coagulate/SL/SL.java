@@ -139,8 +139,9 @@ public class SL extends Thread {
 
 	public static void report(final String header,
 	                          @Nonnull final Throwable t,
-	                          @Nonnull final DumpableState state) {
-		final String output=ExceptionTools.dumpException(t)+"<br><hr><br>"+state.toHTML();
+	                          @Nullable final DumpableState state) {
+		String output=ExceptionTools.dumpException(t)+"<br><hr><br>";
+		if (state!=null) { output+=state.toHTML(); }
 
 		if (UserException.class.isAssignableFrom(t.getClass())) { if (((UserException) t).suppressed()) { return; }}
 		if (SystemException.class.isAssignableFrom(t.getClass())) { if (((SystemException) t).suppressed()) { return; }}

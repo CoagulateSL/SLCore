@@ -126,10 +126,10 @@ public class User extends LockableTable implements Comparable<User> {
 	}
 
 	public static User findOrCreate(@Nullable String name,@Nonnull final String key) {
-		if (name==null || "".equals(name)) { name=""; }
+		if (name==null || "".equals(name) || "???".equals(name) || "(???)".equals(name)) { name=""; }
 		Integer userid=null;
 		try {
-			userid=SL.getDB().dqi("select id from users where (username=? or avatarkey=?)",name,key);
+			userid=SL.getDB().dqi("select id from users where (avatarkey=?)",key);
 		}
 		catch (@Nonnull final NoDataException e) {}
 		if (userid==null) {

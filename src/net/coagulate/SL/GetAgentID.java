@@ -1,24 +1,11 @@
 package net.coagulate.SL;
 
 import net.coagulate.Core.Exceptions.User.UserInputValidationFilterException;
-import net.coagulate.Core.Tools.MailTools;
-import net.coagulate.GPHUD.Data.Char;
-import net.coagulate.GPHUD.Data.Cookie;
-import net.coagulate.GPHUD.Data.Region;
-import net.coagulate.GPHUD.GPHUD;
-import org.json.JSONObject;
 
 import javax.annotation.Nonnull;
-import javax.mail.MessagingException;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.regex.Pattern;
-
-import static java.util.logging.Level.SEVERE;
-import static java.util.logging.Level.WARNING;
 
 public class GetAgentID {
 
@@ -58,7 +45,7 @@ public class GetAgentID {
 		transmission.setReadTimeout(35000);
 		transmission.setRequestProperty("api-key", API_KEY);
 		transmission.connect();
-
+/*
 		JSONObject request=new JSONObject();
 		request.put("username",firstname);
 		request.put("lastname",lastname);
@@ -112,6 +99,8 @@ public class GetAgentID {
 			}
 		}
 		succeeded=true;
+*/
+		return "";
 	}
 
 }

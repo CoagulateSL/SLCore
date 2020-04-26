@@ -44,10 +44,10 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 		page.header("Control Panel");
 		if ("NameAPI".equals(state.get("NameAPI"))) {
 			try {
-				String ret=GetAgentID.getAgentID(state.get("input"));
+				final String ret=GetAgentID.getAgentID(state.get("input"));
 				page.add(new Raw("<pre>"+state.get("input")+" resolved to "+ret+"</pre><br>"));
 			}
-			catch (Throwable t) { page.add(new Raw("<pre>"+t.getLocalizedMessage()+"</pre><br>")); }
+			catch (final Throwable t) { page.add(new Raw("<pre>"+t.getLocalizedMessage()+"</pre><br>")); }
 		}
 		if ("Test Mail".equals(state.get("Test Mail"))) {
 			page.paragraph("Sending mail");

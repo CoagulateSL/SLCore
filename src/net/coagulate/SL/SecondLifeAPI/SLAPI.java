@@ -49,7 +49,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 			st.put("slapi_ownername",optionalHeader(req,"X-SecondLife-Owner-Name",st));
 			st.put("slapi_ownerkey",requireHeader(req,"X-SecondLife-Owner-Key",st));
 			if (st.get("slapi_ownername")==null || st.get("slapi_ownername").isEmpty()) {
-				final User userlookup=User.findOptional(st.get("slapi_ownerkey"));
+				final User userlookup=User.findUserKeyNullable(st.get("slapi_ownerkey"));
 				if (userlookup!=null) {
 					final String username=userlookup.getName();
 					if (username!=null) { st.put("slapi_ownername",username); }

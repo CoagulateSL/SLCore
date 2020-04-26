@@ -38,4 +38,16 @@ public class Container implements Element {
 		content.add(element);
 		return this;
 	}
+
+	@Nonnull
+	public Container submit(final String s) {
+		add(new Submit(s));
+		return this;
+	}
+
+	@Nonnull
+	public Container submit(final Element e) {
+		add(e);
+		return this;
+	}
 }

@@ -12,15 +12,5 @@ public class Form extends Container {
 		return "<form method=post>"+super.toHtml(st)+"</form>";
 	}
 
-	@Nonnull
-	public Form submit(final String s) {
-		add(new Submit(s));
-		return this;
-	}
 
-	@Nonnull
-	public Form submit(final Element e) {
-		add(e);
-		return this;
-	}
 }

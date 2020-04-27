@@ -139,7 +139,7 @@ public class User extends LockableTable implements Comparable<User> {
 	 *
 	 * @throws SystemBadValueException if it is necessary to create the user and both username and key are not presented
 	 */
-	public static User findOrCreate(@Nullable String name,@Nonnull final String key,@Nonnull final boolean trustname) {
+	public static User findOrCreate(@Nullable String name,@Nonnull final String key,final boolean trustname) {
 		if (name==null || "???".equals(name) || "(???)".equals(name) || "Loading...".equals(name) || "(Loading...)".equals(name)) { name=""; }
 		Integer userid=null;
 		try {

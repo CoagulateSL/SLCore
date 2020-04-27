@@ -141,6 +141,7 @@ public class User extends LockableTable implements Comparable<User> {
 	 */
 	public static User findOrCreate(@Nullable String name,@Nonnull final String key,final boolean trustname) {
 		if (name==null || "???".equals(name) || "(???)".equals(name) || "Loading...".equals(name) || "(Loading...)".equals(name)) { name=""; }
+		if (!name.isEmpty()) { name=formatUsername(name); }
 		Integer userid=null;
 		try {
 			userid=SL.getDB().dqi("select id from users where (avatarkey=?)",key);
@@ -195,10 +196,11 @@ public class User extends LockableTable implements Comparable<User> {
 		return results;
 	}
 
-	@Nonnull public static User findUsername(final String name) {
+	@Nonnull public static User findUsername(@Nonnull String name,final boolean trustname) {
+		name=formatUsername(name);
 		try { return User.get(SL.getDB().dqinn("select id from users where username=?",name)); }
 		catch (final NoDataException e) {
-			return createByName(name);
+			return createByName(name,trustname);
 		}
 	}
 
@@ -207,9 +209,9 @@ public class User extends LockableTable implements Comparable<User> {
 	 *
 	 * @return Avatar object
 	 */
-	@Nullable public static User findUsernameNullable(@Nonnull final String username) {
+	@Nullable public static User findUsernameNullable(@Nonnull final String username,final boolean trustname) {
 		try {
-			return findUsername(username);
+			return findUsername(username,trustname);
 		}
 		catch (@Nonnull final Throwable t) {
 			return null;
@@ -243,10 +245,11 @@ public class User extends LockableTable implements Comparable<User> {
 		}
 	}
 
-	@Nonnull private static User createByName(@Nonnull final String name) {
+	@Nonnull private static User createByName(@Nonnull String name,final boolean trustname) {
+		name=formatUsername(name);
 		try {
 			final String uuid=GetAgentID.getAgentID(name);
-			return findOrCreate(name,uuid,true);
+			return findOrCreate(name,uuid,trustname);
 		}
 		catch (final Throwable t) {
 			throw new UserInputLookupFailureException("Failed to find avatar object for name or key '"+name+"' "+t.getLocalizedMessage(),t);
@@ -441,7 +444,8 @@ public class User extends LockableTable implements Comparable<User> {
 	}
 
 	// ----- Internal Instance -----
-	private void setUsername(@Nonnull final String username) {
+	private void setUsername(@Nonnull String username) {
+		username=formatUsername(username);
 		d("update users set username=? where id=?",username,getId());
 		usernamecache=username;
 	}

@@ -171,7 +171,7 @@ public class User extends LockableTable implements Comparable<User> {
 		}
 		final User u=get(userid);
 		final String currentusername=u.getUsername();
-		System.out.println("Find or create for "+key+" -> "+userid+" current "+currentusername+" supplied "+name);
+		//System.out.println("Find or create for "+key+" -> "+userid+" current "+currentusername+" supplied "+name);
 		if (trustname && !name.isEmpty() && !currentusername.equalsIgnoreCase(name)) {
 			u.setUsername(name);
 			try {

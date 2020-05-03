@@ -32,11 +32,8 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 
 	// ----- Internal Instance -----
 	@Override
-	protected void run(
-			@Nonnull
-			final State state,
-			@Nonnull
-			final Page page) {
+	protected void run(@Nonnull final State state,
+	                   @Nonnull final Page page) {
 		if (!state.user().superuser()) {
 			throw new UserAccessDeniedException("Unauthorised access to Control Panel from "+state.userNullable());
 		}
@@ -60,9 +57,7 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 				               "Test OK"
 				              );
 			}
-			catch (
-					@Nonnull
-					final MessagingException ex) {
+			catch (@Nonnull final MessagingException ex) {
 				Logger.getLogger(ControlPanel.class.getName()).log(Level.SEVERE,null,ex);
 				page.add(new Raw(ExceptionTools.toHTML(ex)));
 			}

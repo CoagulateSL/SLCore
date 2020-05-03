@@ -39,22 +39,27 @@ import static net.coagulate.SL.Config.LOCK_NUMBER_GPHUD_MAINTENANCE;
  */
 public class SL extends Thread {
 	public static final String VERSION="v0.03.00";
-	public static boolean DEV;
-	@Nullable private static JSLBot bot;
-	@Nullable private static Logger log;
-	private static boolean shutdown;
-	private static boolean errored;
-	@Nullable private static DBConnection db;
-	@Nullable private static HTTPListener listener;
-	private static int watchdogcycle;
 	private static final long laststats=new Date().getTime();
 	private static final long nextarchival=new Date().getTime()+((int) ((Math.random()*60.0*45.0*1000.0)));
+	public static boolean DEV;
+	@Nullable
+	private static JSLBot bot;
+	@Nullable
+	private static Logger log;
+	private static boolean shutdown;
+	private static boolean errored;
+	@Nullable
+	private static DBConnection db;
+	@Nullable
+	private static HTTPListener listener;
+	private static int watchdogcycle;
 	private static int gphudoffset;
 
 	private SL() {}
 
 	// ---------- STATICS ----------
-	@Nonnull public static JSLBot bot() {
+	@Nonnull
+	public static JSLBot bot() {
 		if (bot==null) { throw new SystemInitialisationException("Access to bot before it is set up"); }
 		return bot;
 	}
@@ -152,7 +157,8 @@ public class SL extends Thread {
 		}
 	}
 
-	@Nonnull public static Logger log() {
+	@Nonnull
+	public static Logger log() {
 		if (log==null) { throw new SystemInitialisationException("Logger is null"); }
 		return log;
 	}
@@ -161,7 +167,8 @@ public class SL extends Thread {
 		return "https://picture-service.secondlife.com/"+textureuuid+"/320x240.jpg";
 	}
 
-	public static String getClientIP(final HttpRequest req,final HttpContext context) {
+	public static String getClientIP(final HttpRequest req,
+	                                 final HttpContext context) {
 
 		final Header[] headers=req.getHeaders("X-Forwarded-For");
 		try {

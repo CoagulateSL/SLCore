@@ -30,9 +30,7 @@ public class GetAgentID {
 	 * @return The UUID, or an exception if one wasn't found.
 	 */
 	@Nonnull
-	public static final String getAgentID(
-			@Nonnull
-			final String name) {
+	public static final String getAgentID(@Nonnull final String name) {
 
 		// validate the name a bit and we need to break it down into a firstname (called username in modern LL nomenclature, apparently)
 		// and a last name
@@ -75,9 +73,12 @@ public class GetAgentID {
 			responsecode=transmission.getResponseCode();
 
 			switch (responsecode) {
-				case 403: throw new SystemRemoteFailureException("SL Name API Rate Limited");
-				case 405: throw new SystemRemoteFailureException("SL Name API said Malformed Request");
-				case 500: throw new UserRemoteFailureException("SL Name API service errored");
+				case 403:
+					throw new SystemRemoteFailureException("SL Name API Rate Limited");
+				case 405:
+					throw new SystemRemoteFailureException("SL Name API said Malformed Request");
+				case 500:
+					throw new UserRemoteFailureException("SL Name API service errored");
 			}
 
 			final BufferedReader rd;

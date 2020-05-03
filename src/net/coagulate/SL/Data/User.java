@@ -48,7 +48,9 @@ public class User extends LockableTable implements Comparable<User> {
 		return findOrCreate("SYSTEM","DEADBEEF",true);
 	}
 
-	@Nonnull public static String getGPHUDLink(final String name,final int id) {
+	@Nonnull
+	public static String getGPHUDLink(final String name,
+	                                  final int id) {
 		return new Link(name,"/GPHUD/avatars/view/"+id).asHtml(null,true);
 	}
 
@@ -71,7 +73,8 @@ public class User extends LockableTable implements Comparable<User> {
 		throw new SystemConsistencyException("Created user for "+username+" and then couldn't find its id");
 	}*/
 
-	@Nonnull public static String formatUsername(String username) {
+	@Nonnull
+	public static String formatUsername(String username) {
 		final String original=username;
 		// possible formats
 		// user.resident
@@ -102,7 +105,8 @@ public class User extends LockableTable implements Comparable<User> {
 		return factory(id);
 	}
 
-	@Nullable public static User resolveDeveloperKey(@Nullable final String key) {
+	@Nullable
+	public static User resolveDeveloperKey(@Nullable final String key) {
 		if (key==null || "".equals(key)) {
 			return null;
 		}
@@ -113,7 +117,8 @@ public class User extends LockableTable implements Comparable<User> {
 		catch (@Nonnull final NoDataException e) { return null; }
 	}
 
-	@Nullable public static User getSSO(final String token) {
+	@Nullable
+	public static User getSSO(final String token) {
 		// purge old tokens
 		SL.getDB().d("update users set ssotoken=null,ssoexpires=null where ssoexpires<?",UnixTime.getUnixTime());
 		try {
@@ -139,7 +144,9 @@ public class User extends LockableTable implements Comparable<User> {
 	 *
 	 * @throws SystemBadValueException if it is necessary to create the user and both username and key are not presented
 	 */
-	public static User findOrCreate(@Nullable String name,@Nonnull final String key,final boolean trustname) {
+	public static User findOrCreate(@Nullable String name,
+	                                @Nonnull final String key,
+	                                final boolean trustname) {
 		if (name==null || "???".equals(name) || "(???)".equals(name) || "Loading...".equals(name) || "(Loading...)".equals(name)) { name=""; }
 		if (!name.isEmpty()) { name=formatUsername(name); }
 		Integer userid=null;
@@ -187,7 +194,8 @@ public class User extends LockableTable implements Comparable<User> {
 	}
 
 	// GPHUD legacy
-	@Nonnull public static Map<Integer,String> loadMap() {
+	@Nonnull
+	public static Map<Integer,String> loadMap() {
 		final Map<Integer,String> results=new TreeMap<>();
 		final Results rows=SL.getDB().dq("select id,username from users");
 		for (final ResultsRow r: rows) {
@@ -196,7 +204,9 @@ public class User extends LockableTable implements Comparable<User> {
 		return results;
 	}
 
-	@Nonnull public static User findUsername(@Nonnull String name,final boolean trustname) {
+	@Nonnull
+	public static User findUsername(@Nonnull String name,
+	                                final boolean trustname) {
 		name=formatUsername(name);
 		try { return User.get(SL.getDB().dqinn("select id from users where username=?",name)); }
 		catch (final NoDataException e) {
@@ -209,7 +219,9 @@ public class User extends LockableTable implements Comparable<User> {
 	 *
 	 * @return Avatar object
 	 */
-	@Nullable public static User findUsernameNullable(@Nonnull final String username,final boolean trustname) {
+	@Nullable
+	public static User findUsernameNullable(@Nonnull final String username,
+	                                        final boolean trustname) {
 		try {
 			return findUsername(username,trustname);
 		}
@@ -226,11 +238,13 @@ public class User extends LockableTable implements Comparable<User> {
 		return ret;
 	}
 
-	@Nonnull public static User findUserKey(@Nonnull final String uuid) {
+	@Nonnull
+	public static User findUserKey(@Nonnull final String uuid) {
 		return new User(SL.getDB().dqinn("select id from users where avatarkey like ?",uuid));
 	}
 
-	@Nullable public static User findUserKeyNullable(@Nonnull final String uuid) {
+	@Nullable
+	public static User findUserKeyNullable(@Nonnull final String uuid) {
 		try { return findUserKey(uuid); }
 		catch (final NoDataException e) { return null; }
 	}
@@ -245,7 +259,9 @@ public class User extends LockableTable implements Comparable<User> {
 		}
 	}
 
-	@Nonnull private static User createByName(@Nonnull String name,final boolean trustname) {
+	@Nonnull
+	private static User createByName(@Nonnull String name,
+	                                 final boolean trustname) {
 		name=formatUsername(name);
 		try {
 			final String uuid=GetAgentID.getAgentID(name);
@@ -257,21 +273,31 @@ public class User extends LockableTable implements Comparable<User> {
 	}
 
 	// ---------- INSTANCE ----------
-	@Nonnull public String getGPHUDLink() { return getGPHUDLink(getUsername(),getId()); }
+	@Nonnull
+	public String getGPHUDLink() { return getGPHUDLink(getUsername(),getId()); }
 
 	public String getUsername() {
 		if (usernamecache==null) { usernamecache=getString("username"); }
 		return usernamecache;
 	}
 
+	@Nonnull
+	@Override
+	public String getTableName() { return "users"; }
+
 	/**
 	 * Same as getUsername()
 	 */
 	public String getName() { return getUsername(); }
 
-	@Nonnull @Override public String getTableName() { return "users"; }
+	@Nonnull
+	@Override
+	public String toString() { return getUsername()+"[#"+getId()+"]"; }
 
-	@Nonnull @Override public String toString() { return getUsername()+"[#"+getId()+"]"; }
+	@Nullable
+	public String getDeveloperKey() {
+		return dqs("select developerkey from users where id=?",getId());
+	}
 
 	public boolean superuser() { return getId()==1 && "Iain Maltz".equalsIgnoreCase(getUsername()); }
 
@@ -284,8 +310,12 @@ public class User extends LockableTable implements Comparable<User> {
 		catch (@Nonnull final NoDataException e) { return false; }
 	}
 
-	@Nullable public String getDeveloperKey() {
-		return dqs("select developerkey from users where id=?",getId());
+	@Nonnull
+	public String generateSSO() {
+		final String token=Tokens.generateToken();
+		final int expires=UnixTime.getUnixTime()+Config.SSOWINDOWSECONDS;
+		d("update users set ssotoken=?,ssoexpires=? where "+getIdColumn()+"=?",token,expires,getId());
+		return token;
 	}
 
 	/**
@@ -307,17 +337,28 @@ public class User extends LockableTable implements Comparable<User> {
 		return isadmin==1;
 	}
 
-	@Nonnull public String generateSSO() {
-		final String token=Tokens.generateToken();
-		final int expires=UnixTime.getUnixTime()+Config.SSOWINDOWSECONDS;
-		d("update users set ssotoken=?,ssoexpires=? where "+getIdColumn()+"=?",token,expires,getId());
-		return token;
-	}
-
-	public void setPassword(@Nonnull final String password,final String clientip) {
+	public void setPassword(@Nonnull final String password,
+	                        final String clientip) {
 		if (password.length()<6) { throw new UserInputTooShortException("Password not long enough"); }
 		d("update users set password=? where id=?",Passwords.createHash(password),getId());
 		SL.getLogger().info("User "+getUsername()+" has set password from "+clientip);
+	}
+
+	public void bill(final int ammount,
+	                 final String description) {
+		final int serial;
+		try {serial=lock();}
+		catch (@Nonnull final LockException e) {
+			throw new UserInputStateException("Your balance is currently being updated elsewhere, please retry in a moment");
+		}
+		try {
+			final int balance=balance();
+			if (balance<ammount) {
+				throw new UserInsufficientCreditException("Insufficient balance (L$"+balance+") to pay charge L$"+ammount);
+			}
+			d("insert into journal(tds,userid,ammount,description) values(?,?,?,?)",UnixTime.getUnixTime(),getId(),-ammount,description);
+		}
+		finally { unlock(serial); }
 	}
 
 	public boolean checkPassword(@Nonnull final String password) {
@@ -336,23 +377,10 @@ public class User extends LockableTable implements Comparable<User> {
 		catch (@Nonnull final NoDataException e) { return 0; }
 	}
 
-	public void bill(final int ammount,final String description) {
-		final int serial;
-		try {serial=lock();}
-		catch (@Nonnull final LockException e) {
-			throw new UserInputStateException("Your balance is currently being updated elsewhere, please retry in a moment");
-		}
-		try {
-			final int balance=balance();
-			if (balance<ammount) {
-				throw new UserInsufficientCreditException("Insufficient balance (L$"+balance+") to pay charge L$"+ammount);
-			}
-			d("insert into journal(tds,userid,ammount,description) values(?,?,?,?)",UnixTime.getUnixTime(),getId(),-ammount,description);
-		}
-		finally { unlock(serial); }
-	}
-
-	@Nonnull public Set<Subscription> getSubscriptions(@Nullable final Pricing.SERVICE service,final boolean activeonly,final boolean paidonly) {
+	@Nonnull
+	public Set<Subscription> getSubscriptions(@Nullable final Pricing.SERVICE service,
+	                                          final boolean activeonly,
+	                                          final boolean paidonly) {
 		final Results res;
 		int paiduntilfilter=UnixTime.getUnixTime();
 		if (!paidonly) { paiduntilfilter=0; }
@@ -372,20 +400,33 @@ public class User extends LockableTable implements Comparable<User> {
 		return subs;
 	}
 
-	@Nullable public String getEmail() { return getStringNullable("email"); }
+	@Nullable
+	public String getEmail() { return getStringNullable("email"); }
 
-	@Nullable public String getNewEmail() { return getStringNullable("newemail"); }
+	@Nullable
+	public String getNewEmail() { return getStringNullable("newemail"); }
 
 	/**
 	 * Sets the new email address, returning the token that must be used to validate it.
 	 *
 	 * @return String token used to validate the email address
 	 */
-	@Nonnull public String setNewEmail(final String newemail) {
+	@Nonnull
+	public String setNewEmail(final String newemail) {
 		final int expires=UnixTime.getUnixTime()+Config.NEWEMAIL_TOKEN_LIFESPAN;
 		final String token=Tokens.generateToken();
 		d("update users set newemail=?,newemailtoken=?,newemailexpires=? where id=?",newemail,token,expires,getId());
 		return token;
+	}
+
+	/**
+	 * Return the avatar's UUID.
+	 *
+	 * @return UUID (Avatar Key)
+	 */
+	@Nonnull
+	public String getUUID() {
+		return getString("avatarkey");
 	}
 
 	public void confirmNewEmail(@Nullable final String token) {
@@ -403,20 +444,22 @@ public class User extends LockableTable implements Comparable<User> {
 
 	}
 
-	/**
-	 * Return the avatar's UUID.
-	 *
-	 * @return UUID (Avatar Key)
-	 */
-	@Nonnull public String getUUID() {
-		return getString("avatarkey");
-	}
-
-	@Nonnull public String getTimeZone() {
+	@Nonnull
+	public String getTimeZone() {
 		final String s=getStringNullable("timezone");
 		if (s==null) { return "America/Los_Angeles"; }
 		if ("SLT".equals(s)) { return "America/Los_Angeles"; }
 		return s;
+	}
+
+	/**
+	 * Gets the avatar's last active timestamp.
+	 *
+	 * @return The last active time for an avatar, possibly null.
+	 */
+	@Nonnull
+	public Integer getLastActive() {
+		return dqinn("select lastactive from users where id=?",getId());
 	}
 
 	public void setTimeZone(final String timezone) { set("timezone",timezone); }
@@ -430,16 +473,8 @@ public class User extends LockableTable implements Comparable<User> {
 		d("update users set lastgphudinstance=? where id=?",i.getId(),getId());
 	}
 
-	/**
-	 * Gets the avatar's last active timestamp.
-	 *
-	 * @return The last active time for an avatar, possibly null.
-	 */
-	@Nonnull public Integer getLastActive() {
-		return dqinn("select lastactive from users where id=?",getId());
-	}
-
-	@Override public int compareTo(@NotNull final User o) {
+	@Override
+	public int compareTo(@NotNull final User o) {
 		return getUsername().compareToIgnoreCase(o.getUsername());
 	}
 

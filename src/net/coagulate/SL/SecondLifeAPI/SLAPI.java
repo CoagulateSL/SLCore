@@ -17,7 +17,6 @@ import org.json.JSONObject;
 import javax.annotation.Nonnull;
 import java.util.logging.Logger;
 
-import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
 
 /**
@@ -69,40 +68,30 @@ public abstract class SLAPI implements HttpRequestHandler {
 			if (needsDigest()) {
 				final String digest=content.optString("digest");
 				if (objectkey==null) {
-					SL.getLogger().log(SEVERE,"No object owner key provided to Second Life API");
-					resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
-					return;
+					throw new SystemRemoteFailureException("No object owner key provided to Second Life API");
 				}
 				if (digest==null) {
-					SL.getLogger().log(SEVERE,"No digest provided to Second Life API");
-					resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
-					return;
+					throw new SystemRemoteFailureException("No digest provided to Second Life API");
 				}
 				final String timestamp=content.optString("timestamp");
 				if (timestamp==null || timestamp.isEmpty()) {
-					SL.getLogger().log(SEVERE,"No timestamp provided to Second Life API");
-					resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
-					return;
+					throw new SystemRemoteFailureException("No timestamp provided to Second Life API");
 				}
 				// not replay attack proof :(  still, the wires are /reasonably/ secure.  maybe later.  hmm)
 				int timestampoffset=UnixTime.getUnixTime()-Integer.parseInt(timestamp);
 				if (timestampoffset<0) { timestampoffset=-timestampoffset; }
 				if (timestampoffset>300) {
-					SL.getLogger().log(SEVERE,"Timestamp deviates by more than 300 seconds");
-					resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
-					return;
+					throw new SystemRemoteFailureException("Timestamp deviates by more than 300 seconds");
 				}
 				final String theirobjectkey=content.optString("objectkey");
 				if (theirobjectkey!=null && !theirobjectkey.isEmpty()) {
 					if (!theirobjectkey.equals(objectkey)) {
-						SL.getLogger().log(SEVERE,"Object key mismatch - headers generated "+objectkey+" but they think it's "+theirobjectkey);
+						throw new SystemRemoteFailureException("Object key mismatch - headers generated "+objectkey+" but they think it's "+theirobjectkey);
 					}
 				}
 				final String targetdigest=Crypto.SHA1(objectkey+timestamp+"***REMOVED***");
 				if (!targetdigest.equalsIgnoreCase(digest)) {
-					SL.getLogger().log(SEVERE,"Incorrect digest provided to Second Life API");
-					resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
-					return;
+					throw new SystemRemoteFailureException("Incorrect digest provided to Second Life API");
 				}
 			}
 			final JSONObject response=handleJSON(content,st);

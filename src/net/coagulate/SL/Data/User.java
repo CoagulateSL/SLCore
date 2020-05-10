@@ -199,7 +199,7 @@ public class User extends LockableTable implements Comparable<User> {
 		final Map<Integer,String> results=new TreeMap<>();
 		final Results rows=SL.getDB().dq("select id,username from users");
 		for (final ResultsRow r: rows) {
-			results.put(r.getInt("id"),TableRow.getLink(r.getString("username"),"avatars",r.getInt("id")));
+			results.put(r.getInt("id"),TableRow.getLink(r.getString("username").replaceAll(" ","&nbsp;"),"avatars",r.getInt("id")));
 		}
 		return results;
 	}

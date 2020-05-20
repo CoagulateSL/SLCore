@@ -3,6 +3,7 @@ package net.coagulate.SL;
 import net.coagulate.Core.Database.DB;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Database.MariaDBConnection;
+import net.coagulate.Core.Exceptions.System.SystemImplementationException;
 import net.coagulate.Core.Exceptions.System.SystemInitialisationException;
 import net.coagulate.Core.Exceptions.System.SystemRemoteFailureException;
 import net.coagulate.Core.Exceptions.SystemException;
@@ -13,7 +14,6 @@ import net.coagulate.GPHUD.GPHUD;
 import net.coagulate.JSLBot.JSLBot;
 import net.coagulate.JSLBot.LLCATruster;
 import net.coagulate.LSLR.LSLR;
-import net.coagulate.SL.Data.LockTest;
 import net.coagulate.SL.HTTPPipelines.PageMapper;
 import org.apache.http.Header;
 import org.apache.http.HttpInetConnection;
@@ -30,7 +30,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static java.util.logging.Level.SEVERE;
-import static net.coagulate.SL.Config.LOCK_NUMBER_GPHUD_MAINTENANCE;
 
 /**
  * Bootstrap class.
@@ -107,7 +106,6 @@ public class SL extends Thread {
 	public static void startGPHUD() {
 		GPHUD.initialiseAsModule(SL.DEV,Config.getGPHUDJdbc(),Config.getHostName(),Config.getNode()+1);
 		// make sure the lock is ok
-		new LockTest(LOCK_NUMBER_GPHUD_MAINTENANCE);
 	}
 
 	public static void watchdog() {
@@ -193,7 +191,10 @@ public class SL extends Thread {
 
 	}
 
-	// ----- Internal Statics -----
+	public static boolean primaryNode() {
+		throw new SystemImplementationException("Primary node mechanic TODO");
+	}
+
 	private static void startup() {
 		loggingInitialise();
 		configureMailTarget(); // mails are gonna be messed up coming from logging init
@@ -210,7 +211,6 @@ public class SL extends Thread {
 		CATruster.initialise();
 		startBot();
 		Pricing.initialise();
-		IPC.test();
 		startGPHUD();
 		if (!DEV) { startLSLR(); } // never in dev
 		if (!DEV) { waitBot(); } // makes dev restart faster to ignore this
@@ -271,11 +271,11 @@ public class SL extends Thread {
 		MailTools.defaultserver="127.0.0.1";
 	}
 
-	// ---------- INSTANCE ----------
+	// ----- Internal Statics -----
 	@Override
 	public void run() {
 		if (!SL.shutdown) { log().severe("JVM Shutdown Hook invoked"); }
 		SL.shutdown=true;
 	}
-
+	// ---------- INSTANCE ----------
 }

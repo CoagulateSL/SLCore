@@ -7,7 +7,7 @@ import net.coagulate.SL.SL;
 import javax.annotation.Nonnull;
 
 public abstract class StandardSLTable extends StandardTableRow {
-	public StandardSLTable(int id) {super(id);}
+	public StandardSLTable(final int id) {super(id);}
 
 	// ---------- INSTANCE ----------
 	@Nonnull

@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 /**
  * @author Iain Price
  */
-public class Bots extends LockableTable {
+public class Bots extends StandardSLTable {
 
 	public Bots(final int id) {
 		super(id);

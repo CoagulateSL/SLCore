@@ -2,6 +2,7 @@ package net.coagulate.SL.Data;
 
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Database.StandardLockableTableRow;
+import net.coagulate.Core.Database.StandardTableRow;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.SL;
 
@@ -13,7 +14,7 @@ import java.util.logging.Logger;
  *
  * @author Iain Price
  */
-public abstract class LockableTable extends StandardLockableTableRow {
+public abstract class LockableTable extends StandardTableRow {
 
 	public LockableTable(final int id) { super(id); }
 

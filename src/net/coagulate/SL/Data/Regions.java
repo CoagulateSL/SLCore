@@ -1,6 +1,6 @@
 package net.coagulate.SL.Data;
 
-import net.coagulate.Core.Database.LockException;
+
 import net.coagulate.Core.Database.NoDataException;
 import net.coagulate.Core.Exceptions.System.SystemConsistencyException;
 import net.coagulate.Core.Tools.UnixTime;
@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 /**
  * @author Iain Price
  */
-public class Regions extends LockableTable {
+public class Regions extends StandardSLTable {
 
 	public Regions(final int id) { super(id); }
 
@@ -50,10 +50,7 @@ public class Regions extends LockableTable {
 	}
 
 	public void setLastUpdate() {
-		try {
-			set("lastupdate",UnixTime.getUnixTime());
-		}
-		catch (@Nonnull final LockException e) {} // not that important here, something else is updating it...
+		set("lastupdate",UnixTime.getUnixTime());
 	}
 
 	public void setNewStatus(final String status) {

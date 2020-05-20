@@ -1,6 +1,9 @@
 package net.coagulate.SL.Data;
 
-import net.coagulate.Core.Database.*;
+import net.coagulate.Core.Database.DBException;
+import net.coagulate.Core.Database.NoDataException;
+import net.coagulate.Core.Database.Results;
+import net.coagulate.Core.Database.ResultsRow;
 import net.coagulate.Core.Exceptions.System.SystemBadValueException;
 import net.coagulate.Core.Exceptions.System.SystemImplementationException;
 import net.coagulate.Core.Exceptions.User.*;
@@ -28,7 +31,7 @@ import static net.coagulate.Core.Tools.UnixTime.getUnixTime;
 /**
  * @author Iain Price
  */
-public class User extends LockableTable implements Comparable<User> {
+public class User extends StandardSLTable implements Comparable<User> {
 
 	private static final Map<Integer,User> users=new HashMap<>();
 	private String usernamecache;
@@ -346,19 +349,12 @@ public class User extends LockableTable implements Comparable<User> {
 
 	public void bill(final int ammount,
 	                 final String description) {
-		final int serial;
-		try {serial=lock();}
-		catch (@Nonnull final LockException e) {
-			throw new UserInputStateException("Your balance is currently being updated elsewhere, please retry in a moment");
+		if (!SL.primaryNode()) { throw new UserInputStateException("This node is not the authorised master node, please retry in a minute"); }
+		final int balance=balance();
+		if (balance<ammount) {
+			throw new UserInsufficientCreditException("Insufficient balance (L$"+balance+") to pay charge L$"+ammount);
 		}
-		try {
-			final int balance=balance();
-			if (balance<ammount) {
-				throw new UserInsufficientCreditException("Insufficient balance (L$"+balance+") to pay charge L$"+ammount);
-			}
-			d("insert into journal(tds,userid,ammount,description) values(?,?,?,?)",UnixTime.getUnixTime(),getId(),-ammount,description);
-		}
-		finally { unlock(serial); }
+		d("insert into journal(tds,userid,ammount,description) values(?,?,?,?)",UnixTime.getUnixTime(),getId(),-ammount,description);
 	}
 
 	public boolean checkPassword(@Nonnull final String password) {

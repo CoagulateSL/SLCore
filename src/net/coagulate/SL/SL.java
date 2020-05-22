@@ -3,7 +3,6 @@ package net.coagulate.SL;
 import net.coagulate.Core.Database.DB;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Database.MariaDBConnection;
-import net.coagulate.Core.Exceptions.System.SystemImplementationException;
 import net.coagulate.Core.Exceptions.System.SystemInitialisationException;
 import net.coagulate.Core.Exceptions.System.SystemRemoteFailureException;
 import net.coagulate.Core.Exceptions.SystemException;
@@ -87,8 +86,15 @@ public class SL extends Thread {
 			}
 			Runtime.getRuntime().addShutdownHook(new SL());
 			while (!shutdown) {
-				watchdog();
-				if (!shutdown) { Maintenance.maintenance(); }
+				//watchdog();
+				try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
+				if (!shutdown) {
+					try { Maintenance.maintenance(); }
+					catch (Throwable t) {
+						System.out.println("Uhoh, maintenance crashed, even though it's crash proofed (primaryNode()?)");
+						t.printStackTrace();
+					}
+				}
 			}
 		}
 		catch (@Nonnull final Throwable t) {
@@ -192,7 +198,14 @@ public class SL extends Thread {
 	}
 
 	public static boolean primaryNode() {
-		throw new SystemImplementationException("Primary node mechanic TODO");
+		String name=getDB().dqs("select name from masternode");
+		if (!Config.getHostName().equalsIgnoreCase(name)) { return false; } // not the master node
+		// if we are the master node, shall we update our last run so that things know things are working ... thing.
+		int lastrun=getDB().dqinn("select lastrun from masternode");
+		if (UnixTime.getUnixTime()>(lastrun+60)) {
+			getDB().d("update masternode set lastrun=?",UnixTime.getUnixTime());
+		}
+		return true;
 	}
 
 	private static void startup() {
@@ -215,6 +228,7 @@ public class SL extends Thread {
 		if (!DEV) { startLSLR(); } // never in dev
 		if (!DEV) { waitBot(); } // makes dev restart faster to ignore this
 		listener=new HTTPListener(Config.getPort(),Config.getKeyMaterialFile(),new PageMapper());
+		log.info("Startup complete, config: "+Config.report());
 		log().info("=====[ Coagulate "+(DEV?"DEVELOPMENT ":"")+"Second Life Services {JavaCore, JSLBot, GPHUD, LSLR} version "+VERSION+", startup is fully complete ]=====");
 	}
 

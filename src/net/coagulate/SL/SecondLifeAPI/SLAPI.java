@@ -12,6 +12,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.annotation.Nonnull;
@@ -39,7 +40,12 @@ public abstract class SLAPI implements HttpRequestHandler {
 			JSONObject content=new JSONObject();
 			if (req instanceof HttpEntityEnclosingRequest) {
 				final HttpEntityEnclosingRequest r=(HttpEntityEnclosingRequest) req;
-				content=new JSONObject(ByteTools.convertStreamToString(r.getEntity().getContent()));
+				String contentstring=ByteTools.convertStreamToString(r.getEntity().getContent());
+				try { content=new JSONObject(contentstring); }
+				catch (JSONException jsonerror) {
+					SL.reportString("Unparsable JSON",jsonerror,contentstring);
+					throw new SystemRemoteFailureException("Unparsable JSON input",jsonerror);
+				}
 			}
 			final State st=new State(req,resp,hc);
 			final String shard=requireHeader(req,"X-SecondLife-Shard",st);

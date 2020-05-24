@@ -1,11 +1,14 @@
 package net.coagulate.SL.SecondLifeAPI;
 
+import net.coagulate.Core.Tools.ByteTools;
 import net.coagulate.SL.SL;
 import org.json.JSONObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -103,13 +106,7 @@ public class Transmit extends Thread {
 		out.write(json+"\n");
 		out.flush();
 		out.close();
-		final BufferedReader rd=new BufferedReader(new InputStreamReader(transmission.getInputStream()));
-		String line;
-		final StringBuilder response=new StringBuilder();
-		//noinspection NestedAssignment
-		while ((line=rd.readLine())!=null) {
-			response.append(line).append("\n");
-		}
-		return response.toString();
+		String response=ByteTools.convertStreamToString(transmission.getInputStream());
+		return response;
 	}
 }

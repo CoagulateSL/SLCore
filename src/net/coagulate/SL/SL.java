@@ -144,8 +144,14 @@ public class SL extends Thread {
 	public static void report(final String header,
 	                          @Nonnull final Throwable t,
 	                          @Nullable final DumpableState state) {
+		reportString(header,t,state.toHTML());
+	}
+
+	public static void reportString(final String header,
+	                                @Nonnull final Throwable t,
+	                                @Nullable final String additional) {
 		String output=ExceptionTools.dumpException(t)+"<br><hr><br>";
-		if (state!=null) { output+=state.toHTML(); }
+		if (additional!=null) { output+=additional; }
 
 		if (UserException.class.isAssignableFrom(t.getClass())) { if (((UserException) t).suppressed()) { return; }}
 		if (SystemException.class.isAssignableFrom(t.getClass())) { if (((SystemException) t).suppressed()) { return; }}

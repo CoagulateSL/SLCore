@@ -40,9 +40,9 @@ public abstract class SLAPI implements HttpRequestHandler {
 			JSONObject content=new JSONObject();
 			if (req instanceof HttpEntityEnclosingRequest) {
 				final HttpEntityEnclosingRequest r=(HttpEntityEnclosingRequest) req;
-				String contentstring=ByteTools.convertStreamToString(r.getEntity().getContent());
+				final String contentstring=ByteTools.convertStreamToString(r.getEntity().getContent());
 				try { content=new JSONObject(contentstring); }
-				catch (JSONException jsonerror) {
+				catch (final JSONException jsonerror) {
 					SL.reportString("Unparsable JSON",jsonerror,contentstring);
 					throw new SystemRemoteFailureException("Unparsable JSON input",jsonerror);
 				}

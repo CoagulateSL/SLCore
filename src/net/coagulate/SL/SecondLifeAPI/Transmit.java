@@ -106,7 +106,7 @@ public class Transmit extends Thread {
 		out.write(json+"\n");
 		out.flush();
 		out.close();
-		String response=ByteTools.convertStreamToString(transmission.getInputStream());
+		@SuppressWarnings("UnnecessaryLocalVariable") final String response=ByteTools.convertStreamToString(transmission.getInputStream());
 		return response;
 	}
 }

@@ -87,10 +87,13 @@ public class SL extends Thread {
 			Runtime.getRuntime().addShutdownHook(new SL());
 			while (!shutdown) {
 				//watchdog();
-				try { Thread.sleep(1000); } catch (InterruptedException ignored) {}
+				try { //noinspection BusyWait
+					Thread.sleep(1000);
+				}
+				catch (final InterruptedException ignored) {}
 				if (!shutdown) {
 					try { Maintenance.maintenance(); }
-					catch (Throwable t) {
+					catch (final Throwable t) {
 						System.out.println("Uhoh, maintenance crashed, even though it's crash proofed (primaryNode()?)");
 						t.printStackTrace();
 					}
@@ -144,7 +147,7 @@ public class SL extends Thread {
 	public static void report(final String header,
 	                          @Nonnull final Throwable t,
 	                          @Nullable final DumpableState state) {
-		reportString(header,t,state.toHTML());
+		reportString(header,t,(state!=null?state.toHTML():"No state supplied"));
 	}
 
 	public static void reportString(final String header,
@@ -204,39 +207,17 @@ public class SL extends Thread {
 	}
 
 	public static boolean primaryNode() {
-		String name=getDB().dqs("select name from masternode");
+		final String name=getDB().dqs("select name from masternode");
 		if (!Config.getHostName().equalsIgnoreCase(name)) { return false; } // not the master node
 		// if we are the master node, shall we update our last run so that things know things are working ... thing.
-		int lastrun=getDB().dqinn("select lastrun from masternode");
+		final int lastrun=getDB().dqinn("select lastrun from masternode");
 		if (UnixTime.getUnixTime()>(lastrun+60)) {
 			getDB().d("update masternode set lastrun=?",UnixTime.getUnixTime());
 		}
 		return true;
 	}
 
-	private static void startup() {
-		loggingInitialise();
-		configureMailTarget(); // mails are gonna be messed up coming from logging init
-		if (!DEV) {
-			log().config("SL Services starting up on "+Config.getNodeName()+" (#"+Config.getNode()+")");
-		}
-		else {
-			log().config("SL DEVELOPMENT Services starting up on "+Config.getNodeName()+" (#"+Config.getNode()+")");
-		}
-		//startGPHUD(); if (1==1) { System.exit(0); }
-		LLCATruster.doNotUse(); // as in we use our own truster later on
-		ClassTools.getClasses();
-		db=new MariaDBConnection("SL"+(DEV?"DEV":""),Config.getJdbc());
-		CATruster.initialise();
-		startBot();
-		Pricing.initialise();
-		startGPHUD();
-		if (!DEV) { startLSLR(); } // never in dev
-		if (!DEV) { waitBot(); } // makes dev restart faster to ignore this
-		listener=new HTTPListener(Config.getPort(),Config.getKeyMaterialFile(),new PageMapper());
-		log.info("Startup complete, config: "+Config.report());
-		log().info("=====[ Coagulate "+(DEV?"DEVELOPMENT ":"")+"Second Life Services {JavaCore, JSLBot, GPHUD, LSLR} version "+VERSION+", startup is fully complete ]=====");
-	}
+	// ----- Internal Statics -----
 
 	private static void _shutdown() {
 		log().config("SL Services shutting down");
@@ -291,7 +272,30 @@ public class SL extends Thread {
 		MailTools.defaultserver="127.0.0.1";
 	}
 
-	// ----- Internal Statics -----
+	private static void startup() {
+		loggingInitialise();
+		configureMailTarget(); // mails are gonna be messed up coming from logging init
+		if (!DEV) {
+			log().config("SL Services starting up on "+Config.getNodeName()+" (#"+Config.getNode()+")");
+		}
+		else {
+			log().config("SL DEVELOPMENT Services starting up on "+Config.getNodeName()+" (#"+Config.getNode()+")");
+		}
+		//startGPHUD(); if (1==1) { System.exit(0); }
+		LLCATruster.doNotUse(); // as in we use our own truster later on
+		ClassTools.getClasses();
+		db=new MariaDBConnection("SL"+(DEV?"DEV":""),Config.getJdbc());
+		CATruster.initialise();
+		startBot();
+		Pricing.initialise();
+		startGPHUD();
+		if (!DEV) { startLSLR(); } // never in dev
+		if (!DEV) { waitBot(); } // makes dev restart faster to ignore this
+		listener=new HTTPListener(Config.getPort(),Config.getKeyMaterialFile(),new PageMapper());
+		log().info("Startup complete, config: "+Config.report());
+		log().info("=====[ Coagulate "+(DEV?"DEVELOPMENT ":"")+"Second Life Services {JavaCore, JSLBot, GPHUD, LSLR} version "+VERSION+", startup is fully complete ]=====");
+	}
+
 	@Override
 	public void run() {
 		if (!SL.shutdown) { log().severe("JVM Shutdown Hook invoked"); }

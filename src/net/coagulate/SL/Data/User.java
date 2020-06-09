@@ -92,8 +92,8 @@ public class User extends StandardSLTable implements Comparable<User> {
 			throw new SystemImplementationException("Formatting username '"+original+"' gave '"+username+"' which has "+parts.length+" parts, which is not 2...");
 		}
 		// convert to "uppercase-first"
-		String firstname=parts[0].toLowerCase();
-		String lastname=parts[1].toLowerCase();
+		final String firstname=parts[0].toLowerCase();
+		final String lastname=parts[1].toLowerCase();
 		String newfirstname="";
 		if (firstname.length()>0) { newfirstname+=firstname.substring(0,1).toUpperCase(); }
 		if (firstname.length()>1) { newfirstname+=firstname.substring(1); }

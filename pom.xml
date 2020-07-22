@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.coagulate.SL</groupId>
-    <artifactId>CoagulateSL</artifactId>
+    <artifactId>SLCore</artifactId>
     <version>1.00.00</version>
 
     <build>
@@ -15,6 +15,14 @@
         <testOutputDirectory>${project.basedir}/test</testOutputDirectory>
         <sourceDirectory>${project.basedir}/src</sourceDirectory>
         <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>1.11</source>
+                    <target>1.11</target>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -53,22 +61,9 @@
     </build>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.release>11</maven.compiler.release>
     </properties>
     <dependencies>
-        <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <scope>provided</scope>
-            <version>3.3.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <scope>provided</scope>
-            <version>2.4</version>
-        </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
@@ -87,26 +82,6 @@
         <dependency>
             <groupId>net.coagulate</groupId>
             <artifactId>JavaCore</artifactId>
-            <version>1.00.00</version>
-        </dependency>
-        <dependency>
-            <groupId>net.coagulate.SL</groupId>
-            <artifactId>GPHUD</artifactId>
-            <version>1.00.00</version>
-        </dependency>
-        <dependency>
-            <groupId>net.coagulate.SL</groupId>
-            <artifactId>LSLR</artifactId>
-            <version>1.00.00</version>
-        </dependency>
-        <dependency>
-            <groupId>net.coagulate</groupId>
-            <artifactId>JSLBot</artifactId>
-            <version>1.00.00</version>
-        </dependency>
-        <dependency>
-            <groupId>net.coagulate.SL</groupId>
-            <artifactId>JSLBotBridge</artifactId>
             <version>1.00.00</version>
         </dependency>
         <dependency>

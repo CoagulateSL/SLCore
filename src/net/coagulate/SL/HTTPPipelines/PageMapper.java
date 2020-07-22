@@ -22,13 +22,14 @@ import java.util.logging.Logger;
  */
 public final class PageMapper implements HttpRequestHandlerMapper {
 	private static final boolean DEBUG=false;
-	public final Logger logger;
+	public static Logger logger=null;
 	final Map<String,HttpRequestHandler> prefixes=new HashMap<>();
 	final Map<String,HttpRequestHandler> exact=new HashMap<>();
 
 	private PageMapper() {
-		logger=Logger.getLogger(PageMapper.class.getCanonicalName());
-
+		if (logger==null) { logger = Logger.getLogger(PageMapper.class.getCanonicalName()); }
+	}
+	public static void initialise() {
 		int count=0;
 		for (final Constructor<?> c: ClassTools.getAnnotatedConstructors(Url.class)) {
 			final String url=c.getAnnotation(Url.class).value();

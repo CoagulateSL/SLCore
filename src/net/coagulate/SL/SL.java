@@ -270,6 +270,8 @@ public class SL extends Thread {
             configureMailTarget(); // mails are gonna be messed up coming from logging init
             log.config("Scanning for modules");
             findModules();
+            log.config("Initialising PageMapper");
+            PageMapper.initialise();
             if (!DEV) {
                 log().config("SL Services starting up on " + Config.getHostName());
             } else {

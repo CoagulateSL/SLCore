@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <option name="BUILD_PROCESS_HEAP_SIZE" value="4096" />
+    <annotationProcessing>
+      <profile name="Annotation profile for CoagulateSL" enabled="true">
+        <sourceOutputDir name="bin/generated-sources/annotations" />
+        <sourceTestOutputDir name="bin/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="CoagulateSL" />
+        <module name="JSLBotBridge" />
+        <module name="LSLR" />
+        <module name="JavaCore" />
+        <module name="JSLBot" />
+        <module name="GPHUD" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="GPHUD" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_STRING" value="-Xlint:unchecked" />
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="CoagulateSL" options="" />
+      <module name="JSLBot" options="" />
+      <module name="JSLBotBridge" options="" />
+      <module name="JavaCore" options="" />
+      <module name="LSLR" options="" />
+    </option>
+  </component>
+</project>

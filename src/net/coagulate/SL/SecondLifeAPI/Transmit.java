@@ -89,7 +89,7 @@ public class Transmit extends Thread {
 	}
 
 	// ----- Internal Instance -----
-	Logger getLogger() { return SL.getLogger("SLAPI.Transmit"); }
+	Logger getLogger() { return SL.log("SLAPI.Transmit"); }
 
 	@Nonnull
 	private String sendAttempt() throws IOException {

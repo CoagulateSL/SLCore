@@ -28,7 +28,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 	// ---------- INSTANCE ----------
 	public Logger getLogger() {
 		final String classname=getClass().getSimpleName();
-		return SL.getLogger("SLAPI."+classname);
+		return SL.log("SLAPI."+classname);
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 			st.put("slapi_objectrotation",requireHeader(req,"X-SecondLife-Local-Rotation",st));
 			st.put("slapi_objectposition",requireHeader(req,"X-SecondLife-Local-Position",st));
 			if (!"Production".equalsIgnoreCase(shard)) {
-				SL.getLogger(getClass().getSimpleName()).severe("INCORRECT SHARD : "+objectDump(st));
+				SL.log(getClass().getSimpleName()).severe("INCORRECT SHARD : "+objectDump(st));
 				resp.setStatusCode(HttpStatus.SC_FORBIDDEN);
 				return;
 			}
@@ -105,7 +105,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 			resp.setStatusCode(HttpStatus.SC_OK);
 		}
 		catch (@Nonnull final Exception ex) {
-			SL.getLogger().log(WARNING,"PageHandler at "+req.getRequestLine(),ex);
+			SL.log().log(WARNING,"PageHandler at "+req.getRequestLine(),ex);
 			resp.setStatusCode(HttpStatus.SC_OK);
 			final JSONObject object=new JSONObject();
 			object.put("error","Internal error during SL API parser");
@@ -128,7 +128,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 			version=object.getString("version");
 			if (match.equals(version)) { return; }
 		}
-		SL.getLogger(getClass().getSimpleName()).fine("Version mismatch : "+match+">"+version+" : "+objectDump(st));
+		SL.log(getClass().getSimpleName()).fine("Version mismatch : "+match+">"+version+" : "+objectDump(st));
 	}
 
 	@Nonnull

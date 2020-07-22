@@ -10,6 +10,8 @@
         <option value="$PROJECT_DIR$/../GPHUD/pom.xml" />
         <option value="$PROJECT_DIR$/../LSLR/pom.xml" />
         <option value="$PROJECT_DIR$/../JSLBotBridge/pom.xml" />
+        <option value="$PROJECT_DIR$/../JavaCore/pom.xml" />
+        <option value="$PROJECT_DIR$/../JSLBot/pom.xml" />
       </list>
     </option>
   </component>

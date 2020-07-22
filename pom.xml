@@ -14,14 +14,66 @@
         <finalName>${project.artifactId}-${project.version}</finalName>
         <testOutputDirectory>${project.basedir}/test</testOutputDirectory>
         <sourceDirectory>${project.basedir}/src</sourceDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>net.coagulate.SL.SL</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>net.coagulate.SL.SL</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
-
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <dependencies>
-
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <scope>provided</scope>
+            <version>3.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <scope>provided</scope>
+            <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
@@ -36,6 +88,36 @@
             <groupId>net.coagulate</groupId>
             <artifactId>JavaCore</artifactId>
             <version>1.00.00</version>
+        </dependency>
+        <dependency>
+            <groupId>net.coagulate.SL</groupId>
+            <artifactId>GPHUD</artifactId>
+            <version>1.00.00</version>
+        </dependency>
+        <dependency>
+            <groupId>net.coagulate.SL</groupId>
+            <artifactId>LSLR</artifactId>
+            <version>1.00.00</version>
+        </dependency>
+        <dependency>
+            <groupId>net.coagulate</groupId>
+            <artifactId>JSLBot</artifactId>
+            <version>1.00.00</version>
+        </dependency>
+        <dependency>
+            <groupId>net.coagulate.SL</groupId>
+            <artifactId>JSLBotBridge</artifactId>
+            <version>1.00.00</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20160810</version>
         </dependency>
     </dependencies>
 

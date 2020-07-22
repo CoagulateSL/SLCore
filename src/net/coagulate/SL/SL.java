@@ -3,10 +3,7 @@ package net.coagulate.SL;
 import net.coagulate.Core.Database.DB;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Database.MariaDBConnection;
-import net.coagulate.Core.Exceptions.System.SystemBadValueException;
-import net.coagulate.Core.Exceptions.System.SystemImplementationException;
-import net.coagulate.Core.Exceptions.System.SystemInitialisationException;
-import net.coagulate.Core.Exceptions.System.SystemRemoteFailureException;
+import net.coagulate.Core.Exceptions.System.*;
 import net.coagulate.Core.Exceptions.SystemException;
 import net.coagulate.Core.Exceptions.UserException;
 import net.coagulate.Core.HTTP.HTTPListener;
@@ -268,8 +265,11 @@ public class SL extends Thread {
         try {
             ClassTools.getClasses();
             loggingInitialise();
-            findModules();
+            log.config("Logging services initialised");
+            log.config("Configuring default developer mail target");
             configureMailTarget(); // mails are gonna be messed up coming from logging init
+            log.config("Scanning for modules");
+            findModules();
             if (!DEV) {
                 log().config("SL Services starting up on " + Config.getHostName());
             } else {
@@ -283,7 +283,7 @@ public class SL extends Thread {
             }
             for (SLModule module:modules.values()) {
                 log().config("Starting module - "+module.getName()+" - "+module.getDescription());
-                module.initialise();
+                module.startup();
                 log().config("Module started - "+module.getName()+" - "+module.getDescription());
             }
             // TODO Pricing.initialise();
@@ -317,11 +317,11 @@ public class SL extends Thread {
     }
 
     public static void im(String uuid, String message) {
-        // TODO
+        weakInvoke("JSLBotBridge","im",uuid,message);
     }
 
-    public static void groupInvite(String uuid, String s, String s1) {
-        // TODO
+    public static void groupInvite(String uuid, String groupuuid, String roleuuid) {
+        weakInvoke("JSLBotBridge","groupinvite",uuid,groupuuid,roleuuid);
     }
 
     @Override
@@ -348,5 +348,17 @@ public class SL extends Thread {
         // hmm //if (!listener.isAlive()) { log.log(SEVERE,"Primary listener thread is not alive"); shutdown=true; errored=true; return; }
     }
 
+    public static boolean hasModule(String module) {
+        if (modules.containsKey(module)) { return true; }
+        return false;
+    }
+    @Nonnull
+    public static SLModule getModule(String module) {
+        if (!hasModule(module)) { throw new SystemLookupFailureException("There is no module called "+module); }
+        return modules.get(module);
+    }
+    public static Object weakInvoke(String module,String command,Object... arguments) {
+        return getModule(module).weakInvoke(command,arguments);
+    }
 
 }

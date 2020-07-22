@@ -26,18 +26,9 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 	final Map<String,HttpRequestHandler> prefixes=new HashMap<>();
 	final Map<String,HttpRequestHandler> exact=new HashMap<>();
 
-	public PageMapper() {
+	private PageMapper() {
 		logger=Logger.getLogger(PageMapper.class.getCanonicalName());
 
-		// GPHUD mappings
-		net.coagulate.GPHUD.Interface.base="GPHUD";
-		exact("/GPHUD/external",new net.coagulate.GPHUD.Interfaces.External.Interface());
-		exact("/GPHUD/system",new net.coagulate.GPHUD.Interfaces.System.Interface());
-		prefix("/GPHUD/",new net.coagulate.GPHUD.Interfaces.User.Interface());
-		prefix("/Rental",new net.coagulate.LSLR.HttpReceiver());
-		prefix("/rentals-scijp2",new net.coagulate.LSLR.HttpReceiver());
-		prefix("/rentalavailability-scijp2",new net.coagulate.LSLR.HttpReceiver());
-		// SL pages
 		int count=0;
 		for (final Constructor<?> c: ClassTools.getAnnotatedConstructors(Url.class)) {
 			final String url=c.getAnnotation(Url.class).value();
@@ -67,8 +58,11 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 		logger.log(Level.FINE,"Loaded "+count+" prefix URI handlers");
 	}
 
+	private static PageMapper singleton=new PageMapper();
+	public static  PageMapper getPageMapper() { return singleton; }
+
 	// ---------- INSTANCE ----------
-	public void exact(@Nonnull final String url,
+	private void _exact(@Nonnull final String url,
 	                  final HttpRequestHandler handler) {
 		if (DEBUG) { System.out.println("Registering exact '"+url+"'"); }
 		if (exact.containsKey(url.toLowerCase())) {
@@ -76,8 +70,10 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 		}
 		exact.put(url.toLowerCase(),handler);
 	}
+	public static void exact(@Nonnull final String url,
+					  final HttpRequestHandler handler) { getPageMapper()._exact(url,handler); }
 
-	public void prefix(@Nonnull final String url,
+	private void _prefix(@Nonnull final String url,
 	                   final HttpRequestHandler handler) {
 		if (DEBUG) { System.out.println("Registering prefix '"+url+"'"); }
 		if (prefixes.containsKey(url.toLowerCase())) {
@@ -85,8 +81,11 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 		}
 		prefixes.put(url.toLowerCase(),handler);
 	}
+	public static void prefix(@Nonnull final String url,
+						final HttpRequestHandler handler) { getPageMapper()._prefix(url,handler); }
 
-	@Nullable
+
+		@Nullable
 	@Override
 	public HttpRequestHandler lookup(@Nonnull final HttpRequest req) {
 		if (DEBUG) { System.out.println("REQUEST URI:"+req.getRequestLine().getUri()); }

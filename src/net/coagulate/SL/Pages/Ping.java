@@ -22,7 +22,7 @@ public class Ping extends Handler {
 	@Nonnull
 	@Override
 	protected HttpEntity handleContent(final State state) {
-		final String response="nodename:"+Config.getNodeName()+"\nnode:"+Config.getNode()+"\nhostname:"+Config.getHostName();
+		final String response="hostname:"+Config.getHostName();
 		return new StringEntity(response,ContentType.TEXT_PLAIN);
 	}
 

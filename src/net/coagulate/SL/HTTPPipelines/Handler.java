@@ -62,7 +62,7 @@ public abstract class Handler implements HttpRequestHandler {
 				for (final String component: header.getValue().split(";")) {
 					final String[] kv=component.split("=");
 					if (kv.length!=2) {
-						SL.getLogger().log(Level.WARNING,"Unusual cookie element to parse in line "+header.getValue()+" piece "+component);
+						SL.log().log(Level.WARNING,"Unusual cookie element to parse in line "+header.getValue()+" piece "+component);
 					}
 					else {
 						//System.out.println(kv[0]+"="+kv[1]);
@@ -89,14 +89,14 @@ public abstract class Handler implements HttpRequestHandler {
 		}
 		catch (@Nonnull
 		final URISyntaxException use) { // dont log the exception because we don't want the mail.  this is probably a script kiddie hack attempt that doesn't work
-			SL.getLogger().log(WARNING,"PageHandler");
+			SL.log().log(WARNING,"PageHandler");
 			resp.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
 			resp.setEntity(new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Whatever you're trying to do is illegal.</p></body></html>",
 			                                ContentType.TEXT_HTML
 			));
 		}
 		catch (@Nonnull final Exception ex) {
-			SL.getLogger().log(SEVERE,"PageHandler",ex);
+			SL.log().log(SEVERE,"PageHandler",ex);
 			resp.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
 			resp.setEntity(new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>",
 			                                ContentType.TEXT_HTML

@@ -11,14 +11,9 @@ import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.Passwords;
 import net.coagulate.Core.Tools.Tokens;
 import net.coagulate.Core.Tools.UnixTime;
-import net.coagulate.GPHUD.Data.Instance;
-import net.coagulate.GPHUD.Data.TableRow;
-import net.coagulate.GPHUD.Interfaces.Outputs.Link;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.GetAgentID;
-import net.coagulate.SL.Pricing;
 import net.coagulate.SL.SL;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -54,27 +49,8 @@ public class User extends StandardSLTable implements Comparable<User> {
 	@Nonnull
 	public static String getGPHUDLink(final String name,
 	                                  final int id) {
-		return new Link(name,"/GPHUD/avatars/view/"+id).asHtml(null,true);
+		return "<a href=\"/GPHUD/avatars/view/"+id+"\">"+name.replaceAll(" ","&nbsp;")+"</a>";
 	}
-
-	/*public static User get(String username,
-	                       final boolean createifnecessary) {
-		username=formatUsername(username);
-		Integer id=null;
-		try {
-			id=SL.getDB().dqi("select id from users where username=?",username);
-		}
-		catch (@Nonnull final NoDataException e) {}
-		if (id!=null) { return factory(id,username); }
-		if (!createifnecessary) { throw new NoDataException("Can not find existing user for "+username); }
-		SL.getDB().d("insert into users(username) values(?)",username);
-		try {
-			id=SL.getDB().dqi("select id from users where username=?",username);
-		}
-		catch (@Nonnull final NoDataException e) {}
-		if (id!=null) { return factory(id,username); }
-		throw new SystemConsistencyException("Created user for "+username+" and then couldn't find its id");
-	}*/
 
 	@Nonnull
 	public static String formatUsername(String username) {
@@ -167,12 +143,12 @@ public class User extends StandardSLTable implements Comparable<User> {
 			try {
 				// special key used by the SYSTEM avatar
 				if (!"DEADBEEF".equals(key)) {
-					SL.getLogger("User").info("Creating new avatar entry for '"+name+"'");
+					SL.log("User").info("Creating new avatar entry for '"+name+"'");
 				}
 				SL.getDB().d("insert into users(username,lastactive,avatarkey) values(?,?,?)",name,getUnixTime(),key);
 			}
 			catch (@Nonnull final DBException ex) {
-				SL.getLogger("User").log(SEVERE,"Exception creating avatar "+name,ex);
+				SL.log("User").log(SEVERE,"Exception creating avatar "+name,ex);
 				throw ex;
 			}
 			try {
@@ -181,7 +157,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 			catch (@Nonnull final NoDataException e) {}
 		}
 		if (userid==null) {
-			SL.getLogger("User").severe("Failed to find avatar '"+name+"' after creating it");
+			SL.log("User").severe("Failed to find avatar '"+name+"' after creating it");
 			throw new NoDataException("Failed to find avatar object for name '"+name+"' after we created it!");
 		}
 		final User u=get(userid);
@@ -206,7 +182,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 		final Map<Integer,String> results=new TreeMap<>();
 		final Results rows=SL.getDB().dq("select id,username from users");
 		for (final ResultsRow r: rows) {
-			results.put(r.getInt("id"),TableRow.getLink(r.getString("username").replaceAll(" ","&nbsp;"),"avatars",r.getInt("id")));
+			results.put(r.getInt("id"),getGPHUDLink(r.getString("username"),r.getInt("id")));
 		}
 		return results;
 	}
@@ -320,7 +296,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 	@Nonnull
 	public String generateSSO() {
 		final String token=Tokens.generateToken();
-		final int expires=UnixTime.getUnixTime()+Config.SSOWINDOWSECONDS;
+		final int expires=UnixTime.getUnixTime()+Config.getSSOWindow();
 		d("update users set ssotoken=?,ssoexpires=? where "+getIdColumn()+"=?",token,expires,getId());
 		return token;
 	}
@@ -348,7 +324,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 	                        final String clientip) {
 		if (password.length()<6) { throw new UserInputTooShortException("Password not long enough"); }
 		d("update users set password=? where id=?",Passwords.createHash(password),getId());
-		SL.getLogger().info("User "+getUsername()+" has set password from "+clientip);
+		SL.log().info("User "+getUsername()+" has set password from "+clientip);
 	}
 
 	public void bill(final int ammount,
@@ -364,7 +340,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 	public boolean checkPassword(@Nonnull final String password) {
 		final String hash=dqs("select password from users where id=?",getId());
 		if (hash==null || hash.isEmpty()) {
-			SL.getLogger().warning("Attempt to log in with a null or empty password hash for user "+getUsername());
+			SL.log().warning("Attempt to log in with a null or empty password hash for user "+getUsername());
 			return false;
 		}
 		return Passwords.verifyPassword(password,hash);
@@ -377,6 +353,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 		catch (@Nonnull final NoDataException e) { return 0; }
 	}
 
+	/*
 	@Nonnull
 	public Set<Subscription> getSubscriptions(@Nullable final Pricing.SERVICE service,
 	                                          final boolean activeonly,
@@ -399,6 +376,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 		}
 		return subs;
 	}
+	 */
 
 	@Nullable
 	public String getEmail() { return getStringNullable("email"); }
@@ -413,7 +391,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 	 */
 	@Nonnull
 	public String setNewEmail(final String newemail) {
-		final int expires=UnixTime.getUnixTime()+Config.NEWEMAIL_TOKEN_LIFESPAN;
+		final int expires=UnixTime.getUnixTime()+Config.emailTokenLifespan();
 		final String token=Tokens.generateToken();
 		d("update users set newemail=?,newemailtoken=?,newemailexpires=? where id=?",newemail,token,expires,getId());
 		return token;
@@ -469,12 +447,12 @@ public class User extends StandardSLTable implements Comparable<User> {
 	 *
 	 * @param i Instance to set to
 	 */
-	public void setLastInstance(@Nonnull final Instance i) {
-		d("update users set lastgphudinstance=? where id=?",i.getId(),getId());
+	public void setLastInstance(@Nonnull final int i) {
+		d("update users set lastgphudinstance=? where id=?",i,getId());
 	}
 
 	@Override
-	public int compareTo(@NotNull final User o) {
+	public int compareTo(@Nonnull final User o) {
 		return getUsername().compareToIgnoreCase(o.getUsername());
 	}
 

@@ -125,7 +125,7 @@ public class RegionStats extends Table {
 
 	public static void archiveOld() {
 		final DBConnection d=SL.getDB();
-		final Logger log=SL.getLogger("RegionPerformance.RegionStats");
+		final Logger log=SL.log("RegionPerformance.RegionStats");
 		final int start=UnixTime.getUnixTime();
 		int rollups=0;
 		for (final ResultsRow r: d.dq(

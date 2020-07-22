@@ -32,9 +32,9 @@ public class Session extends Table {
 			final int userid=user.getInt("userid");
 			final int expires=user.getInt("expires");
 			final int expiresin=expires-UnixTime.getUnixTime();
-			if (expiresin<(Config.SESSIONLIFESPANSECONDS/2)) {
+			if (expiresin<(Config.getSessionLifespan()/2)) {
 				// refresh
-				SL.getDB().d("update sessions set expires=? where cookie=?",UnixTime.getUnixTime()+Config.SESSIONLIFESPANSECONDS,sessionid);
+				SL.getDB().d("update sessions set expires=? where cookie=?",UnixTime.getUnixTime()+Config.getSessionLifespan(),sessionid);
 			}
 			return new Session(sessionid,User.get(userid));
 		}
@@ -50,7 +50,7 @@ public class Session extends Table {
 		catch (@Nonnull final Exception e) {}
 		final int userid=user.getId();
 		final String sessionid=Tokens.generateToken();
-		final int expires=UnixTime.getUnixTime()+Config.SESSIONLIFESPANSECONDS;
+		final int expires=UnixTime.getUnixTime()+Config.getSessionLifespan();
 		SL.getDB().d("insert into sessions(cookie,userid,expires) values(?,?,?)",sessionid,userid,expires);
 		return new Session(sessionid,user);
 	}

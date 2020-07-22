@@ -2,7 +2,7 @@ package net.coagulate.SL.HTTPPipelines;
 
 import net.coagulate.Core.Database.NoDataException;
 import net.coagulate.Core.Exceptions.UserException;
-import net.coagulate.JSLBot.Packets.Types.LLUUID;
+//import net.coagulate.JSLBot.Packets.Types.LLUUID;
 import net.coagulate.SL.Data.User;
 import net.coagulate.SL.Pages.HTML.Raw;
 import net.coagulate.SL.Pages.HTML.State;
@@ -50,7 +50,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
 								message="\n\nPlease click the link below to log in to Coagulate SL Services\n\nThis link will be valid for 5 minutes only, and one use.\nIf "+"you wish to log in through the web page rather than via the bot, please 'Set Password' under 'Account' on the top right of the web "+"page after following the link below.\n\n[https://sl.coagulate.net/SSO/"+token+" Log in to Coagulate SL]\n\n";
 							}
 
-							SL.bot().im(new LLUUID(target.getUUID()),message);
+							SL.im(target.getUUID(),message);
 							return new StringEntity(new Page().add(new Raw(ssoSentPage())).toHtml(state),ContentType.TEXT_HTML);
 						}
 					}
@@ -60,13 +60,13 @@ public abstract class AuthenticatedStringHandler extends Handler {
 			try { content=handleString(state); }
 			catch (@Nonnull final UserException ue) {
 				SL.report("AuthenticatedStringHandler caught exception",ue,state);
-				SL.getLogger().log(WARNING,"User exception propagated to handler",ue);
+				SL.log().log(WARNING,"User exception propagated to handler",ue);
 				content="<p>Exception: "+ue.getLocalizedMessage()+"</p>";
 			}
 			return new StringEntity(content,ContentType.TEXT_HTML);
 		}
 		catch (@Nonnull final Exception ex) {
-			SL.getLogger().log(SEVERE,"PageHandler",ex);
+			SL.log().log(SEVERE,"PageHandler",ex);
 			state.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
 			return new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>",ContentType.TEXT_HTML);
 		}
@@ -87,14 +87,14 @@ public abstract class AuthenticatedStringHandler extends Handler {
 			User u=null;
 			try { u=User.findUsernameNullable(username,false); } catch (@Nonnull final NoDataException ignore) {}
 			if (u==null) {
-				SL.getLogger().warning("Attempt to authenticate as invalid user '"+username+"' from "+state.getClientIP());
+				SL.log().warning("Attempt to authenticate as invalid user '"+username+"' from "+state.getClientIP());
 				return false;
 			}
 			if (u.checkPassword(password)) {
 				state.user(u);
 				return true;
 			}
-			SL.getLogger().warning("Attempt to authenticate with incorrect password as '"+username+"' from "+state.getClientIP());
+			SL.log().warning("Attempt to authenticate with incorrect password as '"+username+"' from "+state.getClientIP());
 		}
 		return false;
 	}

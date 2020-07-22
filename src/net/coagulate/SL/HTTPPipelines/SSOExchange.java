@@ -33,12 +33,12 @@ public class SSOExchange implements HttpRequestHandler {
 			final String token=req.getRequestLine().getUri().replaceFirst("/SSO/","");
 			final User user=User.getSSO(token);
 			if (user==null) {
-				SL.getLogger().warning("SSO Exchange of token failed to return a valid user.");
+				SL.log().warning("SSO Exchange of token failed to return a valid user.");
 				resp.addHeader("Location","/");
 				resp.setStatusCode(HttpStatus.SC_SEE_OTHER);
 				return;
 			}
-			SL.getLogger().info("Successful SSO signon for "+user);
+			SL.log().info("Successful SSO signon for "+user);
 			final Session session=Session.create(user);
 			resp.setEntity(new StringEntity(""));
 			resp.addHeader("Set-Cookie","coagulateslsessionid="+session.token()+"; HttpOnly; Path=/; Secure;");
@@ -46,7 +46,7 @@ public class SSOExchange implements HttpRequestHandler {
 			resp.setStatusCode(HttpStatus.SC_SEE_OTHER);
 		}
 		catch (@Nonnull final Exception ex) {
-			SL.getLogger().log(SEVERE,"SSO?",ex);
+			SL.log().log(SEVERE,"SSO?",ex);
 			resp.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
 			resp.setEntity(new StringEntity("<html><body><pre><b>500 - Internal Server Error</b></pre><p>Internal Exception, see debug logs</p></body></html>",
 			                                ContentType.TEXT_HTML

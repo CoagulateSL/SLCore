@@ -58,8 +58,11 @@ public final class PageMapper implements HttpRequestHandlerMapper {
 		logger.log(Level.FINE,"Loaded "+count+" prefix URI handlers");
 	}
 
-	private static PageMapper singleton=new PageMapper();
-	public static  PageMapper getPageMapper() { return singleton; }
+	private static PageMapper singleton=null;
+	public static synchronized PageMapper getPageMapper() {
+		if (singleton==null) { singleton=new PageMapper(); }
+		return singleton;
+	}
 
 	// ---------- INSTANCE ----------
 	private void _exact(@Nonnull final String url,

@@ -136,4 +136,6 @@ public class Config {
     public static boolean enableZabbix() { return getBoolean("zabbix",false); }
 
     public static String getZabbixServer() { return getString("zabbixserver","127.0.0.1"); }
+
+    public static String getDigestSalt() { return getString("digestsalt"); }
 }

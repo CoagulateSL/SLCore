@@ -4,6 +4,7 @@ import net.coagulate.Core.Exceptions.System.SystemRemoteFailureException;
 import net.coagulate.Core.Tools.ByteTools;
 import net.coagulate.Core.Tools.Crypto;
 import net.coagulate.Core.Tools.UnixTime;
+import net.coagulate.SL.Config;
 import net.coagulate.SL.Data.User;
 import net.coagulate.SL.Pages.HTML.State;
 import net.coagulate.SL.SL;
@@ -95,7 +96,7 @@ public abstract class SLAPI implements HttpRequestHandler {
 						throw new SystemRemoteFailureException("Object key mismatch - headers generated "+objectkey+" but they think it's "+theirobjectkey);
 					}
 				}
-				final String targetdigest=Crypto.SHA1(objectkey+timestamp+"***REMOVED***");
+				final String targetdigest=Crypto.SHA1(objectkey+timestamp+ Config.getDigestSalt());
 				if (!targetdigest.equalsIgnoreCase(digest)) {
 					throw new SystemRemoteFailureException("Incorrect digest provided to Second Life API");
 				}

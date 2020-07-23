@@ -3,7 +3,10 @@ package net.coagulate.SL;
 import net.coagulate.Core.Database.DB;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Database.MariaDBConnection;
-import net.coagulate.Core.Exceptions.System.*;
+import net.coagulate.Core.Exceptions.System.SystemBadValueException;
+import net.coagulate.Core.Exceptions.System.SystemImplementationException;
+import net.coagulate.Core.Exceptions.System.SystemInitialisationException;
+import net.coagulate.Core.Exceptions.System.SystemLookupFailureException;
 import net.coagulate.Core.Exceptions.SystemException;
 import net.coagulate.Core.Exceptions.UserException;
 import net.coagulate.Core.HTTP.HTTPListener;
@@ -17,13 +20,8 @@ import org.apache.http.protocol.HttpContext;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.MessagingException;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -278,24 +276,22 @@ public class SL extends Thread {
                 log().config("SL DEVELOPMENT Services starting up on " + Config.getHostName());
             }
             db = new MariaDBConnection("SL" + (DEV ? "DEV" : ""), Config.getJdbc());
-            for (SLModule module:modules.values()) {
-                log().config("Initialising module - "+module.getName()+" - "+module.getDescription());
+            for (SLModule module : modules.values()) {
+                log().config("Initialising module - " + module.getName());
                 module.initialise();
-                log().config("Module initialised - "+module.getName()+" - "+module.getDescription());
             }
-            for (SLModule module:modules.values()) {
-                log().config("Starting module - "+module.getName()+" - "+module.getDescription());
+            for (SLModule module : modules.values()) {
+                log().config("Starting module - " + module.getName());
                 module.startup();
-                log().config("Module started - "+module.getName()+" - "+module.getDescription());
             }
             // TODO Pricing.initialise();
-            listener = new HTTPListener(Config.getPort(),PageMapper.getPageMapper());
+            listener = new HTTPListener(Config.getPort(), PageMapper.getPageMapper());
             log().info("Startup complete.");
             log().info("================================================================================");
             log().info(outerPad("=====[ Coagulate " + (DEV ? "DEVELOPMENT " : "") + "Second Life Services ]======"));
             log().info("================================================================================");
-            for (SLModule module:modules.values()) {
-                log().info(spacePad(module.getName()+" - "+module.getDescription()));
+            for (SLModule module : modules.values()) {
+                log().info(spacePad(module.getName() + " - " + module.getDescription()));
             }
             log().info("================================================================================");
         }

@@ -1,0 +1,6 @@
+#ifndef _MAIN_CONSTANTS
+#define LOGO_COAGULATE "c792716b-13a3-06c9-6e7c-33c4e9d5a48f"
+#define LOGO_COAGULATE_DEV "891e1d92-9fc6-b256-a423-b5c037e70e28"
+#define _MAIN_CONSTANTS
+#endif
+

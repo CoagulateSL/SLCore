@@ -291,11 +291,13 @@ public class SL extends Thread {
             // TODO Pricing.initialise();
             listener = new HTTPListener(Config.getPort(),PageMapper.getPageMapper());
             log().info("Startup complete.");
-            String banner="=====[ Coagulate " + (DEV ? "DEVELOPMENT " : "") + "Second Life Services {";
-            boolean first=true;
-            for (String module:modules.keySet()) { if (!first) { banner+=", "; } banner+=module; first=false; }
-            banner+="} version " + VERSION + ", startup is fully complete ]=====";
-            log().info(banner);
+            log().info("================================================================================");
+            log().info(outerPad("=====[ Coagulate " + (DEV ? "DEVELOPMENT " : "") + "Second Life Services ]======"));
+            log().info("================================================================================");
+            for (SLModule module:modules.values()) {
+                log().info(spacePad(module.getName()+" - "+module.getDescription()));
+            }
+            log().info("================================================================================");
         }
         // print stack trace is discouraged, but the log handler may not be ready yet.
         catch (@Nonnull final Throwable e) {
@@ -306,12 +308,29 @@ public class SL extends Thread {
         }
     }
 
+    private static String spacePad(String s) {
+        while (s.length()<80) { s=s+" "; }
+        return s;
+    }
+
+    private static String outerPad(String s) {
+        while (s.length()<80) {
+            s = "=" + s;
+            if (s.length() == 80) {
+                return s;
+            }
+            s = s + "=";
+        }
+        return s;
+    }
+
     private static void findModules() {
         Set<Class<? extends SLModule>> modulelist = ClassTools.getSubclasses(SLModule.class);
         for (Class<? extends SLModule> module:modulelist) {
             if (modules.containsKey(module.getName())) { throw new SystemBadValueException("Conflict for module name "+module.getName()+" between "+module.getClass().getSimpleName()+" and "+modules.get(module.getName()).getClass().getSimpleName()); }
             try {
-                modules.put(module.getName(),module.getDeclaredConstructor().newInstance());
+                SLModule instance=module.getDeclaredConstructor().newInstance();
+                modules.put(instance.getName(),instance);
             } catch (InstantiationException|IllegalAccessException|InvocationTargetException|NoSuchMethodException e) {
                 throw new SystemImplementationException("Error instantiating module "+module.getSimpleName()+" - "+e.getLocalizedMessage(),e);
             }

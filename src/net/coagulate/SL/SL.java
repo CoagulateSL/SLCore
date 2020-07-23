@@ -291,7 +291,7 @@ public class SL extends Thread {
             log().info(outerPad("=====[ Coagulate " + (DEV ? "DEVELOPMENT " : "") + "Second Life Services ]======"));
             log().info("================================================================================");
             for (SLModule module : modules.values()) {
-                log().info(spacePad(module.getName() + " - "+module.getVersion()+" - " + module.getDescription()));
+                log().info(spacePad(module.getVersion()+" - " +module.getName() + " - "+ module.getDescription()));
             }
             log().info("================================================================================");
         }

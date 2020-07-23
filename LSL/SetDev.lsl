@@ -1,4 +1,4 @@
-#include "SL/LSL/Constants.lsl"
+#include "SLCore/LSL/Constants.lsl"
 integer DEV=0;
 string DEV_INJECT="";
 setDev(integer noisy) {

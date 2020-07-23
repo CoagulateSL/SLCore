@@ -8,7 +8,7 @@
 #define COMMS_DEVKEY "xxxxxxxxxxxx"
 #define COMMS_DONT_CHECK_CALLBACK
 #define COMMS_PROTOCOL "xx"
-#include "SL/LSL/Library/CommsV3.lsl"
+#include "SLCore/LSL/CommsV3.lsl"
 
 call comms_setup() at "go"
 
@@ -34,7 +34,8 @@ call comms_setup() at "go"
 		}
 	}
 **/
-#include "SL/LSL/Library/JsonTools.lsl"
+#include "configuration.lsl"
+#include "SLCore/LSL/JsonTools.lsl"
 #ifdef COMMS_INCLUDECOOKIE
 string cookie="";
 #endif
@@ -78,7 +79,7 @@ httpsend(string url) {
 	integer now=llGetUnixTime();
 	json=llJsonSetValue(json,["timestamp"],(string)now);
 	json=llJsonSetValue(json,["objectkey"],((string)llGetKey()));
-	json=llJsonSetValue(json,["digest"],llSHA1String(((string)llGetKey())+((string)now)+"***REMOVED***"));
+	json=llJsonSetValue(json,["digest"],llSHA1String(((string)llGetKey())+((string)now)+DIGEST_SALT));
 	#endif
 	
 	string devinject=""; if (DEV) { devinject="dev."; }

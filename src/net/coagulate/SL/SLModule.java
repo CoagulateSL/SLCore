@@ -5,6 +5,7 @@ import net.coagulate.Core.Tools.UnixTime;
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 public abstract class SLModule {
 
@@ -22,6 +23,14 @@ public abstract class SLModule {
     public abstract void startup();
     public abstract void initialise();
     public abstract void maintenance();
+    public String getVersion() {
+        try {
+            final Properties properties = new Properties();
+            properties.load(this.getClass().getClassLoader().getResourceAsStream(getName()+".properties"));
+            return properties.getProperty("version");
+        } catch(Throwable error) { error.printStackTrace(); }
+        return "0";
+    }
 
     // this is a lame mechanism.  It allows a module to be invoked even if it might not be present
     // becakse weakInvoke is part of the CoagulateSL module everything knows about this

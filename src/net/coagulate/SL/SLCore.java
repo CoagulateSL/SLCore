@@ -14,14 +14,14 @@ import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
 import static net.coagulate.SL.SL.DEV;
 
-public class DBStatsModule extends SLModule {
+public class SLCore extends SLModule {
     @Nonnull
     @Override
-    public String getName() { return "DBStatsModule"; }
+    public String getName() { return "SLCore"; }
 
     @Nonnull
     @Override
-    public String getDescription() { return "Drives the reporting of database statistics"; }
+    public String getDescription() { return "Provides core services"; }
 
     @Override
     public void shutdown() {}
@@ -35,7 +35,7 @@ public class DBStatsModule extends SLModule {
     @Override
     public void maintenance() {
         if (!Config.enableZabbix()) { return; }
-        if (nextRun("DBStatsModule-maintenance",60)) {
+        if (nextRun("SLCore-DBStats-maintenance",60)) {
             reportDBStats();
         }
     }

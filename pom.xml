@@ -6,7 +6,7 @@
 
     <groupId>net.coagulate.SL</groupId>
     <artifactId>SLCore</artifactId>
-    <version>1.00.00</version>
+    <version>1.0.0</version>
 
     <build>
         <directory>${project.basedir}/bin</directory>

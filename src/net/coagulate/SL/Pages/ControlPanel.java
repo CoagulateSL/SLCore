@@ -1,5 +1,6 @@
 package net.coagulate.SL.Pages;
 
+import net.coagulate.Core.Exceptions.System.SystemBadValueException;
 import net.coagulate.Core.Exceptions.System.SystemImplementationException;
 import net.coagulate.Core.Exceptions.User.UserAccessDeniedException;
 import net.coagulate.Core.Exceptions.User.UserInputStateException;
@@ -87,6 +88,10 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 		if ("UserException".equals(state.get("UserException"))) {
 			throw new UserInputStateException("Manually triggered user exception");
 		}
+		if ("LoggedOnlyException".equals(state.get("LoggedOnlyException"))) {
+			SL.log().log(Level.INFO,"Manually generated logged only exception",new SystemBadValueException("Manually generated log event"));
+			page.form().add(new Raw("<p>Sent event</P>"));
+		}
 		if ("SystemException".equals(state.get("SystemException"))) {
 			throw new SystemImplementationException("Manually triggered system exception");
 		}
@@ -99,6 +104,7 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 				    submit("Test Mail").
 				    submit("UserException").
 				    submit("SystemException").
+					submit("LoggedOnlyException").
 				    submit("Shutdown").
 				    submit("NameAPI");
 	}

@@ -400,6 +400,12 @@ public class SL extends Thread {
         for (SLModule module:modules.values()) {
             if (module.getBuildDate().compareTo(bd)>0) { bd=module.getBuildDate(); }
         }
+        if (bd.contains("T")) {
+            bd = bd.replaceAll("T", " ");
+            bd = bd.replaceAll("-", "");
+            bd = bd.replaceAll(":", "");
+            bd = bd.substring(0, 13);
+        }
         return bd;
     }
 }

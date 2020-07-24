@@ -292,7 +292,6 @@ public class SL extends Thread {
             log().info("================================================================================");
             for (SLModule module : modules.values()) {
                 log().info(spacePad(spacePrePad(module.getVersion())+" - " +module.getName() + " - "+ module.getDescription()));
-                log().info(spacePad("         - "+module.getBuildDate()));
             }
             log().info("--------------------------------------------------------------------------------");
             log().info(spacePad(spacePrePad(getStackVersion())+" - "+getStackBuildDate()+" - CoagulateSL Stack Version"));

@@ -54,26 +54,22 @@ public abstract class SLModule {
 
 
         String abuilddate = properties.getProperty("build");
-        System.out.println("Parsing:"+abuilddate);
         abuilddate=abuilddate.replaceAll("T"," ");
         try {
             abuilddate=abuilddate.replaceAll("Z"," ");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
             builddate=sdf.parse(abuilddate);
-            System.out.println("First pass ("+abuilddate+")");
         } catch (ParseException e) {}
         if (builddate==null) {
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmm");
                 sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"));
                 builddate = sdf.parse(abuilddate);
-                System.out.println("Second pass");
             } catch (ParseException e) {
             }
         }
         if (builddate==null) { builddate=new Date(0); }
-        System.out.println("Parsed:"+builddate);
     }
 
     public String getBuildDate() {

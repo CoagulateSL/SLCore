@@ -405,6 +405,8 @@ public class SL extends Thread {
             bd = bd.replaceAll("-", "");
             bd = bd.replaceAll(":", "");
             bd = bd.substring(0, 13);
+            bd=bd.replaceAll(" ","-");
+            bd = bd+"Z";
         }
         return bd;
     }

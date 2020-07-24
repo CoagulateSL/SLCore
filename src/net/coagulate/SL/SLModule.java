@@ -3,6 +3,9 @@ package net.coagulate.SL;
 import net.coagulate.Core.Tools.UnixTime;
 
 import javax.annotation.Nonnull;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -24,7 +27,7 @@ public abstract class SLModule {
     public abstract void initialise();
     public abstract void maintenance();
     private String version;
-    private String builddate;
+    private Date builddate;
     private int majorversion;
     private int minorversion;
     private int bugfixversion;
@@ -33,19 +36,31 @@ public abstract class SLModule {
             final Properties properties = new Properties();
             properties.load(this.getClass().getClassLoader().getResourceAsStream(getName() + ".properties"));
             version = properties.getProperty("version");
-            builddate = properties.getProperty("build");
-            String[] split=version.split("\\.");
-            if (split.length!=3) { version="0.0.0"; split=version.split("\\."); }
-            majorversion=Integer.parseInt(version.split("\\.")[0]);
-            minorversion=Integer.parseInt(version.split("\\.")[1]);
-            bugfixversion=Integer.parseInt(version.split("\\.")[2]);
+            String abuilddate = properties.getProperty("build");
+            System.out.println("Parsing:"+abuilddate);
+            abuilddate=abuilddate.replaceAll("T"," ");
+            try {
+                builddate=new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ").parse(abuilddate);
+                System.out.println("First pass");
+            } catch (ParseException e) {}
+            if (builddate==null) {
+                try {
+                    builddate = new SimpleDateFormat("yyyyMMdd-HHmm").parse(abuilddate);
+                    System.out.println("Second pass");
+                } catch (ParseException e) {
+                }
+            }
+            if (builddate==null) { builddate=new Date(0); }
+            System.out.println("Parsed:"+builddate);
         } catch (Throwable error) {
             error.printStackTrace();
             version = "0.0.0"; majorversion=0; minorversion=0; bugfixversion=0;
         }
     }
 
-    public String getBuildDate() { return builddate; }
+    public String getBuildDate() {
+        return new SimpleDateFormat("YYYY-MM-dd HH:mm").format(builddate);
+    }
 
     // this is a lame mechanism.  It allows a module to be invoked even if it might not be present
     // becakse weakInvoke is part of the CoagulateSL module everything knows about this

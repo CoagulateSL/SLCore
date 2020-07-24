@@ -1,14 +1,13 @@
 package net.coagulate.SL;
 
+import net.coagulate.Core.Exceptions.System.SystemInitialisationException;
 import net.coagulate.Core.Tools.UnixTime;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public abstract class SLModule {
 
@@ -32,30 +31,49 @@ public abstract class SLModule {
     private int minorversion;
     private int bugfixversion;
     public SLModule() {
-        try {
-            final Properties properties = new Properties();
-            properties.load(this.getClass().getClassLoader().getResourceAsStream(getName() + ".properties"));
-            version = properties.getProperty("version");
-            String abuilddate = properties.getProperty("build");
-            System.out.println("Parsing:"+abuilddate);
-            abuilddate=abuilddate.replaceAll("T"," ");
-            try {
-                builddate=new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ").parse(abuilddate);
-                System.out.println("First pass");
-            } catch (ParseException e) {}
-            if (builddate==null) {
-                try {
-                    builddate = new SimpleDateFormat("yyyyMMdd-HHmm").parse(abuilddate);
-                    System.out.println("Second pass");
-                } catch (ParseException e) {
-                }
-            }
-            if (builddate==null) { builddate=new Date(0); }
-            System.out.println("Parsed:"+builddate);
-        } catch (Throwable error) {
-            error.printStackTrace();
-            version = "0.0.0"; majorversion=0; minorversion=0; bugfixversion=0;
+        final Properties properties = new Properties();
+        try { properties.load(this.getClass().getClassLoader().getResourceAsStream(getName() + ".properties")); } catch (IOException e) {
+            throw new SystemInitialisationException("Unable to load properties for "+getName(),e);
         }
+
+        version = properties.getProperty("version");
+        try {
+            String parts[]=version.split("\\.");
+            if (parts.length!=3) {
+                majorversion=0;
+                minorversion=0;
+                bugfixversion=99;
+            } else {
+                majorversion=Integer.parseInt(parts[0]);
+                minorversion=Integer.parseInt(parts[1]);
+                bugfixversion=Integer.parseInt(parts[2]);
+            }
+        } catch (NumberFormatException e) {
+            majorversion=0; minorversion=0; bugfixversion=98;
+        }
+
+
+        String abuilddate = properties.getProperty("build");
+        System.out.println("Parsing:"+abuilddate);
+        abuilddate=abuilddate.replaceAll("T"," ");
+        try {
+            abuilddate=abuilddate.replaceAll("Z"," ");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+            builddate=sdf.parse(abuilddate);
+            System.out.println("First pass ("+abuilddate+")");
+        } catch (ParseException e) {}
+        if (builddate==null) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmm");
+                sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"));
+                builddate = sdf.parse(abuilddate);
+                System.out.println("Second pass");
+            } catch (ParseException e) {
+            }
+        }
+        if (builddate==null) { builddate=new Date(0); }
+        System.out.println("Parsed:"+builddate);
     }
 
     public String getBuildDate() {

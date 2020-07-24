@@ -11,13 +11,13 @@
         <repository>
             <id>github</id>
             <name>GitHub IPrice/JavaCore Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/iprice/JavaCore</url>
+            <url>https://maven.pkg.github.com/CoagulateSL/JavaCore</url>
         </repository>
     </repositories>
     <distributionManagement>
         <repository>
             <id>github</id>
-            <name>GitHub IPrice/SLCore Apache Maven Packages</name>
+            <name>GitHub CoagulateSL/SLCore Apache Maven Packages</name>
             <url>https://maven.pkg.github.com/CoagulateSL/SLCore</url>
         </repository>
     </distributionManagement>

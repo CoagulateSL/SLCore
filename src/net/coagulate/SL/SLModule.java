@@ -23,13 +23,24 @@ public abstract class SLModule {
     public abstract void startup();
     public abstract void initialise();
     public abstract void maintenance();
-    public String getVersion() {
+    private String version;
+    private int majorversion;
+    private int minorversion;
+    private int bugfixversion;
+    public SLModule() {
         try {
             final Properties properties = new Properties();
-            properties.load(this.getClass().getClassLoader().getResourceAsStream(getName()+".properties"));
-            return properties.getProperty("version");
-        } catch(Throwable error) { error.printStackTrace(); }
-        return "0";
+            properties.load(this.getClass().getClassLoader().getResourceAsStream(getName() + ".properties"));
+            version = properties.getProperty("version");
+            String[] split=version.split("\\.");
+            if (split.length!=3) { version="0.0.0"; split=version.split("\\."); }
+            majorversion=Integer.parseInt(version.split("\\.")[0]);
+            minorversion=Integer.parseInt(version.split("\\.")[1]);
+            bugfixversion=Integer.parseInt(version.split("\\.")[2]);
+        } catch (Throwable error) {
+            error.printStackTrace();
+            version = "0.0.0"; majorversion=0; minorversion=0; bugfixversion=0;
+        }
     }
 
     // this is a lame mechanism.  It allows a module to be invoked even if it might not be present
@@ -42,4 +53,9 @@ public abstract class SLModule {
     // This shouldn't be used for many things otherwise it needs a strong redesign...  but for 2-3 bot related method calls
     // it's a bodge/hack.
     public Object weakInvoke(String command,Object... arguments){return null;}
+
+    public final int getMajorVersion() { return majorversion; }
+    public final int getMinorVersion() { return minorversion; }
+    public final int getBugfixversion() { return bugfixversion; }
+    public final String getVersion() { return getMajorVersion()+"."+getMinorVersion()+"."+getBugfixversion(); }
 }

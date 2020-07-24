@@ -291,9 +291,12 @@ public class SL extends Thread {
             log().info(outerPad("=====[ Coagulate " + (DEV ? "DEVELOPMENT " : "") + "Second Life Services ]======"));
             log().info("================================================================================");
             for (SLModule module : modules.values()) {
-                log().info(spacePad(module.getVersion()+" - " +module.getName() + " - "+ module.getDescription()));
+                log().info(spacePad(spacePrePad(module.getVersion())+" - " +module.getName() + " - "+ module.getDescription()));
             }
+            log().info("--------------------------------------------------------------------------------");
+            log().info(spacePad(spacePrePad(getStackVersion())+" - CoagulateSL Stack Version"));
             log().info("================================================================================");
+
         }
         // print stack trace is discouraged, but the log handler may not be ready yet.
         catch (@Nonnull final Throwable e) {
@@ -306,6 +309,10 @@ public class SL extends Thread {
 
     private static String spacePad(String s) {
         while (s.length()<80) { s=s+" "; }
+        return s;
+    }
+    private static String spacePrePad(String s) {
+        while (s.length()<8) { s=" "+s; }
         return s;
     }
 
@@ -378,4 +385,13 @@ public class SL extends Thread {
         return getModule(module).weakInvoke(command,arguments);
     }
 
+    public static String getStackVersion() {
+        int maj=0; int min=0; int bug=0;
+        for (SLModule module:modules.values()) {
+            maj+=module.getMajorVersion();
+            min+=module.getMinorVersion();
+            bug+=module.getBugfixversion();
+        }
+        return maj+"."+min+"."+bug;
+    }
 }

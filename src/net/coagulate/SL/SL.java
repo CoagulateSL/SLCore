@@ -292,9 +292,10 @@ public class SL extends Thread {
             log().info("================================================================================");
             for (SLModule module : modules.values()) {
                 log().info(spacePad(spacePrePad(module.getVersion())+" - " +module.getName() + " - "+ module.getDescription()));
+                log().info(spacePad("         - "+module.getBuildDate()));
             }
             log().info("--------------------------------------------------------------------------------");
-            log().info(spacePad(spacePrePad(getStackVersion())+" - CoagulateSL Stack Version"));
+            log().info(spacePad(spacePrePad(getStackVersion())+" - "+getStackBuildDate()+" - CoagulateSL Stack Version"));
             log().info("================================================================================");
 
         }
@@ -393,5 +394,13 @@ public class SL extends Thread {
             bug+=module.getBugfixversion();
         }
         return maj+"."+min+"."+bug;
+    }
+
+    public static String getStackBuildDate() {
+        String bd="1";
+        for (SLModule module:modules.values()) {
+            if (module.getBuildDate().compareTo(bd)>0) { bd=module.getBuildDate(); }
+        }
+        return bd;
     }
 }

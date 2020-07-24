@@ -9,7 +9,7 @@
     <version>1.0.0</version>
     <repositories>
         <repository>
-            <id>javacore</id>
+            <id>github</id>
             <name>GitHub IPrice/JavaCore Apache Maven Packages</name>
             <url>https://maven.pkg.github.com/iprice/JavaCore</url>
         </repository>
@@ -18,7 +18,7 @@
         <repository>
             <id>github</id>
             <name>GitHub IPrice/SLCore Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/iprice/SLCore</url>
+            <url>https://maven.pkg.github.com/CoagulateSL/SLCore</url>
         </repository>
     </distributionManagement>
     <build>
@@ -49,6 +49,11 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>net.coagulate</groupId>
+            <artifactId>JavaCore</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
             <version>3.0.2</version>
@@ -62,11 +67,6 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
             <version>4.4.9</version>
-        </dependency>
-        <dependency>
-            <groupId>net.coagulate</groupId>
-            <artifactId>JavaCore</artifactId>
-            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>javax.mail</groupId>

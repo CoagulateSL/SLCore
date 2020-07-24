@@ -48,7 +48,7 @@
         <dependency>
             <groupId>net.coagulate</groupId>
             <artifactId>JavaCore</artifactId>
-            <version>1.00.00</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>javax.mail</groupId>

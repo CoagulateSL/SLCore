@@ -49,7 +49,7 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>net.coagulate</groupId>
+            <groupId>net.coagulate.SL</groupId>
             <artifactId>JavaCore</artifactId>
             <version>1.0.0</version>
         </dependency>

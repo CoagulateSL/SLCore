@@ -287,15 +287,15 @@ public class SL extends Thread {
             // TODO Pricing.initialise();
             listener = new HTTPListener(Config.getPort(), PageMapper.getPageMapper());
             log().info("Startup complete.");
-            log().info("================================================================================");
+            log().info("========================================================================================================================");
             log().info(outerPad("=====[ Coagulate " + (DEV ? "DEVELOPMENT " : "") + "Second Life Services ]======"));
-            log().info("================================================================================");
+            log().info("========================================================================================================================");
             for (SLModule module : modules.values()) {
-                log().info(spacePad(spacePrePad(module.getVersion())+" - " +module.getName() + " - "+ module.getDescription()));
+                log().info(spacePad(spacePrePad(module.getVersion())+" - "+module.getBuildDate()+" - " +module.getName() + " - "+ module.getDescription()));
             }
-            log().info("--------------------------------------------------------------------------------");
+            log().info("------------------------------------------------------------------------------------------------------------------------");
             log().info(spacePad(spacePrePad(getStackVersion())+" - "+getStackBuildDate()+" - CoagulateSL Stack Version"));
-            log().info("================================================================================");
+            log().info("========================================================================================================================");
 
         }
         // print stack trace is discouraged, but the log handler may not be ready yet.
@@ -308,7 +308,7 @@ public class SL extends Thread {
     }
 
     private static String spacePad(String s) {
-        while (s.length()<80) { s=s+" "; }
+        while (s.length()<120) { s=s+" "; }
         return s;
     }
     private static String spacePrePad(String s) {
@@ -317,9 +317,9 @@ public class SL extends Thread {
     }
 
     private static String outerPad(String s) {
-        while (s.length()<80) {
+        while (s.length()<120) {
             s = "=" + s;
-            if (s.length() == 80) {
+            if (s.length() == 120) {
                 return s;
             }
             s = s + "=";

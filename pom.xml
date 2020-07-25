@@ -9,7 +9,7 @@
     <version>1.0.0</version>
     <repositories>
         <repository>
-            <id>github</id>
+            <id>JavaCore</id>
             <name>GitHub IPrice/JavaCore Apache Maven Packages</name>
             <url>https://maven.pkg.github.com/CoagulateSL/JavaCore</url>
         </repository>
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>net.coagulate.SL</groupId>
             <artifactId>JavaCore</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>

@@ -9,9 +9,9 @@
     <version>1.0.1</version>
     <repositories>
         <repository>
-            <id>JavaCore</id>
+            <id>github</id>
             <name>GitHub IPrice/JavaCore Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/CoagulateSL/JavaCore</url>
+            <url>https://maven.pkg.github.com/CoagulateSL/SLCore</url>
         </repository>
     </repositories>
     <distributionManagement>

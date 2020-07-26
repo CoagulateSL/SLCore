@@ -54,7 +54,7 @@ public class SL extends Thread {
 
     @Nonnull
     public static Logger log(final String subspace) {
-        return log().getLogger(log.getName()+"."+subspace);
+        return Logger.getLogger(log.getName()+"."+subspace);
     }
 
     public static void shutdown() {
@@ -77,7 +77,6 @@ public class SL extends Thread {
             startup();
             Runtime.getRuntime().addShutdownHook(new SL());
             while (!shutdown) {
-                //noinspection BusyWait
                 try { Thread.sleep(1000); } catch (final InterruptedException ignored) {}
                 if (!shutdown) {
                     try { runMaintenance(); } catch (final Throwable t) {
@@ -101,6 +100,7 @@ public class SL extends Thread {
 
     private static final Map<String,Integer> maintenancefails=new HashMap<>();
     private static void runMaintenance() {
+        if (!primaryNode()) { return; }
         for (SLModule module:modules.values()) {
             if (!maintenancefails.containsKey(module.getName())) { maintenancefails.put(module.getName(),0); }
             int failcount=maintenancefails.get(module.getName());
@@ -213,12 +213,21 @@ public class SL extends Thread {
 
     }
 
+    private static boolean wasmasternode=false;
     public static boolean primaryNode() {
         final String name = getDB().dqs("select name from masternode");
         if (!Config.getHostName().equalsIgnoreCase(name)) {
+            if (wasmasternode) {
+                log("Maintenance").config("We are no longer the master node!");
+                wasmasternode=false;
+            }
             return false;
         } // not the master node
         // if we are the master node, shall we update our last run so that things know things are working ... thing.
+        if (!wasmasternode) {
+            log("Maintenance").config("We are now the master node!");
+            wasmasternode=true;
+        }
         final int lastrun = getDB().dqinn("select lastrun from masternode");
         if (UnixTime.getUnixTime() > (lastrun + 60)) {
             getDB().d("update masternode set lastrun=?", UnixTime.getUnixTime());
@@ -347,6 +356,8 @@ public class SL extends Thread {
     public static void groupInvite(String uuid, String groupuuid, String roleuuid) {
         weakInvoke("JSLBotBridge","groupinvite",uuid,groupuuid,roleuuid);
     }
+
+    public static Collection<SLModule> modules() { return modules.values(); }
 
     @Override
     public void run() {

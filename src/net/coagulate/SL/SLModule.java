@@ -1,5 +1,7 @@
 package net.coagulate.SL;
 
+import net.coagulate.Core.Database.DBConnection;
+import net.coagulate.Core.Exceptions.System.SystemImplementationException;
 import net.coagulate.Core.Exceptions.System.SystemInitialisationException;
 import net.coagulate.Core.Tools.UnixTime;
 
@@ -8,10 +10,13 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Logger;
 
 public abstract class SLModule {
 
     private final Map<String,Integer> nextruns=new HashMap<>();
+    private final Logger logger;
+
     protected final boolean nextRun(String name,int interval) {
         if (!nextruns.containsKey(name)) { nextruns.put(name,UnixTime.getUnixTime()); } // why am i doing unixtime stuff here...
         if (UnixTime.getUnixTime()<nextruns.get(name)) { return false; }
@@ -35,7 +40,7 @@ public abstract class SLModule {
         try { properties.load(this.getClass().getClassLoader().getResourceAsStream(getName() + ".properties")); } catch (IOException e) {
             throw new SystemInitialisationException("Unable to load properties for "+getName(),e);
         }
-
+        logger=SL.log(getClass().getSimpleName());
         version = properties.getProperty("version");
         try {
             String parts[]=version.split("\\.");
@@ -91,4 +96,38 @@ public abstract class SLModule {
     public final int getMinorVersion() { return minorversion; }
     public final int getBugfixversion() { return bugfixversion; }
     public final String getVersion() { return getMajorVersion()+"."+getMinorVersion()+"."+getBugfixversion(); }
+
+    public void schemaCheck(DBConnection db, String schemaname, int requiredversion) {
+        try {
+            int currentversion = getSchemaVersion(db,schemaname);
+            while (currentversion != requiredversion) {
+                logger.config("Schema " + currentversion + " is not of required version " + requiredversion + ", calling schemaUpgrade");
+                int newversion = schemaUpgrade(db,schemaname, currentversion);
+                if (newversion == currentversion) {
+                    throw new SystemImplementationException("Schema upgrade failed ; requested upgrade from " + currentversion + " and remained at " + newversion + ", the target is version " + requiredversion);
+                }
+                logger.config("Upgraded schema from " + currentversion + " to " + newversion + " (target is " + requiredversion + ")");
+                db.d("update schemaversions set version=? where name like ?", newversion, schemaname);
+                currentversion = newversion;
+            }
+            logger.config("DB Schema '" + schemaname + "' is at required version " + currentversion);
+        } catch (Throwable t) {
+            logger.config("Schema upgrade FAILED.  Terminating as a safety measure.  It is advised you keep these logs to diagnose and resolve the failed upgrade.  You will probably need to manually resolve this condition.");
+            if (Error.class.isAssignableFrom(t.getClass())) { throw t; }
+            System.exit(1);
+        }
+    }
+
+    /** Issued when a schema upgrade is required.
+     * The database version of the schema is not the same as the requirement in the software.
+     * This method should update the 'current version' and return the new version of the schema.  Caller will update database.
+     * @param schemaname Name of schema to update
+     * @param currentversion Current version to update from
+     * @return New version of schema
+     */
+    protected abstract int schemaUpgrade(DBConnection db,String schemaname, int currentversion);
+
+    public int getSchemaVersion(DBConnection db,String schemaname) {
+        return db.dqinn("select max(version) from schemaversions where name like ?",schemaname);
+    }
 }

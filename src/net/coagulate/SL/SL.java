@@ -54,7 +54,7 @@ public class SL extends Thread {
 
     @Nonnull
     public static Logger log(final String subspace) {
-        return log().getLogger(subspace);
+        return log().getLogger(log.getName()+"."+subspace);
     }
 
     public static void shutdown() {
@@ -70,6 +70,8 @@ public class SL extends Thread {
         Config.load(args[0]);
 
         DEV = Config.getDevelopment();
+        loggingInitialise();
+        log.config("Logging services initialised");
 
         try {
             startup();
@@ -262,8 +264,6 @@ public class SL extends Thread {
     private static void startup() {
         try {
             ClassTools.getClasses();
-            loggingInitialise();
-            log.config("Logging services initialised");
             log.config("Configuring default developer mail target");
             configureMailTarget(); // mails are gonna be messed up coming from logging init
             log.config("Scanning for modules");

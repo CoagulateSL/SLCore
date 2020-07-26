@@ -27,10 +27,13 @@ public class SLCore extends SLModule {
     public void shutdown() {}
 
     @Override
-    public void startup() {}
+    public void startup() {
+    }
 
     @Override
-    public void initialise() {}
+    public void initialise() {
+        schemaCheck(SL.getDB(),"slcore",1);
+    }
 
     @Override
     public void maintenance() {
@@ -38,6 +41,11 @@ public class SLCore extends SLModule {
         if (nextRun("SLCore-DBStats-maintenance",60)) {
             reportDBStats();
         }
+    }
+
+    @Override
+    protected int schemaUpgrade(DBConnection db, String schemaname, int currentversion) {
+        return currentversion;
     }
 
     private void reportDBStats() {

@@ -30,7 +30,7 @@ public abstract class SLModule {
     public abstract void startup();
     public abstract void initialise();
     public abstract void maintenance();
-    private String version;
+    private final String version;
     private Date builddate;
     private int majorversion;
     private int minorversion;
@@ -43,7 +43,7 @@ public abstract class SLModule {
         logger=SL.log(getClass().getSimpleName());
         version = properties.getProperty("version");
         try {
-            String parts[]=version.split("\\.");
+            String[] parts =version.split("\\.");
             if (parts.length!=3) {
                 majorversion=0;
                 minorversion=0;

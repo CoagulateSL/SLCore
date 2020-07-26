@@ -15,6 +15,7 @@ import net.coagulate.SL.Pages.HTML.Raw;
 import net.coagulate.SL.Pages.HTML.State;
 import net.coagulate.SL.Pages.HTML.Table;
 import net.coagulate.SL.SL;
+import net.coagulate.SL.SLModule;
 
 import javax.annotation.Nonnull;
 import javax.mail.MessagingException;
@@ -63,6 +64,12 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 			}
 			page.paragraph("Sent mail");
 		}
+		if("ForceMaintenance".equals(state.get("ForceMaintenance"))) {
+			for (SLModule module:SL.modules()) {
+				SL.log("ControlPanel").warning("Forcing maintenance run on "+module.getName());
+				module.maintenance();
+			}
+		}
 		if ("Thread Info".equals(state.get("Thread Info"))) {
 			final Table t=new Table();
 			page.add(t);
@@ -106,6 +113,7 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 				    submit("SystemException").
 					submit("LoggedOnlyException").
 				    submit("Shutdown").
+					submit("ForceMaintenance").
 				    submit("NameAPI");
 	}
 

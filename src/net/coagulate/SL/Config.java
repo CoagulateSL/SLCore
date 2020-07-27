@@ -23,12 +23,12 @@ public class Config {
         }
     }
 
-    private static boolean getBoolean(@Nonnull final String key, final boolean defaultvalue) {
+    public static boolean getBoolean(@Nonnull final String key, final boolean defaultvalue) {
         if (config.containsKey(key)) { return getBoolean(key); }
         return defaultvalue;
     }
 
-    private static boolean getBoolean(@Nonnull final String key) {
+    public static boolean getBoolean(@Nonnull final String key) {
         try {
             return ValueMapper.toBoolean(config.getProperty(key));
         } catch (UserInputValidationParseException e) {
@@ -36,7 +36,7 @@ public class Config {
         }
     }
 
-    @Nonnull private static String getString(@Nonnull final String key) {
+    @Nonnull public static String getString(@Nonnull final String key) {
         try {
             return config.getProperty(key);
         } catch (UserInputValidationParseException e) {
@@ -44,7 +44,7 @@ public class Config {
         }
     }
 
-    @Nonnull private static String getString(@Nonnull final String key, @Nonnull final String defaultvalue) {
+    @Nonnull public static String getString(@Nonnull final String key, @Nonnull final String defaultvalue) {
         if (config.containsKey(key)) { return getString(key); }
         return defaultvalue;
     }

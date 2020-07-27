@@ -138,4 +138,6 @@ public class Config {
     public static String getZabbixServer() { return getString("zabbixserver","127.0.0.1"); }
 
     public static String getDigestSalt() { return getString("digestsalt"); }
+
+    public static String getDistributionRegion() { return getString("gphud-distributionregion",""); }
 }

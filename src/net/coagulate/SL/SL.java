@@ -293,6 +293,8 @@ public class SL extends Thread {
                 log().config("Starting module - " + module.getName());
                 module.startup();
             }
+            // something about mails may break later on so we send a test mail here...
+            MailTools.mail("CoagulateSL "+(DEV?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" (v"+getStackVersion()+" "+getStackBuildDate()+")", "");
             // TODO Pricing.initialise();
             listener = new HTTPListener(Config.getPort(), PageMapper.getPageMapper());
             log().info("Startup complete.");
@@ -305,7 +307,6 @@ public class SL extends Thread {
             log().info("------------------------------------------------------------------------------------------------------------------------");
             log().info(spacePad(spacePrePad(getStackVersion())+" - "+getStackBuildDate()+" - CoagulateSL Stack Version"));
             log().info("========================================================================================================================");
-
         }
         // print stack trace is discouraged, but the log handler may not be ready yet.
         catch (@Nonnull final Throwable e) {

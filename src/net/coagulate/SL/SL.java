@@ -294,7 +294,7 @@ public class SL extends Thread {
                 module.startup();
             }
             // something about mails may break later on so we send a test mail here...
-            MailTools.mail("CoagulateSL "+(DEV?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" (v"+getStackVersion()+" "+getStackBuildDate()+")", "");
+            MailTools.mail("CoagulateSL "+(DEV?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" (v"+getStackVersion()+" "+getStackBuildDate()+")", htmlVersionDump());
             // TODO Pricing.initialise();
             listener = new HTTPListener(Config.getPort(), PageMapper.getPageMapper());
             log().info("Startup complete.");
@@ -315,6 +315,31 @@ public class SL extends Thread {
             log().log(SEVERE, "Startup failed: " + e.getLocalizedMessage(), e);
             shutdown = true;
         }
+    }
+
+    private static String htmlVersionDump() {
+        String r="<style>table, th, td { border: 1px solid black; }</style>";
+        r+="<pre><table border=0><tr>";
+        r+="<th>Name</th>";
+        r+="<th>Version</th>";
+        r+="<th>Build Date</th>";
+        r+="<th>Description</th>";
+        r+="</tr>";
+        for (SLModule module:modules()) {
+            r+="<tr>";
+            r+="<td>"+module.getName()+"</td>";
+            r+="<td align=right>"+module.getVersion()+"</td>";
+            r+="<td>"+module.getBuildDate()+"</td>";
+            r+="<td>"+module.getDescription()+"</td>";
+            r+="</tr>";
+        }
+        r+="<tr>";
+        r+="<th align=left>CoagulateSL</th>";
+        r+="<th align=right>"+getStackVersion()+"</th>";
+        r+="<th align=left>"+getStackBuildDate()+"</th>";
+        r+="<th align=left>Coagulate SL Stack Build Information</th>";
+        r+="</tr></table></pre>";
+        return r;
     }
 
     private static String spacePad(String s) {

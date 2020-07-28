@@ -21,13 +21,13 @@ public class SLCore extends SLModule {
     public static final int MINORVERSION=0;
     public static final int BUGFIXVERSION=7;
     public static final String COMMITID ="MANUAL";
-    public static final Date BUILDDATE=new Date(0l);
+    public static final Date BUILDDATE=new Date(0L);
     public final int majorVersion() { return MAJORVERSION; }
     public final int minorVersion() { return MINORVERSION; }
     public final int bugFixVersion() { return BUGFIXVERSION; }
     public final String commitId() { return COMMITID; }
     public static String getBuildDate() {
-        return new SimpleDateFormat("YYYY-MM-dd HH:mm").format(BUILDDATE);
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(BUILDDATE);
     }
 
     @Nonnull
@@ -96,8 +96,10 @@ public class SLCore extends SLModule {
             final Process zabbix=Runtime.getRuntime().exec(new String[]{"/usr/bin/zabbix_sender","-z",Config.getZabbixServer(),"-i-"});
             zabbix.getOutputStream().write(results.getBytes(StandardCharsets.UTF_8));
             zabbix.getOutputStream().close();
-            final String output= ByteTools.convertStreamToString(zabbix.getInputStream());
-            final String error=ByteTools.convertStreamToString(zabbix.getErrorStream());
+            //final String output=
+            ByteTools.convertStreamToString(zabbix.getInputStream());
+            //final String error
+            ByteTools.convertStreamToString(zabbix.getErrorStream());
             //getLogger().fine("Zabbix output:"+output);
             //getLogger().fine("Zabbix stderr:"+error);
             zabbix.getErrorStream().close();

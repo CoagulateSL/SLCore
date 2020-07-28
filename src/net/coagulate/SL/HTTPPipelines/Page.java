@@ -40,7 +40,7 @@ public class Page extends Container {
 		String ret="<div style='position:absolute;bottom:5;right:5;left:5;'><hr>";
 		ret+=(SL.DEV?"DEVELOPMENT":"Production");
 		ret+=" // "+Config.getHostName();
-		ret+=" // Stack v"+ SL.getStackVersion();
+		ret+=" // <a href=\"/versions\">Stack v"+ SL.getStackVersion()+"</a>";
 		ret+="<span style='display:block;float:right;'>(C) Iain Maltz @ Second Life</span></div></body></html>";
 		return ret;
 	}

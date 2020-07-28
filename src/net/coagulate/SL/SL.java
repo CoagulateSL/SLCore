@@ -317,27 +317,26 @@ public class SL extends Thread {
         }
     }
 
-    private static String htmlVersionDump() {
-        String r="<style>table, th, td { border: 1px solid black; }</style>";
-        r+="<pre><table border=0><tr>";
-        r+="<th>Name</th>";
-        r+="<th>Version</th>";
-        r+="<th>Commit Hash</th>";
-        r+="<th>Description</th>";
+    public static String htmlVersionDump() {
+        String r="<pre><table border=1 style=\"border-collapse: collapse;\"><tr>";
+        r+="<th style=\"padding: 2px\">Name</th>";
+        r+="<th style=\"padding: 2px\">Version</th>";
+        r+="<th style=\"padding: 2px\">Commit Hash</th>";
+        r+="<th style=\"padding: 2px\">Description</th>";
         r+="</tr>";
         for (SLModule module:modules()) {
             r+="<tr>";
-            r+="<td>"+module.getName()+"</td>";
-            r+="<td align=right>"+module.getVersion()+"</td>";
-            r+="<td>"+module.commitId()+"</td>";
-            r+="<td>"+module.getDescription()+"</td>";
+            r+="<td style=\"padding: 2px\">"+module.getName()+"</td>";
+            r+="<td align=right style=\"padding: 2px\">"+module.getVersion()+"</td>";
+            r+="<td style=\"padding: 2px\">"+module.commitId()+"</td>";
+            r+="<td style=\"padding: 2px\">"+module.getDescription()+"</td>";
             r+="</tr>";
         }
         r+="<tr>";
-        r+="<th align=left>CoagulateSL</th>";
-        r+="<th align=right>"+getStackVersion()+"</th>";
-        r+="<th align=left>"+SLCore.getBuildDate()+"</th>";
-        r+="<th align=left>Coagulate SL Stack Build Information</th>";
+        r+="<th align=left style=\"padding: 2px\">CoagulateSL</th>";
+        r+="<th align=right style=\"padding: 2px\">"+getStackVersion()+"</th>";
+        r+="<th align=left style=\"padding: 2px\">"+SLCore.getBuildDate()+"</th>";
+        r+="<th align=left style=\"padding: 2px\">Coagulate SL Stack Build Information</th>";
         r+="</tr></table></pre>";
         return r;
     }

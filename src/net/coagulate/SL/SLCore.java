@@ -21,7 +21,7 @@ public class SLCore extends SLModule {
     public static final int MINORVERSION=0;
     public static final int BUGFIXVERSION=7;
     public static final String COMMITID ="MANUAL";
-    public static final Date BUILDDATE=new Date(1595951771000l);
+    public static final Date BUILDDATE=new Date(0l);
     public final int majorVersion() { return MAJORVERSION; }
     public final int minorVersion() { return MINORVERSION; }
     public final int bugFixVersion() { return BUGFIXVERSION; }

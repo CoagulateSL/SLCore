@@ -2,13 +2,9 @@ package net.coagulate.SL;
 
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Exceptions.System.SystemImplementationException;
-import net.coagulate.Core.Exceptions.System.SystemInitialisationException;
 import net.coagulate.Core.Tools.UnixTime;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -23,6 +19,7 @@ public abstract class SLModule {
         nextruns.put(name,nextruns.get(name)+interval);
         return true;
     }
+    public SLModule() {logger=SL.log(getClass().getSimpleName());}
 
     @Nonnull public abstract String getName();
     @Nonnull public abstract String getDescription();
@@ -30,56 +27,10 @@ public abstract class SLModule {
     public abstract void startup();
     public abstract void initialise();
     public abstract void maintenance();
-    private final String version;
-    private Date builddate;
-    private int majorversion;
-    private int minorversion;
-    private int bugfixversion;
-    public SLModule() {
-        final Properties properties = new Properties();
-        try { properties.load(this.getClass().getClassLoader().getResourceAsStream(getName() + ".properties")); } catch (IOException e) {
-            throw new SystemInitialisationException("Unable to load properties for "+getName(),e);
-        }
-        logger=SL.log(getClass().getSimpleName());
-        version = properties.getProperty("version");
-        try {
-            String[] parts =version.split("\\.");
-            if (parts.length!=3) {
-                majorversion=0;
-                minorversion=0;
-                bugfixversion=99;
-            } else {
-                majorversion=Integer.parseInt(parts[0]);
-                minorversion=Integer.parseInt(parts[1]);
-                bugfixversion=Integer.parseInt(parts[2]);
-            }
-        } catch (NumberFormatException e) {
-            majorversion=0; minorversion=0; bugfixversion=98;
-        }
-
-
-        String abuilddate = properties.getProperty("build");
-        abuilddate=abuilddate.replaceAll("T"," ");
-        try {
-            abuilddate=abuilddate.replaceAll("Z"," ");
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-            builddate=sdf.parse(abuilddate);
-        } catch (ParseException e) {}
-        if (builddate==null) {
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmm");
-                sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"));
-                builddate = sdf.parse(abuilddate);
-            } catch (ParseException e) {
-            }
-        }
-        if (builddate==null) { builddate=new Date(0); }
-    }
-
-    public String getBuildDate() {
-        return new SimpleDateFormat("YYYY-MM-dd HH:mm").format(builddate);
-    }
+    public abstract int majorVersion();
+    public abstract int minorVersion();
+    public abstract int bugFixVersion();
+    public abstract String commitId();
 
     // this is a lame mechanism.  It allows a module to be invoked even if it might not be present
     // becakse weakInvoke is part of the CoagulateSL module everything knows about this
@@ -92,10 +43,7 @@ public abstract class SLModule {
     // it's a bodge/hack.
     public Object weakInvoke(String command,Object... arguments){return null;}
 
-    public final int getMajorVersion() { return majorversion; }
-    public final int getMinorVersion() { return minorversion; }
-    public final int getBugfixversion() { return bugfixversion; }
-    public final String getVersion() { return getMajorVersion()+"."+getMinorVersion()+"."+getBugfixversion(); }
+    public final String getVersion() { return majorVersion()+"."+ minorVersion()+"."+ bugFixVersion(); }
 
     public void schemaCheck(DBConnection db, String schemaname, int requiredversion) {
         try {

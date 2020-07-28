@@ -294,7 +294,7 @@ public class SL extends Thread {
                 module.startup();
             }
             // something about mails may break later on so we send a test mail here...
-            MailTools.mail("CoagulateSL "+(DEV?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" (v"+getStackVersion()+" "+getStackBuildDate()+")", htmlVersionDump());
+            MailTools.mail("CoagulateSL "+(DEV?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" (v"+getStackVersion()+" "+SLCore.getBuildDate()+")", htmlVersionDump());
             // TODO Pricing.initialise();
             listener = new HTTPListener(Config.getPort(), PageMapper.getPageMapper());
             log().info("Startup complete.");
@@ -302,10 +302,10 @@ public class SL extends Thread {
             log().info(outerPad("=====[ Coagulate " + (DEV ? "DEVELOPMENT " : "") + "Second Life Services ]======"));
             log().info("========================================================================================================================");
             for (SLModule module : modules.values()) {
-                log().info(spacePad(spacePrePad(module.getVersion())+" - "+module.getBuildDate()+" - " +module.getName() + " - "+ module.getDescription()));
+                log().info(spacePad(spacePrePad(module.getVersion())+" - "+module.commitId()+" - " +module.getName() + " - "+ module.getDescription()));
             }
             log().info("------------------------------------------------------------------------------------------------------------------------");
-            log().info(spacePad(spacePrePad(getStackVersion())+" - "+getStackBuildDate()+" - CoagulateSL Stack Version"));
+            log().info(spacePad(spacePrePad(getStackVersion())+" - "+SLCore.getBuildDate()+" - CoagulateSL Stack Version"));
             log().info("========================================================================================================================");
         }
         // print stack trace is discouraged, but the log handler may not be ready yet.
@@ -329,14 +329,14 @@ public class SL extends Thread {
             r+="<tr>";
             r+="<td>"+module.getName()+"</td>";
             r+="<td align=right>"+module.getVersion()+"</td>";
-            r+="<td>"+module.getBuildDate()+"</td>";
+            r+="<td>"+module.commitId()+"</td>";
             r+="<td>"+module.getDescription()+"</td>";
             r+="</tr>";
         }
         r+="<tr>";
         r+="<th align=left>CoagulateSL</th>";
         r+="<th align=right>"+getStackVersion()+"</th>";
-        r+="<th align=left>"+getStackBuildDate()+"</th>";
+        r+="<th align=left>"+SLCore.getBuildDate()+"</th>";
         r+="<th align=left>Coagulate SL Stack Build Information</th>";
         r+="</tr></table></pre>";
         return r;
@@ -425,18 +425,10 @@ public class SL extends Thread {
     public static String getStackVersion() {
         int maj=0; int min=0; int bug=0;
         for (SLModule module:modules.values()) {
-            maj+=module.getMajorVersion();
-            min+=module.getMinorVersion();
-            bug+=module.getBugfixversion();
+            maj+=module.majorVersion();
+            min+=module.minorVersion();
+            bug+=module.bugFixVersion();
         }
         return maj+"."+min+"."+bug;
-    }
-
-    public static String getStackBuildDate() {
-        String bd="1";
-        for (SLModule module:modules.values()) {
-            if (module.getBuildDate().compareTo(bd)>0) { bd=module.getBuildDate(); }
-        }
-        return bd;
     }
 }

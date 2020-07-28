@@ -7,6 +7,8 @@ import net.coagulate.Core.Tools.ByteTools;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -15,6 +17,19 @@ import static java.util.logging.Level.WARNING;
 import static net.coagulate.SL.SL.DEV;
 
 public class SLCore extends SLModule {
+    public static final int MAJORVERSION=1;
+    public static final int MINORVERSION=0;
+    public static final int BUGFIXVERSION=7;
+    public static final String COMMITID ="MANUAL";
+    public static final Date BUILDDATE=new Date(1595951771000l);
+    public final int majorVersion() { return MAJORVERSION; }
+    public final int minorVersion() { return MINORVERSION; }
+    public final int bugFixVersion() { return BUGFIXVERSION; }
+    public final String commitId() { return COMMITID; }
+    public static String getBuildDate() {
+        return new SimpleDateFormat("YYYY-MM-dd HH:mm").format(BUILDDATE);
+    }
+
     @Nonnull
     @Override
     public String getName() { return "SLCore"; }

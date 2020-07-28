@@ -322,7 +322,7 @@ public class SL extends Thread {
         r+="<pre><table border=0><tr>";
         r+="<th>Name</th>";
         r+="<th>Version</th>";
-        r+="<th>Build Date</th>";
+        r+="<th>Commit Hash</th>";
         r+="<th>Description</th>";
         r+="</tr>";
         for (SLModule module:modules()) {

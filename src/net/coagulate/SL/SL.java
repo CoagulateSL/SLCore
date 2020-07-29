@@ -34,9 +34,6 @@ import static java.util.logging.Level.SEVERE;
  * @author Iain Price
  */
 public class SL extends Thread {
-    public static final String VERSION = "v0.03.00";
-    private static final long laststats = new Date().getTime();
-    private static final long nextarchival = new Date().getTime() + ((int) ((Math.random() * 60.0 * 45.0 * 1000.0)));
     public static boolean DEV;
     @Nullable
     private static Logger log;
@@ -46,14 +43,13 @@ public class SL extends Thread {
     private static DBConnection db;
     @Nullable
     private static HTTPListener listener;
-    private static int watchdogcycle;
-    private static int gphudoffset;
     private static final Map<String,SLModule> modules=new TreeMap<>();
 
     private SL() {}
 
     @Nonnull
     public static Logger log(final String subspace) {
+        if (log==null) { throw new SystemInitialisationException("Logger is not initialised by the time it is used"); }
         return Logger.getLogger(log.getName()+"."+subspace);
     }
 
@@ -71,13 +67,14 @@ public class SL extends Thread {
 
         DEV = Config.getDevelopment();
         loggingInitialise();
-        log.config("Logging services initialised");
+        log().config("Logging services initialised");
 
         try {
             startup();
             Runtime.getRuntime().addShutdownHook(new SL());
             while (!shutdown) {
-                try { Thread.sleep(1000); } catch (final InterruptedException ignored) {}
+                try { //noinspection BusyWait
+                    Thread.sleep(1000); } catch (final InterruptedException ignored) {}
                 if (!shutdown) {
                     try { runMaintenance(); } catch (final Throwable t) {
                         System.out.println("Uhoh, maintenance crashed, even though it's crash proofed (primaryNode()?)");
@@ -112,7 +109,7 @@ public class SL extends Thread {
                     failcount++;
                     maintenancefails.put(module.getName(), failcount);
                     if (failcount >= 5) {
-                        SL.reportString("Maintenance DISABLED for " + module.getName(), null, "Module exceeded 5 fail counts");
+                        SL.reportString("Maintenance DISABLED for " + module.getName(),null,"Module exceeded 5 fail counts");
                     }
                 }
             }
@@ -138,36 +135,40 @@ public class SL extends Thread {
     }
 
     public static void report(final String header,
-                              @Nonnull final Throwable t,
+                              @Nullable final Throwable t,
                               @Nullable final DumpableState state) {
         reportString(header, t, (state != null ? state.toHTML() : "No state supplied"));
     }
 
     public static void reportString(final String header,
-                                    @Nonnull final Throwable t,
+                                    @Nullable final Throwable t,
                                     @Nullable final String additional) {
-        String output = ExceptionTools.dumpException(t) + "<br><hr><br>";
+        String output = "";
+        if (t!=null) { output+=ExceptionTools.dumpException(t) + "<br><hr><br>"; }
         if (additional != null) {
             output += additional;
         }
-
-        if (UserException.class.isAssignableFrom(t.getClass())) {
-            if (((UserException) t).suppressed()) {
-                return;
-            }
-        }
-        if (SystemException.class.isAssignableFrom(t.getClass())) {
-            if (((SystemException) t).suppressed()) {
-                return;
-            }
-        }
-        LogHandler.alreadyMailed(t);
         try {
-            if (LogHandler.suppress(t)) {
-                System.out.println("Exception Report Suppressed " + LogHandler.getCount(t) + "x" + LogHandler.getSignature(t));
-            } else {
+            if (t!=null) {
+                if (UserException.class.isAssignableFrom(t.getClass())) {
+                    if (((UserException) t).suppressed()) {
+                        return;
+                    }
+                }
+                if (SystemException.class.isAssignableFrom(t.getClass())) {
+                    if (((SystemException) t).suppressed()) {
+                        return;
+                    }
+                }
+                LogHandler.alreadyMailed(t);
+                if (LogHandler.suppress(t)) {
+                    System.out.println("Exception Report Suppressed " + LogHandler.getCount(t) + "x" + LogHandler.getSignature(t));
+                    return;
+                }
                 MailTools.mail((DEV ? "Dev" : "PROD") + " EX : " + header + " - " + t.getLocalizedMessage(), output);
+                return;
             }
+            MailTools.mail((DEV ? "Dev" : "PROD") + " EX : " + header, output);
         } catch (@Nonnull final MessagingException e) {
             log().log(SEVERE, "Exception mailing out about exception", e);
         }
@@ -273,11 +274,11 @@ public class SL extends Thread {
     private static void startup() {
         try {
             ClassTools.getClasses();
-            log.config("Configuring default developer mail target");
+            log().config("Configuring default developer mail target");
             configureMailTarget(); // mails are gonna be messed up coming from logging init
-            log.config("Scanning for modules");
+            log().config("Scanning for modules");
             findModules();
-            log.config("Initialising PageMapper");
+            log().config("Initialising PageMapper");
             PageMapper.initialise();
             if (!DEV) {
                 log().config("SL Services starting up on " + Config.getHostName());
@@ -318,53 +319,56 @@ public class SL extends Thread {
     }
 
     public static String htmlVersionDump() {
-        String r="<pre><table border=1 style=\"border-collapse: collapse;\"><tr>";
-        r+="<th style=\"padding: 2px\">Name</th>";
-        r+="<th style=\"padding: 2px\">Version</th>";
-        r+="<th style=\"padding: 2px\">Commit Hash</th>";
-        r+="<th style=\"padding: 2px\">Description</th>";
-        r+="</tr>";
+        StringBuilder r= new StringBuilder("<pre><table border=1 style=\"border-collapse: collapse;\"><tr>");
+        r.append("<th style=\"padding: 2px\">Name</th>");
+        r.append("<th style=\"padding: 2px\">Version</th>");
+        r.append("<th style=\"padding: 2px\">Commit Hash</th>");
+        r.append("<th style=\"padding: 2px\">Description</th>");
+        r.append("</tr>");
         for (SLModule module:modules()) {
-            r+="<tr>";
-            r+="<td style=\"padding: 2px\">"+module.getName()+"</td>";
-            r+="<td align=right style=\"padding: 2px\">"+module.getVersion()+"</td>";
-            r+="<td style=\"padding: 2px\">"+module.commitId()+"</td>";
-            r+="<td style=\"padding: 2px\">"+module.getDescription()+"</td>";
-            r+="</tr>";
+            r.append("<tr>");
+            r.append("<td style=\"padding: 2px\">").append(module.getName()).append("</td>");
+            r.append("<td align=right style=\"padding: 2px\">").append(module.getVersion()).append("</td>");
+            r.append("<td style=\"padding: 2px\">").append(module.commitId()).append("</td>");
+            r.append("<td style=\"padding: 2px\">").append(module.getDescription()).append("</td>");
+            r.append("</tr>");
         }
-        r+="<tr>";
-        r+="<th align=left style=\"padding: 2px\">CoagulateSL</th>";
-        r+="<th align=right style=\"padding: 2px\">"+getStackVersion()+"</th>";
-        r+="<th align=left style=\"padding: 2px\">"+SLCore.getBuildDate()+"</th>";
-        r+="<th align=left style=\"padding: 2px\">Coagulate SL Stack Build Information</th>";
-        r+="</tr></table></pre>";
-        return r;
+        r.append("<tr>");
+        r.append("<th align=left style=\"padding: 2px\">CoagulateSL</th>");
+        r.append("<th align=right style=\"padding: 2px\">").append(getStackVersion()).append("</th>");
+        r.append("<th align=left style=\"padding: 2px\">").append(SLCore.getBuildDate()).append("</th>");
+        r.append("<th align=left style=\"padding: 2px\">Coagulate SL Stack Build Information</th>");
+        r.append("</tr></table></pre>");
+        return r.toString();
     }
 
     private static String spacePad(String s) {
-        while (s.length()<120) { s=s+" "; }
-        return s;
+        StringBuilder sBuilder = new StringBuilder(s);
+        while (sBuilder.length()<120) { sBuilder.append(" "); }
+        return sBuilder.toString();
     }
     private static String spacePrePad(String s) {
-        while (s.length()<8) { s=" "+s; }
-        return s;
+        StringBuilder sBuilder = new StringBuilder(s);
+        while (sBuilder.length()<8) { sBuilder.insert(0, " "); }
+        return sBuilder.toString();
     }
 
     private static String outerPad(String s) {
-        while (s.length()<120) {
-            s = "=" + s;
-            if (s.length() == 120) {
-                return s;
+        StringBuilder sBuilder = new StringBuilder(s);
+        while (sBuilder.length()<120) {
+            sBuilder.insert(0, "=");
+            if (sBuilder.length() == 120) {
+                return sBuilder.toString();
             }
-            s = s + "=";
+            sBuilder.append("=");
         }
-        return s;
+        return sBuilder.toString();
     }
 
     private static void findModules() {
         Set<Class<? extends SLModule>> modulelist = ClassTools.getSubclasses(SLModule.class);
         for (Class<? extends SLModule> module:modulelist) {
-            if (modules.containsKey(module.getName())) { throw new SystemBadValueException("Conflict for module name "+module.getName()+" between "+module.getClass().getSimpleName()+" and "+modules.get(module.getName()).getClass().getSimpleName()); }
+            if (modules.containsKey(module.getName())) { throw new SystemBadValueException("Conflict for module name "+module.getName()+" between "+modules.get(module.getName()).getClass().getSimpleName()+" and "+modules.get(module.getName()).getClass().getSimpleName()); }
             try {
                 SLModule instance=module.getDeclaredConstructor().newInstance();
                 modules.put(instance.getName(),instance);
@@ -392,32 +396,16 @@ public class SL extends Thread {
         SL.shutdown = true;
     }
 
-    public static void watchdog() {
-        try {
-            Thread.sleep(1000);
-        } catch (@Nonnull final InterruptedException e) {
-        }
-        if (shutdown) {
-            return;
-        }
-        if (!DB.test()) {
-            log().log(SEVERE, "Database failed connectivity test, shutting down.");
-            shutdown = true;
-            errored = true;
-        }
-        // hmm //if (!listener.isAlive()) { log.log(SEVERE,"Primary listener thread is not alive"); shutdown=true; errored=true; return; }
-    }
-
     public static boolean hasModule(String module) {
-        if (modules.containsKey(module)) { return true; }
-        return false;
+        return modules.containsKey(module);
     }
     @Nonnull
     public static SLModule getModule(String module) {
         if (!hasModule(module)) { throw new SystemLookupFailureException("There is no module called "+module); }
         return modules.get(module);
     }
-    public static Object weakInvoke(String module,String command,Object... arguments) {
+    @SuppressWarnings("UnusedReturnValue")
+    public static Object weakInvoke(String module, String command, Object... arguments) {
         return getModule(module).weakInvoke(command,arguments);
     }
 

@@ -33,7 +33,7 @@ public abstract class SLModule {
     public abstract String commitId();
 
     // this is a lame mechanism.  It allows a module to be invoked even if it might not be present
-    // becakse weakInvoke is part of the CoagulateSL module everything knows about this
+    // because weakInvoke is part of the CoagulateSL module everything knows about this
     // currently only used to send IM's and group invites via JSLBotBridge
     // the idea is that JSLBot and the bridge are optional modules, and if this doesn't exist then
     // the relevant functionality will be unavailable (primarily SSO login via URL being IMed to avatar)

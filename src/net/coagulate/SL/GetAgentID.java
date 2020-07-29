@@ -30,16 +30,16 @@ public class GetAgentID {
 	 * @return The UUID, or an exception if one wasn't found.
 	 */
 	@Nonnull
-	public static final String getAgentID(@Nonnull String name) {
+	public static String getAgentID(@Nonnull String name) {
 
 		// validate the name a bit and we need to break it down into a firstname (called username in modern LL nomenclature, apparently)
 		// and a last name
 		// "Usernames can contain only letters and numbers" (and when concatenated a single space or dot separator)
 		name=name.trim();
-		if (Pattern.compile(".*[^A-Za-z0-9\\. ].*").matcher(name).matches()) {
+		if (Pattern.compile(".*[^A-Za-z0-9. ].*").matcher(name).matches()) {
 			throw new UserInputValidationFilterException("Name '"+name+"' contains invalid characters");
 		}
-		if (Pattern.compile(".*[ \\.].*[ \\.].*").matcher(name).matches()) {
+		if (Pattern.compile(".*[ .].*[ .]*").matcher(name).matches()) {
 			throw new UserInputValidationFilterException("Name '"+name+"' contains too many separators");
 		}
 

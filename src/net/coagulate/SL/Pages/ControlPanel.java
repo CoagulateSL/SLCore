@@ -35,7 +35,7 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 	@Override
 	protected void run(@Nonnull final State state,
 	                   @Nonnull final Page page) {
-		if (!state.user().superuser()) {
+		if (!state.user().isSuperAdmin()) {
 			throw new UserAccessDeniedException("Unauthorised access to Control Panel from "+state.userNullable());
 		}
 		page.layout(Page.PAGELAYOUT.CENTERCOLUMN);

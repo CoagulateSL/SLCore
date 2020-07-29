@@ -47,7 +47,7 @@ public class Session extends Table {
 		try {
 			SL.getDB().d("delete from sessions where expires<?",UnixTime.getUnixTime());
 		}
-		catch (@Nonnull final Exception e) {}
+		catch (@Nonnull final Exception ignored) {}
 		final int userid=user.getId();
 		final String sessionid=Tokens.generateToken();
 		final int expires=UnixTime.getUnixTime()+Config.getSessionLifespan();

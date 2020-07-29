@@ -136,7 +136,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 		try {
 			userid=SL.getDB().dqi("select id from users where (avatarkey=?)",key);
 		}
-		catch (@Nonnull final NoDataException e) {}
+		catch (@Nonnull final NoDataException ignored) {}
 		if (userid==null) {
 			if (key.isEmpty()) { throw new SystemBadValueException("Empty avatar key blocks creation"); }
 			if (name.isEmpty()) { throw new SystemBadValueException("Empty avatar name blocks creation (for key "+key+")"); }
@@ -154,7 +154,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 			try {
 				userid=SL.getDB().dqi("select id from users where avatarkey=?",key);
 			}
-			catch (@Nonnull final NoDataException e) {}
+			catch (@Nonnull final NoDataException ignored) {}
 		}
 		if (userid==null) {
 			SL.log("User").severe("Failed to find avatar '"+name+"' after creating it");
@@ -282,13 +282,10 @@ public class User extends StandardSLTable implements Comparable<User> {
 		return dqs("select developerkey from users where id=?",getId());
 	}
 
-	public boolean superuser() { return getId()==1 && "Iain Maltz".equalsIgnoreCase(getUsername()); }
-
 	public boolean hasDeveloperKey() {
 		try {
 			final String s=getDeveloperKey();
-			if (s==null || s.isEmpty()) { return false; }
-			return true;
+			return s != null && !s.isEmpty();
 		}
 		catch (@Nonnull final NoDataException e) { return false; }
 	}
@@ -447,7 +444,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 	 *
 	 * @param i Instance to set to
 	 */
-	public void setLastInstance(@Nonnull final int i) {
+	public void setLastInstance(final int i) { //TODO consider purging this method, it can be worked out from characters tables.  probably.
 		d("update users set lastgphudinstance=? where id=?",i,getId());
 	}
 

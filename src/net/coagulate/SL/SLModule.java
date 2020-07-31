@@ -60,7 +60,8 @@ public abstract class SLModule {
             }
             logger.config("DB Schema '" + schemaname + "' is at required version " + currentversion);
         } catch (Throwable t) {
-            logger.config("Schema upgrade FAILED.  Terminating as a safety measure.  It is advised you keep these logs to diagnose and resolve the failed upgrade.  You will probably need to manually resolve this condition.");
+            t.printStackTrace();
+            logger.config("Schema upgrade FAILED for "+schemaname+" version "+requiredversion+".  Terminating as a safety measure.  It is advised you keep these logs to diagnose and resolve the failed upgrade.  You will probably need to manually resolve this condition.");
             if (Error.class.isAssignableFrom(t.getClass())) { throw t; }
             System.exit(1);
         }
@@ -76,6 +77,10 @@ public abstract class SLModule {
     protected abstract int schemaUpgrade(DBConnection db,String schemaname, int currentversion);
 
     public int getSchemaVersion(DBConnection db,String schemaname) {
-        return db.dqinn("select max(version) from schemaversions where name like ?",schemaname);
+        try { return db.dqinn("select max(version) from schemaversions where name like ?",schemaname); }
+        catch (Throwable t) {
+            System.err.println("Exception thrown during Schema Version query on schema "+schemaname);
+            throw t;
+        }
     }
 }

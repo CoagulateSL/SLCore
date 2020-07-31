@@ -83,7 +83,7 @@ httpsend(string url) {
 	#endif
 	
 	string devinject=""; if (DEV) { devinject="dev."; }
-	string SERVER_URL="http://"+devinject+"SL.Coagulate.NET/"+url;
+	string SERVER_URL="http://"+devinject+SERVER_HOSTNAME+"/"+url;
 	//llOwnerSay(llGetScriptName()+": Sending to "+SERVER_URL+"\n"+json);
 	llHTTPRequest(SERVER_URL,[HTTP_METHOD,"POST"],json);
 }

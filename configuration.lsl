@@ -10,4 +10,4 @@
 // the raw FQDN host name of your server (will expect e.g. /GPHUD/system to work.  Requires HTTP and HTTPS access to be working with valid certificate for HTTPS)
 #define SERVER_HOSTNAME "your.hostname.com"
 // avatar UUID for the "developer" (you probably), gives access to fake startups, and diagnostic/repackaging commands
-#define SYSTEM_OWNER_UUID 12345678-9abc-def1-2345-6789abcdef12"
+#define SYSTEM_OWNER_UUID "12345678-90ab-cdef-1234-567890abcdef"

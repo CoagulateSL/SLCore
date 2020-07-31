@@ -12,8 +12,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-import static java.util.logging.Level.SEVERE;
-import static java.util.logging.Level.WARNING;
+import static java.util.logging.Level.*;
 import static net.coagulate.SL.SL.DEV;
 
 public class SLCore extends SLModule {
@@ -47,7 +46,7 @@ public class SLCore extends SLModule {
 
     @Override
     public void initialise() {
-        schemaCheck(SL.getDB(),"slcore",1);
+        schemaCheck(SL.getDB(),"slcore",2);
     }
 
     @Override
@@ -59,7 +58,14 @@ public class SLCore extends SLModule {
     }
 
     @Override
-    protected int schemaUpgrade(DBConnection db, String schemaname, int currentversion) {
+    protected int schemaUpgrade(DBConnection db, String schemaname, int currentversion)
+    {
+        if (currentversion==1) {
+            currentversion=2;
+            SL.log("SLCore").log(CONFIG,"Upgrading schema from 1 to 2");
+            SL.log("SLCore").log(CONFIG,"Schema: Change lastrun in masternode to default 0 and not null");
+            db.d("alter table masternode modify column lastrun int default 0 not null");
+        }
         return currentversion;
     }
 

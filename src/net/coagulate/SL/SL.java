@@ -216,6 +216,12 @@ public class SL extends Thread {
 
     private static boolean wasmasternode=false;
     public static boolean primaryNode() {
+        // default schema has this being empty :P
+        int rowcount=getDB().dqinn("select count(*) from masternode");
+        if (rowcount==0) {
+            getDB().d("insert into masternode(name) values(?)",Config.getHostName());
+            log("Maintenance").config("Claimed the master node role as it was unset");
+        }
         final String name = getDB().dqs("select name from masternode");
         if (!Config.getHostName().equalsIgnoreCase(name)) {
             if (wasmasternode) {

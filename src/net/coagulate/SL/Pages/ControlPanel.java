@@ -6,11 +6,13 @@ import net.coagulate.Core.Exceptions.User.UserAccessDeniedException;
 import net.coagulate.Core.Exceptions.User.UserInputStateException;
 import net.coagulate.Core.Tools.ExceptionTools;
 import net.coagulate.Core.Tools.MailTools;
+import net.coagulate.Core.Tools.TraceProfiler;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.GetAgentID;
 import net.coagulate.SL.HTTPPipelines.AuthenticatedContainerHandler;
 import net.coagulate.SL.HTTPPipelines.Page;
 import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
+import net.coagulate.SL.Pages.HTML.Header1;
 import net.coagulate.SL.Pages.HTML.Raw;
 import net.coagulate.SL.Pages.HTML.State;
 import net.coagulate.SL.Pages.HTML.Table;
@@ -115,6 +117,11 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 				    submit("Shutdown").
 					submit("ForceMaintenance").
 				    submit("NameAPI");
+
+		for (String traceprofile:TraceProfiler.profiles()) {
+			page.form().add(new Header1(traceprofile));
+			page.form().add(new Raw(TraceProfiler.reportProfile(traceprofile)));
+		}
 	}
 
 

@@ -117,7 +117,7 @@ public class Config {
 
     public static String getQLRSlowBotFirstName() { return getString("lslr-slow-firstname"); }
 
-    public static String getQLRSLowBotFirstName() { return getString("lslr-slow-lastname"); }
+    public static String getQLRSlowBotLastName() { return getString("lslr-slow-lastname"); }
 
     public static String getQLRSlowBotPassword() { return getString("lslr-slow-password"); }
 

@@ -2,7 +2,6 @@ package net.coagulate.SL.HTTPPipelines;
 
 import net.coagulate.Core.Database.NoDataException;
 import net.coagulate.Core.Exceptions.UserException;
-//import net.coagulate.JSLBot.Packets.Types.LLUUID;
 import net.coagulate.SL.Data.User;
 import net.coagulate.SL.Pages.HTML.Raw;
 import net.coagulate.SL.Pages.HTML.State;
@@ -103,7 +102,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
 	private String failPage() { return loginpage1+"<tr><td colspan=2><font color=red><b>Invalid Login</b></font></td></tr>"+loginpageprebot+botLine()+loginpagepostbot; }
 
 	@Nonnull
-	private String ssoSentPage() { return loginpage1+"<tr><td colspan=2><font color=blue><b>Login sent via IM in Second Life</b></font></td></tr>"+loginpageprebot+botLine()+loginpagepostbot; }
+	private String ssoSentPage() { return loginpage1+"<tr><td colspan=2><font color=blue><b>Login sent via IM in Second Life (please wait up to 10 seconds)</b></font></td></tr>"+loginpageprebot+botLine()+loginpagepostbot; }
 
 	@Nonnull
 	private String loginPage() { return loginpage1+loginpageprebot+botLine()+loginpagepostbot; }

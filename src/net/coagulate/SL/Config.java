@@ -142,4 +142,6 @@ public class Config {
     public static String getDistributionRegion() { return getString("gphud-distributionregion",""); }
 
     public static String getURLHost() { return getString("urlhostname",getHostName()); }
+
+    public static boolean getDatabasePathTracing() { return getBoolean("db-entry-point-checking",false); }
 }

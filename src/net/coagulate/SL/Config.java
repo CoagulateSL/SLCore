@@ -140,4 +140,6 @@ public class Config {
     public static String getDigestSalt() { return getString("digestsalt"); }
 
     public static String getDistributionRegion() { return getString("gphud-distributionregion",""); }
+
+    public static String getURLHost() { return getString("urlhostname",getHostName()); }
 }

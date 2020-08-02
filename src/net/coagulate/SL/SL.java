@@ -11,11 +11,13 @@ import net.coagulate.Core.Exceptions.SystemException;
 import net.coagulate.Core.Exceptions.UserException;
 import net.coagulate.Core.HTTP.HTTPListener;
 import net.coagulate.Core.Tools.*;
+import net.coagulate.GPHUD.Data.Region;
 import net.coagulate.SL.HTTPPipelines.PageMapper;
 import org.apache.http.Header;
 import org.apache.http.HttpInetConnection;
 import org.apache.http.HttpRequest;
 import org.apache.http.protocol.HttpContext;
+import org.json.JSONObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,6 +46,7 @@ public class SL extends Thread {
     @Nullable
     private static HTTPListener listener;
     private static final Map<String,SLModule> modules=new TreeMap<>();
+    private static boolean imwarned=false;
 
     private SL() {}
 
@@ -385,7 +388,26 @@ public class SL extends Thread {
     }
 
     public static void im(String uuid, String message) {
-        weakInvoke("JSLBotBridge","im",uuid,message);
+        if (hasModule("JSLBotBridge")) {
+            weakInvoke("JSLBotBridge", "im", uuid, message);
+            return;
+        }
+        if (!Config.getDistributionRegion().isBlank()) {
+            System.out.println("Here:");
+            Region r=Region.findNullable(Config.getDistributionRegion(),false);
+            if (r==null) {
+                log().warning("Instant messaging services unavailable, no JSLBotBridge or Distribution Region configured");
+                return;
+            }
+            System.out.println("Here:"+r.getName());
+            JSONObject json=new JSONObject();
+            json.put("instantmessage",uuid);
+            json.put("instantmessagemessage",message);
+            r.sendServerSync(json);
+            System.out.println("Done");
+            return;
+        }
+        if (!imwarned) { log().info("There is no supplier configured for delivering instant messages"); imwarned=true; }
     }
 
     public static void groupInvite(String uuid, String groupuuid, String roleuuid) {

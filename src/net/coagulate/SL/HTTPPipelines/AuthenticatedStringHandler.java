@@ -22,6 +22,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
 
 	private static final String loginpage1="<form method=post><p align=center>"+"<table align=center><tr><td colspan=2>"+"<h1>Welcome to Coagulate SL Services</h1><br>"+"SL"+".Coagulate"+".net"+" is an "+"umbrella service that contains a set of different services used in Second Life.<br>"+"Currently this consists of the following:<ul>"+"<li"+">RPHUD "+"- "+"Obsolete RP HUD (<a href=\"https://www.coagulate.net/wiki/index.php/RPHUD\">Limited Documentation Here</a>)</li>"+"<li>GPHUD - Next "+"Generation RP "+"HUD "+"(<a "+"href=\"https://sl.coagulate.net/Docs/GPHUD/\">Documentation</a>)</li>"+"<li>Quiet Life Rentals - Land rental company in Second Life "+"(<a"+" "+"href=\"https"+"://coagulate"+".sl/Docs/QLR/\">Documentation)</a></li>"+"</ul>"+"These services are run by <a "+"href=\"secondlife:///app/agent"+"/8dc52677-bea8-4fc3-b69b"+"-21c5e2224306/about\">Iain "+"Maltz</a>"+"</p></td></tr>"+"<tr><td colspan=2>&nbsp;</td></tr>"+"<tr><td"+" colspan=2><hr></td"+"></tr>"+"<tr><td colspan=2>&nbsp;"+"</td></tr>"+"<tr><td colspan=2 "+"align=center><font size=5><u>Login</u></font></td></tr>"+"<tr><td"+">&nbsp;"+"</td></tr>"+"<tr><th align=right>Avatar "+"Name:</th"+"><td><input autofocus type=text "+"size=20"+" name=login_username></td></tr>";
 	private static final String loginpageprebot=""+"<tr><th align=right>Coagulate SL Password:</th><td><input type=password size=20 name=login_password></td></tr>"+"<tr><td"+" colspan=2 align=center><i>If you "+"do not enter a password, your avatar will be IMed a login in Second Life</i></td></tr>"+"<tr><td colspan=2>&nbsp;</td></tr>"+"<tr><td colspan=2 "+"align=center><button type=submit name=Login value=Login>Login</button></td></tr>"+"</table>";
+	private static final String loginpageprebotnoim=""+"<tr><th align=right>Coagulate SL Password:</th><td><input type=password size=20 name=login_password></td></tr>"+"<tr><td colspan=2>&nbsp;</td></tr>"+"<tr><td colspan=2 "+"align=center><button type=submit name=Login value=Login>Login</button></td></tr>"+"</table>";
 	private static final String loginpagepostbot="</p></form></table>";
 
 	// ---------- INSTANCE ----------
@@ -37,7 +38,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
 					return new StringEntity(new Page().add(new Raw(loginPage())).toHtml(state),ContentType.TEXT_HTML);
 				}
 				else {
-					if ("Login".equals(state.get("Login")) && password.isEmpty()) {
+					if ("Login".equals(state.get("Login")) && password.isEmpty() && SL.canIM()) {
 						final User target=User.findUsernameNullable(username,false);
 						if (target!=null) {
 							final String token=target.generateSSO();
@@ -99,13 +100,13 @@ public abstract class AuthenticatedStringHandler extends Handler {
 	}
 
 	@Nonnull
-	private String failPage() { return loginpage1+"<tr><td colspan=2><font color=red><b>Invalid Login</b></font></td></tr>"+loginpageprebot+botLine()+loginpagepostbot; }
+	private String failPage() { return loginpage1+"<tr><td colspan=2><font color=red><b>Invalid Login</b></font></td></tr>"+(SL.canIM()?loginpageprebot:loginpageprebotnoim)+botLine()+loginpagepostbot; }
 
 	@Nonnull
-	private String ssoSentPage() { return loginpage1+"<tr><td colspan=2><font color=blue><b>Login sent via IM in Second Life</b></font></td></tr>"+loginpageprebot+botLine()+loginpagepostbot; }
+	private String ssoSentPage() { return loginpage1+"<tr><td colspan=2><font color=blue><b>Login sent via IM in Second Life</b></font></td></tr>"+(SL.canIM()?loginpageprebot:loginpageprebotnoim)+botLine()+loginpagepostbot; }
 
 	@Nonnull
-	private String loginPage() { return loginpage1+loginpageprebot+botLine()+loginpagepostbot; }
+	private String loginPage() { return loginpage1+(SL.canIM()?loginpageprebot:loginpageprebotnoim)+botLine()+loginpagepostbot; }
 
 	@Nonnull
 	private String botLine() { return ""; }

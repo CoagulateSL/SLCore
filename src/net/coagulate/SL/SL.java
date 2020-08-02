@@ -385,6 +385,7 @@ public class SL extends Thread {
         }
     }
 
+    public static boolean canIM() { return hasModule("JSLBotBridge") || hasModule("GPHUD"); }
     public static void im(String uuid, String message) {
         if (hasModule("JSLBotBridge")) {
             weakInvoke("JSLBotBridge", "im", uuid, message);
@@ -394,7 +395,7 @@ public class SL extends Thread {
             weakInvoke("GPHUD","im",uuid,message);
             return;
         }
-        if (!imwarned) { log().info("There is no supplier configured for delivering instant messages"); imwarned=true; }
+        if (!imwarned) { log().warning("There is no supplier configured for delivering instant messages"); imwarned=true; }
     }
 
     public static void groupInvite(String uuid, String groupuuid, String roleuuid) {

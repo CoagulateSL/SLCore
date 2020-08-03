@@ -151,7 +151,7 @@ comms_do_callback() {
 }
 #endif
 comms_error(string message) {
-	llOwnerSay(llGetScriptName()+" : Cluster Server failed.  Please retry your last operation.");
+	llOwnerSay(llGetScriptName()+" : Stack Server failed.  Please retry your last operation.");
 }
 integer comms_http_response(key request_id,integer status) {
 	return FALSE;

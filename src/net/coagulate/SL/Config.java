@@ -148,4 +148,6 @@ public class Config {
     // don't cheese this.  it currently does the following things
     // 1) Triggers a group invite to instance owners to join the "GPHUD Instance Owners" group via a bot.
     public static boolean isOfficial() { return getBoolean("official-install",false); }
+
+    public static boolean skipShardCheck() { return getBoolean("skipshardcheck",false); }
 }

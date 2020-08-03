@@ -150,4 +150,32 @@ public class Config {
     public static boolean isOfficial() { return getBoolean("official-install",false); }
 
     public static boolean skipShardCheck() { return getBoolean("skipshardcheck",false); }
+
+    public static String getCoagulateSquareLogo() {
+        if (getGrid()==GRID.OSGRID) { return "18d20253-3eea-4180-8d95-3f28a212b0ce"; }
+        return "8dcd4a48-2d37-4909-9f78-f7a9eb4ef903";
+    }
+    public static String getCreatorUUID() {
+        if (getGrid()==GRID.OSGRID) { return "cb191fe5-0941-46e6-81b9-c57431fd0ee4"; }
+        return "8dc52677-bea8-4fc3-b69b-21c5e2224306";
+    }
+    public static String getCoagulateLogo() {
+        if (getGrid()==GRID.OSGRID) { return "d9208f65-9922-42ef-a385-4f1f38255ef1"; }
+        return "c792716b-13a3-06c9-6e7c-33c4e9d5a48f";
+    }
+    public static String getGPHUDLogo() {
+        if (getGrid()==GRID.OSGRID) { return "9676cf69-b36c-4edc-b470-57f2ef4a9505"; }
+        return "36c48d34-3d84-7b9a-9979-cda80cf1d96f";
+    }
+    public static String getCoagulateDevLogo() {
+        if (getGrid()==GRID.OSGRID) { return "e3b30b2e-dddd-43cb-a8f1-16ebe5f1b33c"; }
+        return "891e1d92-9fc6-b256-a423-b5c037e70e28";
+    }
+
+    public static GRID getGrid() {
+        String gridname=getString("grid","SecondLife").toLowerCase();
+        if (gridname.equals("osgrid")) { return GRID.OSGRID; }
+        return GRID.SECONDLIFE;
+    }
+    public enum GRID {SECONDLIFE,OSGRID};
 }

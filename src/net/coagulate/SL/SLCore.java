@@ -18,7 +18,7 @@ import static net.coagulate.SL.SL.DEV;
 public class SLCore extends SLModule {
     public static final int MAJORVERSION=1;
     public static final int MINORVERSION=0;
-    public static final int BUGFIXVERSION=7;
+    public static final int BUGFIXVERSION=8;
     public static final String COMMITID ="MANUAL";
     public static final Date BUILDDATE=new Date(0L);
     public final int majorVersion() { return MAJORVERSION; }

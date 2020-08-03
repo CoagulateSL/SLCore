@@ -52,7 +52,7 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 		if ("Test Mail".equals(state.get("Test Mail"))) {
 			page.paragraph("Sending mail");
 			try {
-				MailTools.mail("CL Cluster "+Config.getHostName(),
+				MailTools.mail("SL Stack "+Config.getHostName(),
 				               "sl-cluster-alerts@predestined.net",
 				               "SL Mail Tester",
 				               "sl-cluster-alerts@predestined.net",

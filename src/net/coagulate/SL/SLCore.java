@@ -3,6 +3,7 @@ package net.coagulate.SL;
 import net.coagulate.Core.Database.DB;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Tools.ByteTools;
+import net.coagulate.Core.Tools.Cache;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -51,6 +52,9 @@ public class SLCore extends SLModule {
 
     @Override
     public void maintenance() {
+        if (nextRun("SLCore-Cache-Clear",60)) {
+            Cache.maintenance();
+        }
         if (!Config.enableZabbix()) { return; }
         if (nextRun("SLCore-DBStats-maintenance",60)) {
             reportDBStats();

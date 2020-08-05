@@ -51,7 +51,7 @@ public class Page extends Container {
 			ret+=" // Operated by "+Config.getBrandingOwnerHumanReadable();
 		}
 		ret+="<span style='display:block;float:right;'>(C) ";
-		if (Config.isOfficial()) { ret+="Coagulate SL (Iain Price)"; }
+		if (Config.isOfficial()) { ret+="Coagulate SL (Iain Price)"; } else
 		{ ret+="<a href=\"https://sl.coagulate.net/landingpage\">Coagulate SL (Iain Price)</a>"; }
 		ret+=", Iain Maltz @ SecondLife</span></div></body></html>";
 		return ret;

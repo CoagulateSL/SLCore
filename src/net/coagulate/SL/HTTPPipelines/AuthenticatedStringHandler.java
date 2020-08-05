@@ -137,7 +137,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
 	private String failPage() { return loginpage1()+"<tr><td colspan=2><font color=red><b>Invalid Login</b></font></td></tr>"+(SL.canIM()?loginpageprebot():loginpageprebotnoim())+botLine()+loginpagepostbot(); }
 
 	@Nonnull
-	private String ssoSentPage() { return loginpage1()+"<tr><td colspan=2><font color=blue><b>Login sent via IM in Second Life</b></font></td></tr>"+(SL.canIM()?loginpageprebot():loginpageprebotnoim())+botLine()+loginpagepostbot(); }
+	private String ssoSentPage() { return loginpage1()+"<tr><td colspan=2><font color=blue><b>Login sent via IM in "+Config.getGridName()+"</b></font></td></tr>"+(SL.canIM()?loginpageprebot():loginpageprebotnoim())+botLine()+loginpagepostbot(); }
 
 	@Nonnull
 	private String loginPage() { return loginpage1()+(SL.canIM()?loginpageprebot():loginpageprebotnoim())+botLine()+loginpagepostbot(); }

@@ -182,6 +182,11 @@ public class Config {
 
     public static String getBrandingOwnerHumanReadable() { return getString("branding-owner-name","Someone Unknown"); }
 
+    public static String getGridName() {
+        if (getGrid()==GRID.OSGRID) { return "OSGrid"; }
+        return "Second Life";
+    }
+
     public enum GRID {SECONDLIFE,OSGRID}
 
     public static String getBrandingName() { return getString("branding-name",""); }

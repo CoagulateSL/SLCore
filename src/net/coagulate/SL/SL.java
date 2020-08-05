@@ -127,7 +127,8 @@ public class SL extends Thread {
 
     @Nonnull
     public static String getBannerURL() {
-        return "/resources/banner-coagulate" + (DEV ? "-dev" : "") + ".png";
+        if (Config.getWebLogo().isBlank()) { return "/resources/banner-coagulate" + (DEV ? "-dev" : "") + ".png"; }
+        return "/resources/"+Config.getWebLogo();
     }
 
     @Nonnull
@@ -403,6 +404,16 @@ public class SL extends Thread {
     }
 
     public static Collection<SLModule> modules() { return modules.values(); }
+
+    /** a branding name regardless of who owns it (i.e. can return Coagulate SL)
+     *
+     * @return a branding name regardless of who owns it (i.e. can return Coagulate SL)
+     */
+    public static String brandNameUniversal() {
+        if (Config.isOfficial()) { return "Coagulate SL"; }
+        if (!Config.getBrandingName().isBlank()) { return Config.getBrandingName(); }
+        return "Unknown";
+    }
 
     @Override
     public void run() {

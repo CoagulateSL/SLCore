@@ -177,5 +177,15 @@ public class Config {
         if (gridname.equals("osgrid")) { return GRID.OSGRID; }
         return GRID.SECONDLIFE;
     }
-    public enum GRID {SECONDLIFE,OSGRID};
+
+    public static String getWebLogo() { return getString("branding-web-logo",""); }
+
+    public static String getBrandingOwnerHumanReadable() { return getString("branding-owner-name","Someone Unknown"); }
+
+    public enum GRID {SECONDLIFE,OSGRID}
+
+    public static String getBrandingName() { return getString("branding-name",""); }
+
+    public static String getBrandingOwnerUUID() { return getString("branding-owner","00000000-0000-0000-00000000"); }
+    public static String getBrandingOwnerSLURL() { return "secondlife:///app/agent/"+getBrandingOwnerUUID()+"/about"; }
 }

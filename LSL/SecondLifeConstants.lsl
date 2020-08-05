@@ -7,4 +7,5 @@
 #define GPHUD_LOGO "36c48d34-3d84-7b9a-9979-cda80cf1d96f"
 #define GPHUD_BORDER_TEXTURE "6c6aa3ff-10a3-80dd-7e03-287186336b0f"
 #define GPHUD_ENVELOPE_ICON "60cb35da-b30c-21ac-4d02-68a93d2e5827"
+#define GPHUD_CLOSE_ICON "ca0b9851-4394-fe24-e0f1-eb8de9dec6e6"
 #endif

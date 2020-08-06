@@ -77,7 +77,7 @@ public abstract class AuthenticatedStringHandler extends Handler {
 						if (target!=null) {
 							final String token=target.generateSSO();
 							final String message;
-							if (SL.DEV) {
+							if (Config.getDevelopment()) {
 								message="\n\n===== DEVELOPMENT SSO ENTRY POINT =====\n\n\n[https://dev.sl.coagulate.net/SSO/"+token+" Log in to Coagulate SL DEVELOPMENT "+"ENVIRONMENT]\n\n";
 							}
 							else {

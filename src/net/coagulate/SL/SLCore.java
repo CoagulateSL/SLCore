@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import static java.util.logging.Level.*;
-import static net.coagulate.SL.SL.DEV;
 
 public class SLCore extends SLModule {
     public static final int MAJORVERSION=1;
@@ -74,7 +73,7 @@ public class SLCore extends SLModule {
     }
 
     private void reportDBStats() {
-        if (DEV) {return;} // only log for production.
+        if (Config.getDevelopment()) {return;} // only log for production.
         int queries=0;
         int updates=0;
         long querytime=0;

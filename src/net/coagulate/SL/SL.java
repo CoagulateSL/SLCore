@@ -34,7 +34,6 @@ import static java.util.logging.Level.SEVERE;
  * @author Iain Price
  */
 public class SL extends Thread {
-    public static boolean DEV;
     @Nullable
     private static Logger log;
     private static boolean shutdown;
@@ -66,7 +65,6 @@ public class SL extends Thread {
         }
         Config.load(args[0]);
 
-        DEV = Config.getDevelopment();
         loggingInitialise();
         log().config("Logging services initialised");
 
@@ -127,7 +125,7 @@ public class SL extends Thread {
 
     @Nonnull
     public static String getBannerURL() {
-        if (Config.getWebLogo().isBlank()) { return "/resources/banner-coagulate" + (DEV ? "-dev" : "") + ".png"; }
+        if (Config.getWebLogo().isBlank()) { return "/resources/banner-coagulate" + (Config.getDevelopment() ? "-dev" : "") + ".png"; }
         return "/resources/"+Config.getWebLogo();
     }
 
@@ -167,10 +165,10 @@ public class SL extends Thread {
                     System.out.println("Exception Report Suppressed " + LogHandler.getCount(t) + "x" + LogHandler.getSignature(t));
                     return;
                 }
-                MailTools.mail((DEV ? "Dev" : "PROD") + " EX : " + header + " - " + t.getLocalizedMessage(), output);
+                MailTools.mail((Config.getDevelopment() ? "Dev" : "PROD") + " EX : " + header + " - " + t.getLocalizedMessage(), output);
                 return;
             }
-            MailTools.mail((DEV ? "Dev" : "PROD") + " EX : " + header, output);
+            MailTools.mail((Config.getDevelopment() ? "Dev" : "PROD") + " EX : " + header, output);
         } catch (@Nonnull final MessagingException e) {
             log().log(SEVERE, "Exception mailing out about exception", e);
         }
@@ -268,14 +266,14 @@ public class SL extends Thread {
     private static void loggingInitialise() {
         LogHandler.initialise();
         log = Logger.getLogger("net.coagulate.SL");
-        LogHandler.mailprefix = "E:" + (DEV ? "(DEV) " : " ");
+        LogHandler.mailprefix = "E:" + (Config.getDevelopment() ? "(DEV) " : " ");
     }
 
     private static void configureMailTarget() {
         MailTools.defaultfromaddress = Config.getDeveloperEmail();
         MailTools.defaulttoaddress = Config.getDeveloperEmail();
         MailTools.defaulttoname = "SL Developers";
-        MailTools.defaultfromname = (DEV ? "Dev " : "") + Config.getHostName();
+        MailTools.defaultfromname = (Config.getDevelopment() ? "Dev " : "") + Config.getHostName();
         MailTools.defaultserver = Config.getMailServer();
     }
 
@@ -288,12 +286,12 @@ public class SL extends Thread {
             findModules();
             log().config("Initialising PageMapper");
             PageMapper.initialise();
-            if (!DEV) {
+            if (!Config.getDevelopment()) {
                 log().config("SL Services starting up on " + Config.getHostName());
             } else {
                 log().config("SL DEVELOPMENT Services starting up on " + Config.getHostName());
             }
-            db = new MariaDBConnection("SL" + (DEV ? "DEV" : ""), Config.getJdbc());
+            db = new MariaDBConnection("SL" + (Config.getDevelopment() ? "DEV" : ""), Config.getJdbc());
             for (SLModule module : modules.values()) {
                 log().config("Initialising module - " + module.getName());
                 module.initialise();
@@ -303,12 +301,12 @@ public class SL extends Thread {
                 module.startup();
             }
             // something about mails may break later on so we send a test mail here...
-            MailTools.mail("CoagulateSL "+(DEV?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" (v"+getStackVersion()+" "+SLCore.getBuildDate()+")", htmlVersionDump());
+            MailTools.mail("CoagulateSL "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" (v"+getStackVersion()+" "+SLCore.getBuildDate()+")", htmlVersionDump());
             // TODO Pricing.initialise();
             listener = new HTTPListener(Config.getPort(), PageMapper.getPageMapper());
             log().info("Startup complete.");
             log().info("========================================================================================================================");
-            log().info(outerPad("=====[ Coagulate " + (DEV ? "DEVELOPMENT " : "") + "Second Life Services ]======"));
+            log().info(outerPad("=====[ Coagulate " + (Config.getDevelopment() ? "DEVELOPMENT " : "") + "Second Life Services ]======"));
             log().info("========================================================================================================================");
             for (SLModule module : modules.values()) {
                 log().info(spacePad(spacePrePad(module.getVersion())+" - "+module.commitId()+" - " +module.getName() + " - "+ module.getDescription()));

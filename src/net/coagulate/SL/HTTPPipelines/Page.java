@@ -18,7 +18,7 @@ public class Page extends Container {
 	@Nonnull
 	public static String pageHeader(@Nonnull final State state) {
 		//new Exception().printStackTrace();
-		String r="<html><head><title>"+(SL.DEV?"DEV ":"")+SL.brandNameUniversal()+"</title>"+"<link rel=\"shortcut icon\" href=\"/resources/icon-cluster"+(SL.DEV?"-dev":"")+".png\">"+"</head><body>"+"<p align=center>"+SL
+		String r="<html><head><title>"+(Config.getDevelopment()?"DEV ":"")+SL.brandNameUniversal()+"</title>"+"<link rel=\"shortcut icon\" href=\"/resources/icon-cluster"+(Config.getDevelopment()?"-dev":"")+".png\">"+"</head><body>"+"<p align=center>"+SL
 				.getBannerHREF()+"</p><p><hr>";
 		r+="<table width=100%><tr width=100%><td align=left width=400px>"+"Greetings";
 		if (state.userNullable()!=null) { r+=",&nbsp;"+state.user().getUsername().replaceAll(" ","&nbsp;"); }
@@ -44,7 +44,7 @@ public class Page extends Container {
 	@Nonnull
 	public static String pageFooter(final State state) {
 		String ret="<div style='position:absolute;bottom:5;right:5;left:5;'><hr>";
-		ret+=(SL.DEV?"DEVELOPMENT":"Production");
+		ret+=(Config.getDevelopment()?"DEVELOPMENT":"Production");
 		ret+=" // "+Config.getHostName();
 		ret+=" // <a href=\"/versions\">Stack v"+ SL.getStackVersion()+"</a>";
 		if (!Config.isOfficial()) {

@@ -5,7 +5,9 @@ import net.coagulate.Core.Exceptions.System.SystemImplementationException;
 import net.coagulate.Core.Tools.UnixTime;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Logger;
 
 public abstract class SLModule {
@@ -13,10 +15,10 @@ public abstract class SLModule {
     private final Map<String,Integer> nextruns=new HashMap<>();
     private final Logger logger;
 
-    protected final boolean nextRun(String name,int interval) {
+    protected final boolean nextRun(String name,int interval,int variance) {
         if (!nextruns.containsKey(name)) { nextruns.put(name,UnixTime.getUnixTime()); } // why am i doing unixtime stuff here...
         if (UnixTime.getUnixTime()<nextruns.get(name)) { return false; }
-        nextruns.put(name,nextruns.get(name)+interval);
+        nextruns.put(name,nextruns.get(name)+interval+ThreadLocalRandom.current().nextInt(variance*2)-variance);
         return true;
     }
     public SLModule() {logger=SL.log(getClass().getSimpleName());}

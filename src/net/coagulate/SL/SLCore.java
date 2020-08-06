@@ -51,13 +51,8 @@ public class SLCore extends SLModule {
 
     @Override
     public void maintenance() {
-        if (nextRun("SLCore-Cache-Clear",60)) {
-            Cache.maintenance();
-        }
-        if (!Config.enableZabbix()) { return; }
-        if (nextRun("SLCore-DBStats-maintenance",60)) {
-            reportDBStats();
-        }
+        if (nextRun("SLCore-Cache-Clear",60,30)) { Cache.maintenance(); }
+        if (Config.enableZabbix() && nextRun("SLCore-DBStats-maintenance",60,0)) { reportDBStats(); }
     }
 
     @Override

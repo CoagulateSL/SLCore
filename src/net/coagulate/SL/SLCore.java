@@ -2,7 +2,6 @@ package net.coagulate.SL;
 
 import net.coagulate.Core.Database.DB;
 import net.coagulate.Core.Database.DBConnection;
-import net.coagulate.Core.HTML.Page;
 import net.coagulate.Core.Tools.ByteTools;
 import net.coagulate.Core.Tools.Cache;
 

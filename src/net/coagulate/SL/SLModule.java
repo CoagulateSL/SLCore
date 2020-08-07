@@ -18,7 +18,9 @@ public abstract class SLModule {
     protected final boolean nextRun(String name,int interval,int variance) {
         if (!nextruns.containsKey(name)) { nextruns.put(name,UnixTime.getUnixTime()); } // why am i doing unixtime stuff here...
         if (UnixTime.getUnixTime()<nextruns.get(name)) { return false; }
-        nextruns.put(name,nextruns.get(name)+interval+ThreadLocalRandom.current().nextInt(variance*2)-variance);
+        int nextrun=nextruns.get(name)+interval;
+        if (variance>0) { nextrun+=ThreadLocalRandom.current().nextInt(variance*2)-variance; }
+        nextruns.put(name,nextrun);
         return true;
     }
     public SLModule() {logger=SL.log(getClass().getSimpleName());}

@@ -193,4 +193,5 @@ public class Config {
 
     public static String getBrandingOwnerUUID() { return getString("branding-owner","00000000-0000-0000-00000000"); }
     public static String getBrandingOwnerSLURL() { return "secondlife:///app/agent/"+getBrandingOwnerUUID()+"/about"; }
+    public static String getJSLBotBridgeLoginURI() { return getString("jslbotbridge-loginuri",""); }
 }

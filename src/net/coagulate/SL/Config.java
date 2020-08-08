@@ -187,6 +187,9 @@ public class Config {
         return "Second Life";
     }
 
+    public static String getQLRFastBotSeat() { return getString("lslr-fast-seat",""); }
+    public static String getQLRSlowBotSeat() { return getString("lslr-slow-seat",""); }
+
     public enum GRID {SECONDLIFE,OSGRID}
 
     public static String getBrandingName() { return getString("branding-name",""); }
@@ -194,4 +197,5 @@ public class Config {
     public static String getBrandingOwnerUUID() { return getString("branding-owner","00000000-0000-0000-00000000"); }
     public static String getBrandingOwnerSLURL() { return "secondlife:///app/agent/"+getBrandingOwnerUUID()+"/about"; }
     public static String getJSLBotBridgeLoginURI() { return getString("jslbotbridge-loginuri",""); }
+    public static String getJSLBotBridgeSeat() { return getString("jslbotbridge-seat",""); }
 }

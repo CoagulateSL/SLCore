@@ -9,6 +9,8 @@ import net.coagulate.Core.Exceptions.System.SystemInitialisationException;
 import net.coagulate.Core.Exceptions.System.SystemLookupFailureException;
 import net.coagulate.Core.Exceptions.SystemException;
 import net.coagulate.Core.Exceptions.UserException;
+import net.coagulate.Core.HTML.Container;
+import net.coagulate.Core.HTML.Elements.Img;
 import net.coagulate.Core.HTTP.HTTPListener;
 import net.coagulate.Core.Tools.*;
 import net.coagulate.SL.HTTPPipelines.PageMapper;
@@ -130,8 +132,8 @@ public class SL extends Thread {
     }
 
     @Nonnull
-    public static String getBannerHREF() {
-        return "<img src=\"" + getBannerURL() + "\">";
+    public static Container getBannerHREF() {
+        return new Img(getBannerURL());
     }
 
     public static void report(final String header,

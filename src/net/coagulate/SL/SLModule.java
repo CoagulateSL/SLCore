@@ -37,10 +37,9 @@ public abstract class SLModule {
     public abstract int minorVersion();
     public abstract int bugFixVersion();
     public abstract String commitId();
-    public String getBuildDateString() {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(getBuildDate());
-    }
+    public String getBuildDateString() { return convertDate(getBuildDate()); }
     public abstract Date getBuildDate();
+    public static String convertDate(Date date) { return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(date); }
 
     // this is a lame mechanism.  It allows a module to be invoked even if it might not be present
     // because weakInvoke is part of the CoagulateSL module everything knows about this

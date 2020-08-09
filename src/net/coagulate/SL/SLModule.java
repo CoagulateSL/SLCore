@@ -5,6 +5,8 @@ import net.coagulate.Core.Exceptions.System.SystemImplementationException;
 import net.coagulate.Core.Tools.UnixTime;
 
 import javax.annotation.Nonnull;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -35,6 +37,10 @@ public abstract class SLModule {
     public abstract int minorVersion();
     public abstract int bugFixVersion();
     public abstract String commitId();
+    public String getBuildDateString() {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(getBuildDate());
+    }
+    public abstract Date getBuildDate();
 
     // this is a lame mechanism.  It allows a module to be invoked even if it might not be present
     // because weakInvoke is part of the CoagulateSL module everything knows about this

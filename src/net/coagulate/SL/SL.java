@@ -303,7 +303,7 @@ public class SL extends Thread {
                 module.startup();
             }
             // something about mails may break later on so we send a test mail here...
-            MailTools.mail("CoagulateSL "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" (v"+getStackVersion()+" "+SLCore.getBuildDate()+")", htmlVersionDump());
+            MailTools.mail("CoagulateSL "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" (v"+getStackVersion()+" "+SL.getStackBuildDate()+")", htmlVersionDump());
             // TODO Pricing.initialise();
             listener = new HTTPListener(Config.getPort(), PageMapper.getPageMapper());
             log().info("Startup complete.");
@@ -311,10 +311,10 @@ public class SL extends Thread {
             log().info(outerPad("=====[ Coagulate " + (Config.getDevelopment() ? "DEVELOPMENT " : "") + "Second Life Services ]======"));
             log().info("========================================================================================================================");
             for (SLModule module : modules.values()) {
-                log().info(spacePad(spacePrePad(module.getVersion())+" - "+module.commitId()+" - " +module.getName() + " - "+ module.getDescription()));
+                log().info(spacePad(spacePrePad(module.getVersion())+" - "+module.commitId()+" - " +module.getBuildDateString()+" - "+module.getName() + " - "+ module.getDescription()));
             }
             log().info("------------------------------------------------------------------------------------------------------------------------");
-            log().info(spacePad(spacePrePad(getStackVersion())+" - "+SLCore.getBuildDate()+" - CoagulateSL Stack Version"));
+            log().info(spacePad(spacePrePad(getStackVersion())+" - "+SL.getStackBuildDate()+" - CoagulateSL Stack Version"));
             log().info("========================================================================================================================");
         }
         // print stack trace is discouraged, but the log handler may not be ready yet.
@@ -331,6 +331,7 @@ public class SL extends Thread {
         r.append("<th style=\"padding: 2px\">Name</th>");
         r.append("<th style=\"padding: 2px\">Version</th>");
         r.append("<th style=\"padding: 2px\">Commit Hash</th>");
+        r.append("<th style=\"padding: 2px\">Commit Date</th>");
         r.append("<th style=\"padding: 2px\">Description</th>");
         r.append("</tr>");
         for (SLModule module:modules()) {
@@ -338,13 +339,14 @@ public class SL extends Thread {
             r.append("<td style=\"padding: 2px\">").append(module.getName()).append("</td>");
             r.append("<td align=right style=\"padding: 2px\">").append(module.getVersion()).append("</td>");
             r.append("<td style=\"padding: 2px\">").append(module.commitId()).append("</td>");
+            r.append("<td style=\"padding: 2px\">").append(module.getBuildDateString()).append("</td>");
             r.append("<td style=\"padding: 2px\">").append(module.getDescription()).append("</td>");
             r.append("</tr>");
         }
         r.append("<tr>");
         r.append("<th align=left style=\"padding: 2px\">CoagulateSL</th>");
         r.append("<th align=right style=\"padding: 2px\">").append(getStackVersion()).append("</th>");
-        r.append("<th align=left style=\"padding: 2px\">").append(SLCore.getBuildDate()).append("</th>");
+        r.append("<th colspan=2 align=left style=\"padding: 2px\">").append(SL.getStackBuildDate()).append("</th>");
         r.append("<th align=left style=\"padding: 2px\">Coagulate SL Stack Build Information</th>");
         r.append("</tr></table></pre>");
         return r.toString();
@@ -413,6 +415,15 @@ public class SL extends Thread {
         if (Config.isOfficial()) { return "Coagulate SL"; }
         if (!Config.getBrandingName().isBlank()) { return Config.getBrandingName(); }
         return "Unknown";
+    }
+
+    public static String getStackBuildDate() {
+        Date bd=new Date(0L);
+        String bds="UNKNOWN";
+        for (SLModule module:modules.values()) {
+            if (module.getBuildDate().compareTo(bd)>0) { bd=module.getBuildDate(); bds=module.getBuildDateString(); }
+        }
+        return bds;
     }
 
     @Override

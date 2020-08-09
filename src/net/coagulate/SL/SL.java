@@ -11,6 +11,8 @@ import net.coagulate.Core.Exceptions.SystemException;
 import net.coagulate.Core.Exceptions.UserException;
 import net.coagulate.Core.HTML.Container;
 import net.coagulate.Core.HTML.Elements.Img;
+import net.coagulate.Core.HTML.Elements.Preformatted;
+import net.coagulate.Core.HTML.Elements.Table;
 import net.coagulate.Core.HTTP.HTTPListener;
 import net.coagulate.Core.Tools.*;
 import net.coagulate.SL.HTTPPipelines.PageMapper;
@@ -303,7 +305,7 @@ public class SL extends Thread {
                 module.startup();
             }
             // something about mails may break later on so we send a test mail here...
-            MailTools.mail("CoagulateSL "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" (v"+getStackVersion()+" "+SL.getStackBuildDate()+")", htmlVersionDump());
+            MailTools.mail("CoagulateSL "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" (v"+getStackVersion()+" "+SL.getStackBuildDate()+")", htmlVersionDump().toString());
             // TODO Pricing.initialise();
             listener = new HTTPListener(Config.getPort(), PageMapper.getPageMapper());
             log().info("Startup complete.");
@@ -311,7 +313,7 @@ public class SL extends Thread {
             log().info(outerPad("=====[ Coagulate " + (Config.getDevelopment() ? "DEVELOPMENT " : "") + "Second Life Services ]======"));
             log().info("========================================================================================================================");
             for (SLModule module : modules.values()) {
-                log().info(spacePad(spacePrePad(module.getVersion())+" - "+module.commitId()+" - " +module.getBuildDateString()+" - "+module.getName() + " - "+ module.getDescription()));
+                log().info(spacePad(spacePrePad(module.getVersion())+" - "+module.getBuildDateString()+" - "+module.commitId()+" - " +module.getName() + " - "+ module.getDescription()));
             }
             log().info("------------------------------------------------------------------------------------------------------------------------");
             log().info(spacePad(spacePrePad(getStackVersion())+" - "+SL.getStackBuildDate()+" - CoagulateSL Stack Version"));
@@ -326,30 +328,27 @@ public class SL extends Thread {
         }
     }
 
-    public static String htmlVersionDump() {
-        StringBuilder r= new StringBuilder("<pre><table border=1 style=\"border-collapse: collapse;\"><tr>");
-        r.append("<th style=\"padding: 2px\">Name</th>");
-        r.append("<th style=\"padding: 2px\">Version</th>");
-        r.append("<th style=\"padding: 2px\">Commit Hash</th>");
-        r.append("<th style=\"padding: 2px\">Commit Date</th>");
-        r.append("<th style=\"padding: 2px\">Description</th>");
-        r.append("</tr>");
+    public static Container htmlVersionDump() {
+        Table t=new Table();
+        t.collapsedBorder();
+        t.row().header("Name").
+                header("Version").
+                header("Commit Date").
+                header("Commit Hash").
+                header("Description");
         for (SLModule module:modules()) {
-            r.append("<tr>");
-            r.append("<td style=\"padding: 2px\">").append(module.getName()).append("</td>");
-            r.append("<td align=right style=\"padding: 2px\">").append(module.getVersion()).append("</td>");
-            r.append("<td style=\"padding: 2px\">").append(module.commitId()).append("</td>");
-            r.append("<td style=\"padding: 2px\">").append(module.getBuildDateString()).append("</td>");
-            r.append("<td style=\"padding: 2px\">").append(module.getDescription()).append("</td>");
-            r.append("</tr>");
+            t.row().data(module.getName()).
+                    data(module.getVersion()).alignCell("right").
+                    data(module.getBuildDateString()).
+                    data(module.commitId()).
+                    data(module.getDescription());
         }
-        r.append("<tr>");
-        r.append("<th align=left style=\"padding: 2px\">CoagulateSL</th>");
-        r.append("<th align=right style=\"padding: 2px\">").append(getStackVersion()).append("</th>");
-        r.append("<th colspan=2 align=left style=\"padding: 2px\">").append(SL.getStackBuildDate()).append("</th>");
-        r.append("<th align=left style=\"padding: 2px\">Coagulate SL Stack Build Information</th>");
-        r.append("</tr></table></pre>");
-        return r.toString();
+        t.row().header("CoagulateSL").alignCell("left").
+                header(getStackVersion()).alignCell("right").
+                header(SL.getStackBuildDate()).alignCell("left").
+                header("Coagulate SL Stack Build Information").alignCell("left").spanCell(2);
+        t.styleCascade("padding: 2px");
+        return new Preformatted().add(t);
     }
 
     private static String spacePad(String s) {

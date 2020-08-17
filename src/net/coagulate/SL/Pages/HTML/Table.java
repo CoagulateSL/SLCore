@@ -1,5 +1,7 @@
 package net.coagulate.SL.Pages.HTML;
 
+import net.coagulate.SL.State;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;

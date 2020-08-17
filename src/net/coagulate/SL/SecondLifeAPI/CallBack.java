@@ -1,8 +1,10 @@
 package net.coagulate.SL.SecondLifeAPI;
 
 import net.coagulate.SL.Config;
-import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
-import net.coagulate.SL.Pages.HTML.State;
+import net.coagulate.SL.HTTPPipelines.PageType;
+import net.coagulate.SL.HTTPPipelines.Url;
+import net.coagulate.SL.SL;
+import net.coagulate.SL.State;
 import org.json.JSONObject;
 
 import javax.annotation.Nonnull;
@@ -10,28 +12,16 @@ import javax.annotation.Nonnull;
 /**
  * @author Iain Price
  */
-public class CallBack extends SLAPI {
-
-	@Url("/SecondLifeAPI/CallBack")
-	public CallBack() {super();}
-
-	// ---------- INSTANCE ----------
-	@Nonnull
-	@Override
-	public String toString() { return "CallBack"; }
-
-	// ----- Internal Instance -----
-	@Nonnull
-	@Override
-	protected JSONObject handleJSON(@Nonnull final JSONObject object,
-	                                final State st) {
-		final String url=object.getString("url");
+public class CallBack {
+	@Url(url="/SecondLifeAPI/CallBack",pageType = PageType.SLAPI)
+	public static void callBack(@Nonnull final State state) {
+		final String url=state.parameters().get("url");
+		JSONObject object=new JSONObject();
 		object.put("hostname",Config.getHostName()); // saturn mars neptune
-		object.remove("developerkey");
-		getLogger().fine("CallBack received for URL "+url);
+		SL.log("CallBack").fine("CallBack received for URL "+url);
 		//noinspection CallToThreadRun
 		new Transmit(object,url).run();
-		return object;
+		state.jsonOut(object);
 	}
 
 }

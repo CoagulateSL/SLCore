@@ -1,30 +1,20 @@
 package net.coagulate.SL.Pages;
 
-import net.coagulate.SL.HTTPPipelines.Page;
-import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
-import net.coagulate.SL.HTTPPipelines.StringHandler;
-import net.coagulate.SL.Pages.HTML.Raw;
-import net.coagulate.SL.Pages.HTML.State;
+import net.coagulate.SL.HTTPPipelines.Url;
 import net.coagulate.SL.SL;
+import net.coagulate.SL.State;
 
 import javax.annotation.Nonnull;
 
 /**
  * @author Iain Price
  */
-public class Versions extends StringHandler {
+public class Versions {
 
-	@Url("/versions")
-	public Versions() {}
-
-	// ----- Internal Instance -----
-	@Nonnull
-	@Override
-	protected String handleString(@Nonnull final State state) {
-		Page page=new Page();
-		page.layout(Page.PAGELAYOUT.CENTERCOLUMN);
-		page.add(new Raw(SL.htmlVersionDump().toString()));
-		return page.toHtml(state);
+	@Url(url="/versions",authenticate = false)
+	public static void versionInformation(@Nonnull final State state) {
+		//todo set PAGE LAYOUT CENTER COLUMN
+		state.add(SL.htmlVersionDump());
 	}
 
 }

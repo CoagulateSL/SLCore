@@ -11,11 +11,12 @@ import net.coagulate.Core.Exceptions.SystemException;
 import net.coagulate.Core.Exceptions.UserException;
 import net.coagulate.Core.HTML.Container;
 import net.coagulate.Core.HTML.Elements.Img;
+import net.coagulate.Core.HTML.Elements.Paragraph;
 import net.coagulate.Core.HTML.Elements.Preformatted;
 import net.coagulate.Core.HTML.Elements.Table;
 import net.coagulate.Core.HTTP.HTTPListener;
+import net.coagulate.Core.HTTP.URLDistribution;
 import net.coagulate.Core.Tools.*;
-import net.coagulate.SL.HTTPPipelines.PageMapper;
 import org.apache.http.Header;
 import org.apache.http.HttpInetConnection;
 import org.apache.http.HttpRequest;
@@ -288,8 +289,7 @@ public class SL extends Thread {
             configureMailTarget(); // mails are gonna be messed up coming from logging init
             log().config("Scanning for modules");
             findModules();
-            log().config("Initialising PageMapper");
-            PageMapper.initialise();
+            log().config("Initialising Core URL DistributorPageMapper");
             if (!Config.getDevelopment()) {
                 log().config("SL Services starting up on " + Config.getHostName());
             } else {
@@ -307,7 +307,7 @@ public class SL extends Thread {
             // something about mails may break later on so we send a test mail here...
             MailTools.mail("CoagulateSL "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" (v"+getStackVersion()+" "+SL.getStackBuildDate()+")", htmlVersionDump().toString());
             // TODO Pricing.initialise();
-            listener = new HTTPListener(Config.getPort(), PageMapper.getPageMapper());
+            listener = new HTTPListener(Config.getPort(), URLDistribution.getPageMapper());
             log().info("Startup complete.");
             log().info("========================================================================================================================");
             log().info(outerPad("=====[ Coagulate " + (Config.getDevelopment() ? "DEVELOPMENT " : "") + "Second Life Services ]======"));
@@ -329,7 +329,10 @@ public class SL extends Thread {
     }
 
     public static Container htmlVersionDump() {
+        Paragraph p=new Paragraph();
+        p.alignment("center");
         Table t=new Table();
+        p.add(t);
         t.collapsedBorder();
         t.row().header("Name").
                 header("Version").
@@ -348,7 +351,7 @@ public class SL extends Thread {
                 header(SL.getStackBuildDate()).alignCell("left").
                 header("Coagulate SL Stack Build Information").alignCell("left").spanCell(2);
         t.styleCascade("padding: 2px");
-        return new Preformatted().add(t);
+        return new Preformatted().add(p);
     }
 
     private static String spacePad(String s) {

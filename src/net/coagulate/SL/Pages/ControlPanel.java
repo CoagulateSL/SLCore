@@ -4,20 +4,18 @@ import net.coagulate.Core.Exceptions.System.SystemBadValueException;
 import net.coagulate.Core.Exceptions.System.SystemImplementationException;
 import net.coagulate.Core.Exceptions.User.UserAccessDeniedException;
 import net.coagulate.Core.Exceptions.User.UserInputStateException;
+import net.coagulate.Core.HTML.Container;
+import net.coagulate.Core.HTML.Elements.Paragraph;
+import net.coagulate.Core.HTML.Elements.Preformatted;
+import net.coagulate.Core.HTML.Elements.Raw;
+import net.coagulate.Core.HTML.Elements.Table;
+import net.coagulate.Core.HTML.Page;
 import net.coagulate.Core.Tools.ExceptionTools;
 import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.TraceProfiler;
-import net.coagulate.SL.Config;
-import net.coagulate.SL.GetAgentID;
-import net.coagulate.SL.HTTPPipelines.AuthenticatedContainerHandler;
-import net.coagulate.SL.HTTPPipelines.Page;
-import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
-import net.coagulate.SL.Pages.HTML.Header1;
-import net.coagulate.SL.Pages.HTML.Raw;
-import net.coagulate.SL.Pages.HTML.State;
-import net.coagulate.SL.Pages.HTML.Table;
-import net.coagulate.SL.SL;
-import net.coagulate.SL.SLModule;
+import net.coagulate.SL.*;
+import net.coagulate.SL.HTTPPipelines.SLPageTemplate;
+import net.coagulate.SL.HTTPPipelines.Url;
 
 import javax.annotation.Nonnull;
 import javax.mail.MessagingException;
@@ -28,31 +26,26 @@ import java.util.logging.Logger;
 /**
  * @author Iain Price
  */
-public class ControlPanel extends AuthenticatedContainerHandler {
-
-	@Url("/ControlPanel")
-	public ControlPanel() {super();}
-
-	// ----- Internal Instance -----
-	@Override
-	protected void run(@Nonnull final State state,
-	                   @Nonnull final Page page) {
+public class ControlPanel {
+	@Url(url="/ControlPanel")
+	public static void controlPanel(@Nonnull final State state) {
 		if (!state.user().isSuperAdmin()) {
 			throw new UserAccessDeniedException("Unauthorised access to Control Panel from "+state.userNullable());
 		}
-		page.layout(Page.PAGELAYOUT.CENTERCOLUMN);
-		page.header("Control Panel");
-		if ("NameAPI".equals(state.get("NameAPI"))) {
+		Page.page().template(new SLPageTemplate(SLPageTemplate.PAGELAYOUT.CENTERCOLUMN));
+		Container page=state.page().root();
+		page.header1("Control Panel");
+		if ("NameAPI".equals(state.parameter("NameAPI"))) {
 			try {
-				final String ret=GetAgentID.getAgentID(state.get("input"));
-				page.add(new Raw("<pre>"+state.get("input")+" resolved to "+ret+"</pre><br>"));
+				final String ret= GetAgentID.getAgentID(state.parameter("input"));
+				page.p(new Preformatted(state.parameter("input")+" resolved to "+ret));
 			}
-			catch (final Throwable t) { page.add(new Raw("<pre>"+t.getLocalizedMessage()+"</pre><br>")); }
+			catch (final Throwable t) { page.add(new Paragraph(new Preformatted(t.getLocalizedMessage()))); }
 		}
-		if ("Test Mail".equals(state.get("Test Mail"))) {
-			page.paragraph("Sending mail");
+		if ("Test Mail".equals(state.parameter("Test Mail"))) {
+			page.p("Sending mail");
 			try {
-				MailTools.mail("SL Stack "+Config.getHostName(),
+				MailTools.mail("SL Stack "+ Config.getHostName(),
 				               "sl-cluster-alerts@predestined.net",
 				               "SL Mail Tester",
 				               "sl-cluster-alerts@predestined.net",
@@ -62,51 +55,58 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 			}
 			catch (@Nonnull final MessagingException ex) {
 				Logger.getLogger(ControlPanel.class.getName()).log(Level.SEVERE,null,ex);
+				//todo
+				//noinspection deprecation
 				page.add(new Raw(ExceptionTools.toHTML(ex)));
 			}
-			page.paragraph("Sent mail");
+			page.p("Sent mail");
 		}
-		if("ForceMaintenance".equals(state.get("ForceMaintenance"))) {
+		if("ForceMaintenance".equals(state.parameter("ForceMaintenance"))) {
 			for (SLModule module:SL.modules()) {
 				SL.log("ControlPanel").warning("Forcing maintenance run on "+module.getName());
 				module.maintenance();
 			}
 		}
-		if ("Thread Info".equals(state.get("Thread Info"))) {
+		if ("Thread Info".equals(state.parameter("Thread Info"))) {
 			final Table t=new Table();
+			t.border(); t.collapsedBorder();
 			page.add(t);
-			t.header("Name").header("Daemon").header("Stacktrace");
+			t.row().header("Name").header("Daemon").header("Stacktrace");
 			final Map<Thread,StackTraceElement[]> threads=Thread.getAllStackTraces();
 			for (final Map.Entry<Thread,StackTraceElement[]> entry: threads.entrySet()) {
 				final Thread thread=entry.getKey();
-				t.openRow();
-				t.add(thread.getName());
-				t.add(thread.isDaemon()+"");
 				final StackTraceElement[] stack=entry.getValue();
 				final StringBuilder stacktrace=new StringBuilder();
 				for (final StackTraceElement element: stack) {
-					if (stacktrace.length()>0) { stacktrace.append("<br>"); }
-					final String classname=element.getClassName();
-					if (classname.startsWith("net.coagulate.")) {
-						stacktrace.append(classname).append("/").append(element.getMethodName()).append(":").append(element.getLineNumber());
+					final String className=element.getClassName();
+					if (className.startsWith("net.coagulate.")) {
+                        if (stacktrace.length()>0) { stacktrace.append("<br>"); }
+						stacktrace.append(className).append("/").append(element.getMethodName()).append(":").append(element.getLineNumber());
 					}
 				}
-				t.add(stacktrace.toString());
+                t.row().
+                    add(thread.getName()).
+                    add(thread.isDaemon()+"").
+				    add(stacktrace.toString());
 			}
 		}
-		if ("UserException".equals(state.get("UserException"))) {
+		if ("UserException".equals(state.parameter("UserException"))) {
 			throw new UserInputStateException("Manually triggered user exception");
 		}
-		if ("LoggedOnlyException".equals(state.get("LoggedOnlyException"))) {
+		if ("LoggedOnlyException".equals(state.parameter("LoggedOnlyException"))) {
 			SL.log().log(Level.INFO,"Manually generated logged only exception",new SystemBadValueException("Manually generated log event"));
+			//todo
+			//noinspection deprecation
 			page.form().add(new Raw("<p>Sent event</P>"));
 		}
-		if ("SystemException".equals(state.get("SystemException"))) {
+		if ("SystemException".equals(state.parameter("SystemException"))) {
 			throw new SystemImplementationException("Manually triggered system exception");
 		}
-		if ("Shutdown".equals(state.get("Shutdown"))) {
+		if ("Shutdown".equals(state.parameter("Shutdown"))) {
 			SL.shutdown();
 		}
+		//todo
+		//noinspection deprecation
 		page.form().add(new Raw("<input type=text name=input>")).
 				submit("GS Test").
 				    submit("Thread Info").
@@ -118,11 +118,12 @@ public class ControlPanel extends AuthenticatedContainerHandler {
 					submit("ForceMaintenance").
 				    submit("NameAPI");
 
-		for (String traceprofile:TraceProfiler.profiles()) {
-			page.form().add(new Header1(traceprofile));
-			page.form().add(new Raw(TraceProfiler.reportProfile(traceprofile)));
+		for (String traceProfile: TraceProfiler.profiles()) {
+			page.header1(traceProfile);
+			//todo
+			//noinspection deprecation
+			page.add(new Raw(TraceProfiler.reportProfile(traceProfile)));
 		}
 	}
-
 
 }

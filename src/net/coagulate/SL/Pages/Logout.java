@@ -1,29 +1,21 @@
 package net.coagulate.SL.Pages;
 
-import net.coagulate.SL.HTTPPipelines.Page;
-import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
-import net.coagulate.SL.HTTPPipelines.StringHandler;
-import net.coagulate.SL.Pages.HTML.Raw;
-import net.coagulate.SL.Pages.HTML.State;
+import net.coagulate.SL.HTTPPipelines.Url;
+import net.coagulate.SL.State;
 
 import javax.annotation.Nonnull;
 
 /**
  * @author Iain Price
  */
-public class Logout extends StringHandler {
+public class Logout {
 
-	@Url("/Logout")
-	public Logout() {super();}
-
-	// ----- Internal Instance -----
-	@Nonnull
-	@Override
-	protected String handleString(@Nonnull final State state) {
+	@Url(url="/Logout",authenticate = false)
+	public static void logout(@Nonnull final State state) {
 		state.logout();
-		return new Page().add(new Raw(
-				"<br><br><h3 align=center>Your session has been ended</h3><br><br><br><p align=center><a href=\"/\">Click here to return to the login page</a></p>"))
-		                 .toHtml(state);
+		state.root().
+				header3("Your session has been ended").
+				p().a("/","Click here to return to the login page").align("center");
 	}
 
 }

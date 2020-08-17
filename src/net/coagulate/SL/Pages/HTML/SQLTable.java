@@ -3,6 +3,7 @@ package net.coagulate.SL.Pages.HTML;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Database.Results;
 import net.coagulate.Core.Database.ResultsRow;
+import net.coagulate.SL.State;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

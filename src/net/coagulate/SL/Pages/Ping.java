@@ -1,29 +1,22 @@
 package net.coagulate.SL.Pages;
 
+import net.coagulate.Core.HTML.Elements.PlainText;
 import net.coagulate.SL.Config;
-import net.coagulate.SL.HTTPPipelines.Handler;
-import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
-import net.coagulate.SL.Pages.HTML.State;
-import org.apache.http.HttpEntity;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
+import net.coagulate.SL.HTTPPipelines.PageType;
+import net.coagulate.SL.HTTPPipelines.Url;
+import net.coagulate.SL.State;
 
 import javax.annotation.Nonnull;
 
 /**
  * @author Iain Price
  */
-public class Ping extends Handler {
+public class Ping {
 
-	@Url("/Ping")
-	public Ping() {super();}
-
-	// ----- Internal Instance -----
-	@Nonnull
-	@Override
-	protected HttpEntity handleContent(final State state) {
+	@Url(url="/Ping",authenticate = false,pageType = PageType.PLAINTEXT)
+	public static void ping(@Nonnull final State state) {
 		final String response="hostname:"+Config.getHostName();
-		return new StringEntity(response,ContentType.TEXT_PLAIN);
+		state.add(new PlainText(response));
 	}
 
 }

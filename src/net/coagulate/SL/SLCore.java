@@ -3,20 +3,27 @@ package net.coagulate.SL;
 import net.coagulate.Core.BuildInfo.SLCoreBuildInfo;
 import net.coagulate.Core.Database.DB;
 import net.coagulate.Core.Database.DBConnection;
+import net.coagulate.Core.Exceptions.System.SystemImplementationException;
 import net.coagulate.Core.HTML.Page;
+import net.coagulate.Core.HTTP.URLDistribution;
 import net.coagulate.Core.Tools.ByteTools;
 import net.coagulate.Core.Tools.Cache;
+import net.coagulate.Core.Tools.ClassTools;
+import net.coagulate.SL.HTTPPipelines.*;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static java.util.logging.Level.*;
 
 public class SLCore extends SLModule {
+    public static final boolean DEBUG_URLS=false;
     public final int majorVersion() { return SLCoreBuildInfo.MAJORVERSION; }
     public final int minorVersion() { return SLCoreBuildInfo.MINORVERSION; }
     public final int bugFixVersion() { return SLCoreBuildInfo.BUGFIXVERSION; }
@@ -40,7 +47,59 @@ public class SLCore extends SLModule {
 
     @Override
     public void initialise() {
+        Logger logger=Logger.getLogger(getClass().getCanonicalName());
         schemaCheck(SL.getDB(),"slcore",2);
+        URLDistribution.register("", HTMLMapper.get());
+        for (Method method: ClassTools.getAnnotatedMethods(Url.class)) {
+            Url annotation=method.getAnnotation(Url.class);
+            checkMethod(method);
+            if (annotation.pageType()== PageType.HTML) {
+                URLDistribution.register(annotation.url(),HTMLMapper.get());
+                HTMLMapper.get().exact(annotation.url(), method);
+                if (DEBUG_URLS) { logger.fine("HTTPMapper exact URL "+annotation.url()+" to "+method); }
+            }
+            if (annotation.pageType()== PageType.SLAPI) {
+                URLDistribution.register(annotation.url(), SLAPIMapper.get());
+                SLAPIMapper.get().exact(annotation.url(), method);
+                if (DEBUG_URLS) { logger.fine("SLAPIMapper exact URL "+annotation.url()+" to "+method); }
+            }
+            if (annotation.pageType()== PageType.PLAINTEXT) {
+                URLDistribution.register(annotation.url(), PlainTextMapper.get());
+                PlainTextMapper.get().exact(annotation.url(), method);
+                if (DEBUG_URLS) { logger.fine("PlainTextMapper exact URL "+annotation.url()+" to "+method); }
+            }
+        }
+        for (Method method:ClassTools.getAnnotatedMethods(UrlPrefix.class)) {
+            UrlPrefix annotation=method.getAnnotation(UrlPrefix.class);
+            checkMethod(method);
+            if (annotation.pageType()== PageType.HTML) {
+                URLDistribution.register(annotation.url(),HTMLMapper.get());
+                HTMLMapper.get().prefix(annotation.url(), method);
+                if (DEBUG_URLS) { logger.fine("HTTPMapper prefix URL "+annotation.url()+" to "+method); }
+            }
+            if (annotation.pageType()== PageType.SLAPI) {
+                URLDistribution.register(annotation.url(), SLAPIMapper.get());
+                SLAPIMapper.get().prefix(annotation.url(), method);
+                if (DEBUG_URLS) { logger.fine("SLAPIMapper prefix URL "+annotation.url()+" to "+method); }
+            }
+            if (annotation.pageType()== PageType.PLAINTEXT) {
+                URLDistribution.register(annotation.url(), PlainTextMapper.get());
+                PlainTextMapper.get().exact(annotation.url(), method);
+                if (DEBUG_URLS) { logger.fine("PlainTextMapper exact URL "+annotation.url()+" to "+method); }
+            }
+        }
+    }
+
+    private void checkMethod(Method m) {
+        String fullyQualifiedMethodName=m.getDeclaringClass().getCanonicalName()+"."+m.getName();
+        try {
+            if (!m.canAccess(null)) { throw new SystemImplementationException("No public access on "+fullyQualifiedMethodName+" during URL setup"); }
+        } catch (IllegalArgumentException e) {
+            throw new SystemImplementationException("Not a static method? on URL setup for "+fullyQualifiedMethodName);
+        }
+        if (m.getParameterCount()!=1) { throw new SystemImplementationException("Incorrect parameters on "+fullyQualifiedMethodName+" during URL setup (Should be singular state)"); }
+        if (!m.getParameters()[0].getType().equals(State.class)) { throw new SystemImplementationException("Parameter on "+fullyQualifiedMethodName+" is not of correct type during URL setup"); }
+        if (!m.getReturnType().equals(void.class)) { throw new SystemImplementationException("Wrong return type on "+fullyQualifiedMethodName+" during URL setup"); }
     }
 
     @Override
@@ -48,6 +107,7 @@ public class SLCore extends SLModule {
         if (nextRun("SLCore-Cache-Clear",60,30)) { Cache.maintenance(); }
         if (Config.enableZabbix() && nextRun("SLCore-DBStats-maintenance",60,0)) { reportDBStats(); }
         if (nextRun("SLCore-Page-Thread-Cleaner",60,30)) { Page.maintenance(); }
+        if (nextRun("SLCore-State-Cleaner",60,30)) { State.maintenance(); }
     }
 
     @Override

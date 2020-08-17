@@ -1,8 +1,9 @@
 package net.coagulate.SL.SecondLifeAPI;
 
 import net.coagulate.SL.Config;
-import net.coagulate.SL.HTTPPipelines.PageMapper.Url;
-import net.coagulate.SL.Pages.HTML.State;
+import net.coagulate.SL.HTTPPipelines.PageType;
+import net.coagulate.SL.HTTPPipelines.Url;
+import net.coagulate.SL.State;
 import org.json.JSONObject;
 
 import javax.annotation.Nonnull;
@@ -10,25 +11,12 @@ import javax.annotation.Nonnull;
 /**
  * @author Iain Price
  */
-public class SLPing extends SLAPI {
+public class SLPing {
 
-	@Url("/SecondLifeAPI/Ping")
-	public SLPing() {super();}
-
-	// ---------- INSTANCE ----------
-	@Nonnull
-	@Override
-	public String toString() { return "SLPing"; }
-
-	// ----- Internal Instance -----
-	@Nonnull
-	@Override
-	protected JSONObject handleJSON(@Nonnull final JSONObject object,
-	                                final State st) {
+	@Url(url="/SecondLifeAPI/Ping",pageType = PageType.SLAPI,digest=false)
+	public static void ping(@Nonnull final State state) {
+		JSONObject object=new JSONObject();
 		object.put("hostname",Config.getHostName()); // saturn mars neptune
-		return object;
+		state.jsonOut(object);
 	}
-
-	@Override
-	protected boolean needsDigest() { return false; }
 }

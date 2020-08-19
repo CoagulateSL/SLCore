@@ -2,6 +2,8 @@ package net.coagulate.SL.HTTPPipelines;
 
 import net.coagulate.Core.Database.NoDataException;
 import net.coagulate.Core.Exceptions.System.SystemImplementationException;
+import net.coagulate.Core.Exceptions.SystemException;
+import net.coagulate.Core.Exceptions.UserException;
 import net.coagulate.Core.HTML.Container;
 import net.coagulate.Core.HTML.Elements.*;
 import net.coagulate.Core.HTML.Page;
@@ -11,6 +13,8 @@ import net.coagulate.SL.Data.User;
 import net.coagulate.SL.SL;
 import net.coagulate.SL.State;
 import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
 
 import javax.annotation.Nonnull;
@@ -178,4 +182,40 @@ public class HTMLMapper extends URLMapper<Method> {
         return top;
     }
 
+    private State state() { return State.get(); }
+    @Override
+    protected void renderUnhandledError(HttpRequest request, HttpContext context, HttpResponse response, Throwable t) {
+        SL.report("SL UnkEx: "+t.getLocalizedMessage(),t,state());
+        Page page=Page.page();
+        page.resetRoot();
+        page.root().header1("Unhandled Internal Error");
+        page.root().p("Sorry, an unhandled internal error occurred.");
+        page.root().p("A developer has been notified of this issue.");
+        page.responseCode(HttpStatus.SC_OK);
+        processOutput(response,null);
+    }
+
+    @Override
+    protected void renderSystemError(HttpRequest request, HttpContext context, HttpResponse response, SystemException t) {
+        SL.report("SL SysEx: "+t.getLocalizedMessage(),t,state());
+        Page page=Page.page();
+        page.resetRoot();
+        page.root().header1("Internal Error");
+        page.root().p("Sorry, an internal error occurred.");
+        page.root().p("A developer has been notified of this issue.");
+        page.responseCode(HttpStatus.SC_OK);
+        processOutput(response,null);
+    }
+
+    @Override
+    protected void renderUserError(HttpRequest request, HttpContext context, HttpResponse response, UserException t) {
+        SL.report("SL User: "+t.getLocalizedMessage(),t,state());
+        Page page=Page.page();
+        page.resetRoot();
+        page.root().header1("Error");
+        page.root().p("Sorry, your request could not be completed, please review your data and try again");
+        page.root().p("Error: "+t.getLocalizedMessage());
+        page.responseCode(HttpStatus.SC_OK);
+        processOutput(response,null);
+    }
 }

@@ -2,6 +2,7 @@ package net.coagulate.SL.HTTPPipelines;
 
 import net.coagulate.Core.Exceptions.System.SystemImplementationException;
 import net.coagulate.Core.Exceptions.System.SystemRemoteFailureException;
+import net.coagulate.Core.Exceptions.SystemException;
 import net.coagulate.Core.Exceptions.UserException;
 import net.coagulate.Core.HTTP.URLMapper;
 import net.coagulate.Core.Tools.ByteTools;
@@ -206,5 +207,37 @@ public class SLAPIMapper extends URLMapper<Method> {
     @Override
     protected void cleanup() {
         State.cleanup();
+    }
+
+    private State state() { return State.get(); }
+    @Override
+    protected void renderUnhandledError(HttpRequest request, HttpContext context, HttpResponse response, Throwable t) {
+        SL.report("SLAPI UnkEx: "+t.getLocalizedMessage(),t,state());
+        JSONObject json=new JSONObject();
+        json.put("error","Sorry, an unhandled internal error occurred.");
+        json.put("responsetype","UnhandledException");
+        response.setEntity(new StringEntity(json.toString(2),ContentType.APPLICATION_JSON));
+        response.setStatusCode(200);
+    }
+
+    @Override
+    protected void renderSystemError(HttpRequest request, HttpContext context, HttpResponse response, SystemException t) {
+        SL.report("SLAPI SysEx: "+t.getLocalizedMessage(),t,state());
+        JSONObject json=new JSONObject();
+        json.put("error","Sorry, an internal error occurred.");
+        json.put("responsetype","SystemException");
+        response.setEntity(new StringEntity(json.toString(2),ContentType.APPLICATION_JSON));
+        response.setStatusCode(200);
+    }
+
+    @Override
+    protected void renderUserError(HttpRequest request, HttpContext context, HttpResponse response, UserException t) {
+        SL.report("SLAPI User: "+t.getLocalizedMessage(),t,state());
+        JSONObject json=new JSONObject();
+        json.put("error",t.getLocalizedMessage());
+        json.put("responsetype","UserException");
+        json.put("errorclass",t.getClass().getName());
+        response.setEntity(new StringEntity(json.toString(2),ContentType.APPLICATION_JSON));
+        response.setStatusCode(200);
     }
 }

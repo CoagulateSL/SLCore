@@ -1,6 +1,7 @@
 package net.coagulate.SL.HTTPPipelines;
 
 import net.coagulate.Core.Exceptions.System.SystemImplementationException;
+import net.coagulate.Core.Exceptions.SystemException;
 import net.coagulate.Core.Exceptions.UserException;
 import net.coagulate.Core.HTML.Page;
 import net.coagulate.Core.HTML.PageTemplate;
@@ -106,5 +107,34 @@ public class PlainTextMapper extends URLMapper<Method> {
     @Override
     protected void cleanup() {
         State.cleanup();
+    }
+
+    private State state() { return State.get(); }
+    @Override
+    protected void renderUnhandledError(HttpRequest request, HttpContext context, HttpResponse response, Throwable t) {
+        SL.report("PText UnkEx: "+t.getLocalizedMessage(),t,state());
+        String text="Error: Sorry, an unhandled internal error occurred.\n";
+        text+="Type: UnhandledException";
+        response.setEntity(new StringEntity(text,ContentType.TEXT_PLAIN));
+        response.setStatusCode(200);
+    }
+
+    @Override
+    protected void renderSystemError(HttpRequest request, HttpContext context, HttpResponse response, SystemException t) {
+        SL.report("PText SysEx: "+t.getLocalizedMessage(),t,state());
+        String text="Error: Sorry, an internal error occurred.\n";
+        text+="Type: SystemException";
+        response.setEntity(new StringEntity(text,ContentType.TEXT_PLAIN));
+        response.setStatusCode(200);
+    }
+
+    @Override
+    protected void renderUserError(HttpRequest request, HttpContext context, HttpResponse response, UserException t) {
+        SL.report("PText User: "+t.getLocalizedMessage(),t,state());
+        String text="Error: "+t.getLocalizedMessage()+"\n";
+        text+="Type: UserException\n";
+        text+="Class: "+t.getClass().getName();
+        response.setEntity(new StringEntity(text,ContentType.TEXT_PLAIN));
+        response.setStatusCode(200);
     }
 }

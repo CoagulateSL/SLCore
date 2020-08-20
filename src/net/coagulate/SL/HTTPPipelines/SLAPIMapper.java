@@ -236,7 +236,7 @@ public class SLAPIMapper extends URLMapper<Method> {
         JSONObject json=new JSONObject();
         json.put("error",t.getLocalizedMessage());
         json.put("responsetype","UserException");
-        json.put("errorclass",t.getClass().getName());
+        json.put("errorclass",t.getClass().getSimpleName());
         response.setEntity(new StringEntity(json.toString(2),ContentType.APPLICATION_JSON));
         response.setStatusCode(200);
     }

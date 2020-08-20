@@ -119,14 +119,12 @@ public class HTMLMapper extends URLMapper<Method> {
     }
 
     @Override
-    protected void executePage(Method content) {
+    protected void executePage(Method content) throws InvocationTargetException{
         // it's a static method with no parameters :)
         try {
             content.invoke(null,State.get());
         } catch (IllegalAccessException e) {
-            throw new SystemImplementationException("Method "+content.getDeclaringClass().getCanonicalName()+"."+content.getName()+" does not have public access");
-        } catch (InvocationTargetException e) {
-            throw new SystemImplementationException("Method "+content.getDeclaringClass().getCanonicalName()+"."+content.getName()+" thew an exception",e);// todo
+            throw new SystemImplementationException("Method " + content.getDeclaringClass().getCanonicalName() + "." + content.getName() + " does not have public access");
         }
     }
 
@@ -187,6 +185,7 @@ public class HTMLMapper extends URLMapper<Method> {
     protected void renderUnhandledError(HttpRequest request, HttpContext context, HttpResponse response, Throwable t) {
         SL.report("SL UnkEx: "+t.getLocalizedMessage(),t,state());
         Page page=Page.page();
+        page.template(new SLPageTemplate(SLPageTemplate.PAGELAYOUT.CENTERCOLUMN));
         page.resetRoot();
         page.root().header1("Unhandled Internal Error");
         page.root().p("Sorry, an unhandled internal error occurred.");
@@ -199,6 +198,7 @@ public class HTMLMapper extends URLMapper<Method> {
     protected void renderSystemError(HttpRequest request, HttpContext context, HttpResponse response, SystemException t) {
         SL.report("SL SysEx: "+t.getLocalizedMessage(),t,state());
         Page page=Page.page();
+        page.template(new SLPageTemplate(SLPageTemplate.PAGELAYOUT.CENTERCOLUMN));
         page.resetRoot();
         page.root().header1("Internal Error");
         page.root().p("Sorry, an internal error occurred.");
@@ -211,6 +211,7 @@ public class HTMLMapper extends URLMapper<Method> {
     protected void renderUserError(HttpRequest request, HttpContext context, HttpResponse response, UserException t) {
         SL.report("SL User: "+t.getLocalizedMessage(),t,state());
         Page page=Page.page();
+        page.template(new SLPageTemplate(SLPageTemplate.PAGELAYOUT.CENTERCOLUMN));
         page.resetRoot();
         page.root().header1("Error");
         page.root().p("Sorry, your request could not be completed, please review your data and try again");

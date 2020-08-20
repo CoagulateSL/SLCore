@@ -142,6 +142,8 @@ public class SL extends Thread {
     public static void report(final String header,
                               @Nullable final Throwable t,
                               @Nullable final DumpableState state) {
+
+        log().warning(ExceptionTools.getPertinent(t));
         reportString(header, t, (state != null ? state.toHTML() : "No state supplied"));
     }
 

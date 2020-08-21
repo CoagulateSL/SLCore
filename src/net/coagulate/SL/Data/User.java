@@ -5,6 +5,7 @@ import net.coagulate.Core.Database.NoDataException;
 import net.coagulate.Core.Database.Results;
 import net.coagulate.Core.Database.ResultsRow;
 import net.coagulate.Core.Exceptions.System.SystemBadValueException;
+import net.coagulate.Core.Exceptions.System.SystemExecutionException;
 import net.coagulate.Core.Exceptions.System.SystemImplementationException;
 import net.coagulate.Core.Exceptions.User.*;
 import net.coagulate.Core.Tools.MailTools;
@@ -245,6 +246,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 	@Nonnull
 	private static User createByName(@Nonnull String name,
 	                                 final boolean trustname) {
+		if (Config.getGrid()!= Config.GRID.SECONDLIFE) { throw new SystemExecutionException("It is not possible to createByName on a grid other than Second Life due to the lack of a name resolution service"); }
 		name=formatUsername(name);
 		try {
 			final String uuid=GetAgentID.getAgentID(name);

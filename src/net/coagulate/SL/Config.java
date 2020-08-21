@@ -198,4 +198,5 @@ public class Config {
     public static String getBrandingOwnerSLURL() { return "secondlife:///app/agent/"+getBrandingOwnerUUID()+"/about"; }
     public static String getJSLBotBridgeLoginURI() { return getString("jslbotbridge-loginuri",""); }
     public static String getJSLBotBridgeSeat() { return getString("jslbotbridge-seat",""); }
+    public static String getSecondLifeAPIKey() { return getString("getagentidkey",""); }
 }

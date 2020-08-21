@@ -1,6 +1,7 @@
 package net.coagulate.SL;
 
 import net.coagulate.Core.Exceptions.System.SystemRemoteFailureException;
+import net.coagulate.Core.Exceptions.User.UserConfigurationException;
 import net.coagulate.Core.Exceptions.User.UserInputValidationFilterException;
 import net.coagulate.Core.Exceptions.User.UserRemoteFailureException;
 import org.json.JSONObject;
@@ -17,7 +18,6 @@ import java.util.regex.Pattern;
 public class GetAgentID {
 
 	private static final String SERVICE_URL="https://api.secondlife.com/get_agent_id";
-	private static final String API_KEY="***REMOVED***";
 
 	// ---------- STATICS ----------
 
@@ -31,7 +31,8 @@ public class GetAgentID {
 	 */
 	@Nonnull
 	public static String getAgentID(@Nonnull String name) {
-
+		if (Config.getGrid()!= Config.GRID.SECONDLIFE) { throw new UserConfigurationException("Unable to try resolve this name on this grid type"); }
+		if (Config.getSecondLifeAPIKey().isEmpty()) { throw new UserConfigurationException("Unable to try resolve this name due to lack of Name Service API Key"); }
 		// validate the name a bit and we need to break it down into a firstname (called username in modern LL nomenclature, apparently)
 		// and a last name
 		// "Usernames can contain only letters and numbers" (and when concatenated a single space or dot separator)
@@ -58,7 +59,7 @@ public class GetAgentID {
 			transmission.setDoInput(true);
 			transmission.setConnectTimeout(2000);
 			transmission.setReadTimeout(2000);
-			transmission.setRequestProperty("api-key",API_KEY);
+			transmission.setRequestProperty("api-key",Config.getSecondLifeAPIKey());
 			transmission.connect();
 
 			final JSONObject request=new JSONObject();

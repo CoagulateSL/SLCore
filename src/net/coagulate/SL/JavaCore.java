@@ -2,11 +2,20 @@ package net.coagulate.SL;
 
 import net.coagulate.Core.BuildInfo.JavaCoreBuildInfo;
 import net.coagulate.Core.Database.DBConnection;
+import net.coagulate.SL.HTML.ServiceTile;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Date;
+import java.util.Map;
 
 public class JavaCore extends SLModule {
+    @Nullable
+    @Override
+    public Map<ServiceTile, Integer> getServices() {
+        return null;
+    }
+
     @Nonnull
     @Override
     public String getName() { return "JavaCore"; }
@@ -43,5 +52,5 @@ public class JavaCore extends SLModule {
     public Date getBuildDate() { return JavaCoreBuildInfo.BUILDDATE; }
 
     @Override
-    protected int schemaUpgrade(DBConnection db, String schemaname, int currentversion) { return currentversion; }
+    protected int schemaUpgrade(DBConnection db, String schemaName, int currentVersion) { return currentVersion; }
 }

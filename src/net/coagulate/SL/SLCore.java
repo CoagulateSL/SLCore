@@ -9,13 +9,16 @@ import net.coagulate.Core.HTTP.URLDistribution;
 import net.coagulate.Core.Tools.ByteTools;
 import net.coagulate.Core.Tools.Cache;
 import net.coagulate.Core.Tools.ClassTools;
+import net.coagulate.SL.HTML.ServiceTile;
 import net.coagulate.SL.HTTPPipelines.*;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +32,17 @@ public class SLCore extends SLModule {
     public final int bugFixVersion() { return SLCoreBuildInfo.BUGFIXVERSION; }
     public final String commitId() { return SLCoreBuildInfo.COMMITID; }
     public Date getBuildDate() { return SLCoreBuildInfo.BUILDDATE; }
+
+    @Nullable
+    @Override
+    public Map<ServiceTile, Integer> getServices() {
+        return null;
+        /*
+        Map<ServiceTile, Integer> ret=new HashMap<>();
+        ret.put(new ServiceTile("SLCore","Provides core services, page management, authentication, and similar",null,null,getVersion(),getBuildDateString(),commitId()),999);
+        return ret;
+         */
+    }
 
     @Nonnull
     @Override
@@ -111,15 +125,15 @@ public class SLCore extends SLModule {
     }
 
     @Override
-    protected int schemaUpgrade(DBConnection db, String schemaname, int currentversion)
+    protected int schemaUpgrade(DBConnection db, String schemaName, int currentVersion)
     {
-        if (currentversion==1) {
-            currentversion=2;
+        if (currentVersion ==1) {
+            currentVersion =2;
             SL.log("SLCore").log(CONFIG,"Upgrading schema from 1 to 2");
             SL.log("SLCore").log(CONFIG,"Schema: Change lastrun in masternode to default 0 and not null");
             db.d("alter table masternode modify column lastrun int default 0 not null");
         }
-        return currentversion;
+        return currentVersion;
     }
 
     private void reportDBStats() {

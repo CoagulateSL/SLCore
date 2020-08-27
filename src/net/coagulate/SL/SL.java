@@ -17,6 +17,7 @@ import net.coagulate.Core.HTML.Elements.Table;
 import net.coagulate.Core.HTTP.HTTPListener;
 import net.coagulate.Core.HTTP.URLDistribution;
 import net.coagulate.Core.Tools.*;
+import net.coagulate.SL.HTML.ServiceTile;
 import org.apache.http.Header;
 import org.apache.http.HttpInetConnection;
 import org.apache.http.HttpRequest;
@@ -48,9 +49,34 @@ public class SL extends Thread {
     @Nullable
     private static HTTPListener listener;
     private static final Map<String,SLModule> modules=new TreeMap<>();
-    private static boolean imwarned=false;
+    private static boolean imWarned =false;
 
     private SL() {}
+
+    public static List<ServiceTile> getServiceTiles() {
+        Map<ServiceTile,Integer> tiles=new HashMap<>();
+        for (SLModule module:SL.modules()) {
+            Map<ServiceTile, Integer> moduleServices = module.getServices();
+            if (moduleServices!=null) { tiles.putAll(moduleServices); }
+        }
+        List<ServiceTile> services=new ArrayList<>();
+        while (!tiles.isEmpty()) {
+            int min=999999999;
+            for (Map.Entry<ServiceTile,Integer> tile:tiles.entrySet()) {
+                if (tile.getValue()<min) { min=tile.getValue(); }
+            }
+            Set<ServiceTile> addedList=new HashSet<>();
+            for (Map.Entry<ServiceTile,Integer> tile:tiles.entrySet()) {
+                if (tile.getValue()==min) {
+                    services.add(tile.getKey());
+                    addedList.add(tile.getKey());
+                }
+            }
+            for (ServiceTile processed:addedList) { tiles.remove(processed); }
+        }
+        return services;
+    }
+
 
     @Nonnull
     public static Logger log(final String subspace) {
@@ -81,7 +107,7 @@ public class SL extends Thread {
                     Thread.sleep(1000); } catch (final InterruptedException ignored) {}
                 if (!shutdown) {
                     try { runMaintenance(); } catch (final Throwable t) {
-                        System.out.println("Uhoh, maintenance crashed, even though it's crash proofed (primaryNode()?)");
+                        System.out.println("Uh oh, maintenance crashed, even though it's crash proofed (primaryNode()?)");
                         t.printStackTrace();
                     }
                 }
@@ -99,20 +125,20 @@ public class SL extends Thread {
         System.exit(0);
     }
 
-    private static final Map<String,Integer> maintenancefails=new HashMap<>();
+    private static final Map<String,Integer> maintenanceFails =new HashMap<>();
     private static void runMaintenance() {
         if (!primaryNode()) { return; }
         for (SLModule module:modules.values()) {
-            if (!maintenancefails.containsKey(module.getName())) { maintenancefails.put(module.getName(),0); }
-            int failcount=maintenancefails.get(module.getName());
-            if (failcount<5) {
+            if (!maintenanceFails.containsKey(module.getName())) { maintenanceFails.put(module.getName(),0); }
+            int failCount= maintenanceFails.get(module.getName());
+            if (failCount<5) {
                 try {
                     module.maintenance();
                 } catch (Throwable t) {
-                    SL.report("Maintenance Exceptioned in "+module.getName(),t,null);
-                    failcount++;
-                    maintenancefails.put(module.getName(), failcount);
-                    if (failcount >= 5) {
+                    SL.report("Maintenance Exception in "+module.getName(),t,null);
+                    failCount++;
+                    maintenanceFails.put(module.getName(), failCount);
+                    if (failCount >= 5) {
                         SL.reportString("Maintenance DISABLED for " + module.getName(),null,"Module exceeded 5 fail counts");
                     }
                 }
@@ -189,8 +215,8 @@ public class SL extends Thread {
         return log;
     }
 
-    public static String textureURL(final String textureuuid) {
-        return "https://picture-service.secondlife.com/" + textureuuid + "/320x240.jpg";
+    public static String textureURL(final String textureUUID) {
+        return "https://picture-service.secondlife.com/" + textureUUID + "/320x240.jpg";
     }
 
     public static String getClientIP(final HttpRequest req,
@@ -221,29 +247,29 @@ public class SL extends Thread {
 
     }
 
-    private static boolean wasmasternode=false;
+    private static boolean wasMasterNode =false;
     public static boolean primaryNode() {
         // default schema has this being empty :P
-        int rowcount=getDB().dqinn("select count(*) from masternode");
-        if (rowcount==0) {
+        int rowCount=getDB().dqinn("select count(*) from masternode");
+        if (rowCount==0) {
             getDB().d("insert into masternode(name) values(?)",Config.getHostName());
             log("Maintenance").config("Claimed the master node role as it was unset");
         }
         final String name = getDB().dqs("select name from masternode");
         if (!Config.getHostName().equalsIgnoreCase(name)) {
-            if (wasmasternode) {
+            if (wasMasterNode) {
                 log("Maintenance").config("We are no longer the master node!");
-                wasmasternode=false;
+                wasMasterNode =false;
             }
             return false;
         } // not the master node
         // if we are the master node, shall we update our last run so that things know things are working ... thing.
-        if (!wasmasternode) {
+        if (!wasMasterNode) {
             log("Maintenance").config("We are now the master node!");
-            wasmasternode=true;
+            wasMasterNode =true;
         }
-        final int lastrun = getDB().dqinn("select lastrun from masternode");
-        if (UnixTime.getUnixTime() > (lastrun + 60)) {
+        final int lastRun = getDB().dqinn("select lastrun from masternode");
+        if (UnixTime.getUnixTime() > (lastRun + 60)) {
             getDB().d("update masternode set lastrun=?", UnixTime.getUnixTime());
         }
         return true;
@@ -380,8 +406,8 @@ public class SL extends Thread {
     }
 
     private static void findModules() {
-        Set<Class<? extends SLModule>> modulelist = ClassTools.getSubclasses(SLModule.class);
-        for (Class<? extends SLModule> module:modulelist) {
+        Set<Class<? extends SLModule>> moduleList = ClassTools.getSubclasses(SLModule.class);
+        for (Class<? extends SLModule> module:moduleList) {
             if (modules.containsKey(module.getName())) { throw new SystemBadValueException("Conflict for module name "+module.getName()+" between "+modules.get(module.getName()).getClass().getSimpleName()+" and "+modules.get(module.getName()).getClass().getSimpleName()); }
             try {
                 SLModule instance=module.getDeclaredConstructor().newInstance();
@@ -402,11 +428,11 @@ public class SL extends Thread {
             weakInvoke("GPHUD","im",uuid,message);
             return;
         }
-        if (!imwarned) { log().warning("There is no supplier configured for delivering instant messages"); imwarned=true; }
+        if (!imWarned) { log().warning("There is no supplier configured for delivering instant messages"); imWarned =true; }
     }
 
-    public static void groupInvite(String uuid, String groupuuid, String roleuuid) {
-        weakInvoke("JSLBotBridge","groupinvite",uuid,groupuuid,roleuuid);
+    public static void groupInvite(String uuid, String groupUUID, String roleUUID) {
+        weakInvoke("JSLBotBridge","groupinvite",uuid,groupUUID,roleUUID);
     }
 
     public static Collection<SLModule> modules() { return modules.values(); }

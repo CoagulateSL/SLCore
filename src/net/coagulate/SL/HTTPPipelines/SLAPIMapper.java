@@ -85,7 +85,7 @@ public class SLAPIMapper extends URLMapper<Method> {
         parameters.put("slapi_objectvelocity",requireHeader(request,"X-SecondLife-Local-Velocity"));
         parameters.put("slapi_objectrotation",requireHeader(request,"X-SecondLife-Local-Rotation"));
         parameters.put("slapi_objectposition",requireHeader(request,"X-SecondLife-Local-Position"));
-        if (!Config.skipShardCheck() && (!"Production".equalsIgnoreCase(shard))) {
+        if (Config.enforceShardCheck() && (!"Production".equalsIgnoreCase(shard))) {
             throw new SystemRemoteFailureException("Incorrect shard : "+shard);
         }
     }

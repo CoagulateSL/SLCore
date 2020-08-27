@@ -23,9 +23,9 @@ public class Config {
         }
     }
 
-    public static boolean getBoolean(@Nonnull final String key, final boolean defaultvalue) {
+    public static boolean getBoolean(@Nonnull final String key, final boolean defaultValue) {
         if (config.containsKey(key)) { return getBoolean(key); }
-        return defaultvalue;
+        return defaultValue;
     }
 
     public static boolean getBoolean(@Nonnull final String key) {
@@ -44,9 +44,9 @@ public class Config {
         }
     }
 
-    @Nonnull public static String getString(@Nonnull final String key, @Nonnull final String defaultvalue) {
+    @Nonnull public static String getString(@Nonnull final String key, @Nonnull final String defaultValue) {
         if (config.containsKey(key)) { return getString(key); }
-        return defaultvalue;
+        return defaultValue;
     }
     public static int getInt(@Nonnull final String key) {
         try {
@@ -55,11 +55,11 @@ public class Config {
             throw new SystemBadValueException("Config error in '"+key+"' - "+e.getLocalizedMessage(),e);
         }
     }
-    public static int getInt(@Nonnull final String key,int defaultvalue) {
+    public static int getInt(@Nonnull final String key,int defaultValue) {
         if (config.containsKey(key)) {
              return getInt(key);
         }
-        return defaultvalue;
+        return defaultValue;
     }
 
 
@@ -149,7 +149,7 @@ public class Config {
     // 1) Triggers a group invite to instance owners to join the "GPHUD Instance Owners" group via a bot.
     public static boolean isOfficial() { return getBoolean("official-install",false); }
 
-    public static boolean skipShardCheck() { return getBoolean("skipshardcheck",false); }
+    public static boolean enforceShardCheck() { return !getBoolean("skipshardcheck", false); } // negated
 
     public static String getCoagulateSquareLogo() {
         if (getGrid()==GRID.OSGRID) { return "18d20253-3eea-4180-8d95-3f28a212b0ce"; }

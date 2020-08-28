@@ -25,16 +25,6 @@ public class SLPageTemplate extends PageTemplate {
         r+="</td><td align=center>";
         r+="<a href=\"/\">[&nbsp;Home&nbsp;]</a>";
         r+="</td><td align=right width=400px>";
-        //r+="<a href=\"/Info\">[Info]</a>"+"&nbsp;&nbsp;&nbsp;";
-        if (SL.hasModule("Billing")) {
-            if (state.userNullable() != null) {
-                r += "<a href=\"/Billing\">[&nbsp;Billing&nbsp;(L$" +
-                        state.user().balance() + ")&nbsp;]</a>" + "&nbsp;&nbsp;&nbsp;";
-            }
-        }
-        if (SL.hasModule("AccountManagement")) {
-            r += "<a href=\"/Account\">[&nbsp;Account&nbsp;]</a>" + "&nbsp;&nbsp;&nbsp;";
-        }
         r+="<a href=\"/Logout\">[&nbsp;Logout&nbsp;]</a>"+"&nbsp;&nbsp;&nbsp;"+"</span>";
         r+="</td></tr></table>";
         r+="<hr></p>";

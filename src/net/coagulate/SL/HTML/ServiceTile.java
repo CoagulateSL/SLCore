@@ -28,13 +28,18 @@ public class ServiceTile extends Container {
     public String toString() {
         StringBuilder s=new StringBuilder();
         if (url!=null) { s.append("<a href=\"").append(url).append("\">"); }
-        s.append("<li style=\"vertical-align: top; white-space: normal; color:black; border-style: solid; border-width: 5px; height: 250px; width: 200px; text-align: center; margin: 5px; padding: 5px; list-style-type: none; display: inline-block;\">\n");
+        s.append("<li style=\"vertical-align: top; white-space: normal; color:black; border-style: solid; border-width: 5px; min-height: 250px; width: 200px; text-align: center; margin: 5px; padding: 5px; list-style-type: none; display: inline-block;\">\n");
         if (imageUrl==null) { s.append("<h3 align=\"center\">").append(moduleName); }
         else { s.append("<h3 align=\"center\"><img src=\"").append(imageUrl).append("\">"); }
         s.append("</h3>");
         s.append("<p>");
         s.append(description);
         s.append("</p>");
+        s.append("<p style=\"text-align: left; margin: 0px; font-size: 10px;\">").append(version)
+                .append(" ").append(commitId)
+                //.append("<span style=\"float:center;\">").append("hello").append("</span>")
+                .append("<span style=\"float:right;\">").append(buildDate).append("</span>")
+                .append("</p>");
         s.append("</li>");
         if (url!=null) { s.append("</a>"); }
         return s.toString();

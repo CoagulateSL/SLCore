@@ -34,7 +34,7 @@ public class SLPageTemplate extends PageTemplate {
 
     @Override
     public String getFooter() {
-        State state=State.get();
+        //State state=State.get();
         String ret="<div style='position:absolute;bottom:5;right:5;left:5;'><hr>";
         ret+=(Config.getDevelopment()?"DEVELOPMENT":"Production");
         ret+=" // "+Config.getHostName();

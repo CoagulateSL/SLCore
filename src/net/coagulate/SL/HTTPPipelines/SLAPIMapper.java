@@ -175,8 +175,8 @@ public class SLAPIMapper extends URLMapper<Method> {
             throw new SystemRemoteFailureException("Timestamp deviates by more than 300 seconds");
         }
 
-        final String theirObjectKey=state.jsonIn().optString("objectkey");
-        if (theirObjectKey!=null && !theirObjectKey.isEmpty()) {
+        final String theirObjectKey=state.jsonIn().optString("objectkey","");
+        if (!theirObjectKey.isEmpty()) {
             if (!theirObjectKey.equals(objectKey)) {
                 throw new SystemRemoteFailureException("Object key mismatch - headers generated "+objectKey+" but they think it's "+theirObjectKey);
             }

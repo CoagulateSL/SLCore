@@ -324,6 +324,7 @@ public class SL extends Thread {
                 log().config("SL DEVELOPMENT Services starting up on " + Config.getHostName());
             }
             db = new MariaDBConnection("SL" + (Config.getDevelopment() ? "DEV" : ""), Config.getJdbc());
+            db.permit("net.coagulate.SL.Data");
             for (SLModule module : modules.values()) {
                 log().config("Initialising module - " + module.getName());
                 module.initialise();

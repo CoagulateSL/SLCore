@@ -17,6 +17,7 @@ import net.coagulate.Core.HTML.Elements.Table;
 import net.coagulate.Core.HTTP.HTTPListener;
 import net.coagulate.Core.HTTP.URLDistribution;
 import net.coagulate.Core.Tools.*;
+import net.coagulate.SL.Data.SystemManagement;
 import net.coagulate.SL.HTML.ServiceTile;
 import org.apache.http.Header;
 import org.apache.http.HttpInetConnection;
@@ -127,7 +128,7 @@ public class SL extends Thread {
 
     private static final Map<String,Integer> maintenanceFails =new HashMap<>();
     private static void runMaintenance() {
-        if (!primaryNode()) { return; }
+        if (!SystemManagement.primaryNode()) { return; }
         for (SLModule module:modules.values()) {
             if (!maintenanceFails.containsKey(module.getName())) { maintenanceFails.put(module.getName(),0); }
             int failCount= maintenanceFails.get(module.getName());
@@ -245,34 +246,6 @@ public class SL extends Thread {
             return "UNKNOWN";
         }
 
-    }
-
-    private static boolean wasMasterNode =false;
-    public static boolean primaryNode() {
-        // default schema has this being empty :P
-        int rowCount=getDB().dqinn("select count(*) from masternode");
-        if (rowCount==0) {
-            getDB().d("insert into masternode(name) values(?)",Config.getHostName());
-            log("Maintenance").config("Claimed the master node role as it was unset");
-        }
-        final String name = getDB().dqs("select name from masternode");
-        if (!Config.getHostName().equalsIgnoreCase(name)) {
-            if (wasMasterNode) {
-                log("Maintenance").config("We are no longer the master node!");
-                wasMasterNode =false;
-            }
-            return false;
-        } // not the master node
-        // if we are the master node, shall we update our last run so that things know things are working ... thing.
-        if (!wasMasterNode) {
-            log("Maintenance").config("We are now the master node!");
-            wasMasterNode =true;
-        }
-        final int lastRun = getDB().dqinn("select lastrun from masternode");
-        if (UnixTime.getUnixTime() > (lastRun + 60)) {
-            getDB().d("update masternode set lastrun=?", UnixTime.getUnixTime());
-        }
-        return true;
     }
 
     // ----- Internal Statics -----

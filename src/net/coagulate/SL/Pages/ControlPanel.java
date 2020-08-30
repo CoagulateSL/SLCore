@@ -90,6 +90,10 @@ public class ControlPanel {
 				    add(stacktrace.toString());
 			}
 		}
+		if ("Out of permit SQL".equals(state.parameter("Out of permit SQL"))) {
+			SL.getDB().d("select count(*) from users");
+			page.form().add("Did a database thing naughtily!");
+		}
 		if ("UserException".equals(state.parameter("UserException"))) {
 			throw new UserInputStateException("Manually triggered user exception");
 		}
@@ -116,7 +120,7 @@ public class ControlPanel {
 					submit("LoggedOnlyException").
 				    submit("Shutdown").
 					submit("ForceMaintenance").
-				    submit("NameAPI");
+				    submit("NameAPI").submit("Out of permit SQL");
 
 		for (String traceProfile: TraceProfiler.profiles()) {
 			page.header1(traceProfile);

@@ -328,7 +328,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 
 	public void bill(final int ammount,
 	                 final String description) {
-		if (!SL.primaryNode()) { throw new UserInputStateException("This node is not the authorised master node, please retry in a minute"); }
+		if (!SystemManagement.primaryNode()) { throw new UserInputStateException("This node is not the authorised master node, please retry in a minute"); }
 		final int balance=balance();
 		if (balance<ammount) {
 			throw new UserInsufficientCreditException("Insufficient balance (L$"+balance+") to pay charge L$"+ammount);

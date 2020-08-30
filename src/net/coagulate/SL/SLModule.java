@@ -3,6 +3,7 @@ package net.coagulate.SL;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Exceptions.System.SystemImplementationException;
 import net.coagulate.Core.Tools.UnixTime;
+import net.coagulate.SL.Data.SystemManagement;
 import net.coagulate.SL.HTML.ServiceTile;
 
 import javax.annotation.Nonnull;
@@ -91,7 +92,7 @@ public abstract class SLModule {
     protected abstract int schemaUpgrade(DBConnection db,String schemaName, int currentVersion);
 
     public int getSchemaVersion(DBConnection db,String schemaName) {
-        try { return db.dqinn("select max(version) from schemaversions where name like ?",schemaName); }
+        try { return SystemManagement.get(db,schemaName); }
         catch (Throwable t) {
             System.err.println("Exception thrown during Schema Version query on schema "+schemaName);
             throw t;

@@ -95,7 +95,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 			return null;
 		}
 		try {
-			final int userid=SL.getDB().dqinn("select id from users where developerkey=?",key);
+			final int userid=SL.getDB().dqiNotNull("select id from users where developerkey=?",key);
 			return get(userid);
 		}
 		catch (@Nonnull final NoDataException e) { return null; }
@@ -106,7 +106,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 		// purge old tokens
 		SL.getDB().d("update users set ssotoken=null,ssoexpires=null where ssoexpires<?",UnixTime.getUnixTime());
 		try {
-			final int match=SL.getDB().dqinn("select id from users where ssotoken=?",token);
+			final int match=SL.getDB().dqiNotNull("select id from users where ssotoken=?",token);
 			SL.getDB().d("update users set ssotoken=null,ssoexpires=null where id=?",match);
 			return get(match);
 		}
@@ -192,7 +192,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 	public static User findUsername(@Nonnull String name,
 	                                final boolean trustname) {
 		name=formatUsername(name);
-		try { return User.get(SL.getDB().dqinn("select id from users where username=?",name)); }
+		try { return User.get(SL.getDB().dqiNotNull("select id from users where username=?",name)); }
 		catch (final NoDataException e) {
 			return createByName(name,trustname);
 		}
@@ -224,7 +224,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 
 	@Nonnull
 	public static User findUserKey(@Nonnull final String uuid) {
-		return new User(SL.getDB().dqinn("select id from users where avatarkey like ?",uuid));
+		return new User(SL.getDB().dqiNotNull("select id from users where avatarkey like ?",uuid));
 	}
 
 	@Nullable

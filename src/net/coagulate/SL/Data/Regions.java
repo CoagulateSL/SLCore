@@ -20,13 +20,13 @@ public class Regions extends StandardSLTable {
 	@Nonnull
 	public static Regions getByName(final String name) {
 		try {
-			final int id=SL.getDB().dqinn("select id from regions where region like ?",name);
+			final int id=SL.getDB().dqiNotNull("select id from regions where region like ?",name);
 			return new Regions(id);
 		}
 		catch (@Nonnull final NoDataException e) {
 			SL.getDB().d("insert into regions(region) values(?)",name);
 			try {
-				final int id=SL.getDB().dqinn("select id from regions where region like ?",name);
+				final int id=SL.getDB().dqiNotNull("select id from regions where region like ?",name);
 				return new Regions(id);
 			}
 			catch (@Nonnull final NoDataException f) {

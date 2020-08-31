@@ -28,7 +28,7 @@ public class Session extends Table {
 	@Nullable
 	public static Session get(final String sessionid) {
 		try {
-			final ResultsRow user=SL.getDB().dqone("select userid,expires from sessions where cookie=? and expires>?",sessionid,UnixTime.getUnixTime());
+			final ResultsRow user=SL.getDB().dqOne("select userid,expires from sessions where cookie=? and expires>?",sessionid,UnixTime.getUnixTime());
 			final int userid=user.getInt("userid");
 			final int expires=user.getInt("expires");
 			final int expiresin=expires-UnixTime.getUnixTime();

@@ -148,10 +148,10 @@ public class SLCore extends SLModule {
             final DBConnection.DBStats stats=db.getStats();
             queries=queries+stats.queries;
             updates=updates+stats.updates;
-            querytime=querytime+stats.querytotal;
-            updatetime=updatetime+stats.updatetotal;
-            if (stats.querymax>querymax) { querymax=stats.querymax; }
-            if (stats.updatemax>updatemax) { updatemax=stats.updatemax; }
+            querytime=querytime+stats.queryTotal;
+            updatetime=updatetime+stats.updateTotal;
+            if (stats.queryMax >querymax) { querymax=stats.queryMax; }
+            if (stats.updateMax >updatemax) { updatemax=stats.updateMax; }
         }
         float queryavg=0;
         float updateavg=0;

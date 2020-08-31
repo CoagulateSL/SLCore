@@ -17,6 +17,7 @@ import net.coagulate.Core.HTML.Elements.Table;
 import net.coagulate.Core.HTTP.HTTPListener;
 import net.coagulate.Core.HTTP.URLDistribution;
 import net.coagulate.Core.Tools.*;
+import net.coagulate.GPHUD.GPHUD;
 import net.coagulate.SL.Data.SystemManagement;
 import net.coagulate.SL.HTML.ServiceTile;
 import org.apache.http.Header;
@@ -297,7 +298,10 @@ public class SL extends Thread {
                 log().config("SL DEVELOPMENT Services starting up on " + Config.getHostName());
             }
             db = new MariaDBConnection("SL" + (Config.getDevelopment() ? "DEV" : ""), Config.getJdbc());
-            db.permit("net.coagulate.SL.Data");
+            if (Config.getDatabasePathTracing()) {
+                GPHUD.log().config("Database calling path verification is enabled for SLCore and primary SL services");
+                db.permit("net.coagulate.SL.Data");
+            }
             for (SLModule module : modules.values()) {
                 log().config("Initialising module - " + module.getName());
                 module.initialise();

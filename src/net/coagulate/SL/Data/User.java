@@ -257,7 +257,15 @@ public class User extends StandardSLTable implements Comparable<User> {
 		}
 	}
 
-	// ---------- INSTANCE ----------
+    public static Map<Integer, String> getIdToNameMap() {
+		Map<Integer,String> avatarnames=new TreeMap<>();
+		for (final ResultsRow r: SL.getDB().dq("select id,username from users")) {
+			avatarnames.put(r.getInt("id"),r.getString("username"));
+		}
+		return avatarnames;
+    }
+
+    // ---------- INSTANCE ----------
 	@Nonnull
 	public String getGPHUDLink() { return getGPHUDLink(getUsername(),getId()); }
 

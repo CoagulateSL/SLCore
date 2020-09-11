@@ -297,13 +297,14 @@ public class SL extends Thread {
                 log().config("SL DEVELOPMENT Services starting up on " + Config.getHostName());
             }
             db = new MariaDBConnection("SL" + (Config.getDevelopment() ? "DEV" : ""), Config.getJdbc());
-            if (Config.getDatabasePathTracing()) {
-                log().config("Database calling path verification is enabled for SLCore and primary SL services");
-                db.permit("net.coagulate.SL.Data");
-            }
             for (SLModule module : modules.values()) {
                 log().config("Initialising module - " + module.getName());
                 module.initialise();
+            }
+            // turn on path tracing AFTER initialisation as initialisation may update the schema from the module directly
+            if (Config.getDatabasePathTracing()) {
+                log().config("Database calling path verification is enabled for SLCore and primary SL services");
+                db.permit("net.coagulate.SL.Data");
             }
             for (SLModule module : modules.values()) {
                 log().config("Starting module - " + module.getName());

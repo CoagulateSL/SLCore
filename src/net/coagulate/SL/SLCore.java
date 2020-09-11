@@ -140,31 +140,30 @@ public class SLCore extends SLModule {
         if (Config.getDevelopment()) {return;} // only log for production.
         int queries=0;
         int updates=0;
-        long querytime=0;
-        long updatetime=0;
-        long querymax=0;
-        long updatemax=0;
+        long queryTime=0;
+        long updateTime=0;
+        long queryMax=0;
+        long updateMax=0;
         for (final DBConnection db: DB.get()) {
             final DBConnection.DBStats stats=db.getStats();
             queries=queries+stats.queries;
             updates=updates+stats.updates;
-            querytime=querytime+stats.queryTotal;
-            updatetime=updatetime+stats.updateTotal;
-            if (stats.queryMax >querymax) { querymax=stats.queryMax; }
-            if (stats.updateMax >updatemax) { updatemax=stats.updateMax; }
+            queryTime=queryTime+stats.queryTotal;
+            updateTime=updateTime+stats.updateTotal;
+            if (stats.queryMax >queryMax) { queryMax=stats.queryMax; }
+            if (stats.updateMax >updateMax) { updateMax=stats.updateMax; }
         }
-        float queryavg=0;
-        float updateavg=0;
-        if (queries>0) { queryavg=((float) querytime)/((float) queries); }
-        if (updates>0) { updateavg=((float) updatetime)/((float) updates); }
-        //getLogger().fine("Stats: "+queries+"q, avg "+queryavg+" worst "+querymax+".  "+updates+"u, avg "+updateavg+" worst "+updatemax);
+        float queryAverage=0;
+        float updateAverage=0;
+        if (queries>0) { queryAverage=((float) queryTime)/((float) queries); }
+        if (updates>0) { updateAverage=((float) updateTime)/((float) updates); }
         String results="";
         results+=Config.getHostName().toLowerCase()+" mariadb.cluster.queries "+queries+"\n";
-        results+=Config.getHostName().toLowerCase()+" mariadb.cluster.queryavg "+queryavg+"\n";
-        results+=Config.getHostName().toLowerCase()+" mariadb.cluster.querymax "+querymax+"\n";
+        results+=Config.getHostName().toLowerCase()+" mariadb.cluster.queryavg "+queryAverage+"\n";
+        results+=Config.getHostName().toLowerCase()+" mariadb.cluster.querymax "+queryMax+"\n";
         results+=Config.getHostName().toLowerCase()+" mariadb.cluster.updates "+updates+"\n";
-        results+=Config.getHostName().toLowerCase()+" mariadb.cluster.updateavg "+updateavg+"\n";
-        results+=Config.getHostName().toLowerCase()+" mariadb.cluster.updatemax "+updatemax+"\n";
+        results+=Config.getHostName().toLowerCase()+" mariadb.cluster.updateavg "+updateAverage+"\n";
+        results+=Config.getHostName().toLowerCase()+" mariadb.cluster.updatemax "+updateMax+"\n";
         try {
             final Process zabbix=Runtime.getRuntime().exec(new String[]{"/usr/bin/zabbix_sender","-z",Config.getZabbixServer(),"-i-"});
             zabbix.getOutputStream().write(results.getBytes(StandardCharsets.UTF_8));

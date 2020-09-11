@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 import static java.util.logging.Level.*;
 
 public class SLCore extends SLModule {
+    public static final int SLCORE_DATABASE_SCHEMA_VERSION=3;
     public static final boolean DEBUG_URLS=false;
     public final int majorVersion() { return SLCoreBuildInfo.MAJORVERSION; }
     public final int minorVersion() { return SLCoreBuildInfo.MINORVERSION; }
@@ -62,7 +63,7 @@ public class SLCore extends SLModule {
     @Override
     public void initialise() {
         Logger logger=Logger.getLogger(getClass().getCanonicalName());
-        schemaCheck(SL.getDB(),"slcore",2);
+        schemaCheck(SL.getDB(),"slcore",SLCORE_DATABASE_SCHEMA_VERSION);
         URLDistribution.register("", HTMLMapper.get());
         for (Method method: ClassTools.getAnnotatedMethods(Url.class)) {
             Url annotation=method.getAnnotation(Url.class);
@@ -132,6 +133,26 @@ public class SLCore extends SLModule {
             SL.log("SLCore").log(CONFIG,"Upgrading schema from 1 to 2");
             SL.log("SLCore").log(CONFIG,"Schema: Change lastrun in masternode to default 0 and not null");
             db.d("alter table masternode modify column lastrun int default 0 not null");
+        }
+        if (currentVersion==2) {
+            currentVersion=3;
+            SL.log("SLCore").log(CONFIG,"Upgrading schema from 2 to 3");
+            SL.log("SLCore").log(CONFIG,"Schema: Introduce the eventqueue table");
+            db.d("CREATE TABLE `eventqueue` (\n" +
+                    "  `eventid` INT NOT NULL AUTO_INCREMENT,\n" +
+                    "  `modulename` VARCHAR(64) NOT NULL,\n" +
+                    "  `commandname` VARCHAR(64) NOT NULL,\n" +
+                    "  `queued` INT NOT NULL,\n" +
+                    "  `expires` INT NOT NULL,\n" +
+                    "  `claimed` INT NULL DEFAULT NULL,\n" +
+                    "  `completed` INT NULL DEFAULT NULL,\n" +
+                    "  `status` VARCHAR(64) NOT NULL DEFAULT '',\n" +
+                    "  `structureddata` VARCHAR(4096) NOT NULL DEFAULT '{}',\n" +
+                    "  PRIMARY KEY (`eventid`),\n" +
+                    "  UNIQUE INDEX `eventid_UNIQUE` (`eventid` ASC),\n" +
+                    "  INDEX `eventqueue_queued` (`queued` ASC),\n" +
+                    "  INDEX `eventqueue_expires` (`expires` ASC),\n" +
+                    "  INDEX `eventqueue_claimed` (`claimed` ASC));");
         }
         return currentVersion;
     }

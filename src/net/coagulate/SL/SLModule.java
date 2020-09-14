@@ -3,6 +3,7 @@ package net.coagulate.SL;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Exceptions.System.SystemImplementationException;
 import net.coagulate.Core.Tools.UnixTime;
+import net.coagulate.SL.Data.EventQueue;
 import net.coagulate.SL.Data.SystemManagement;
 import net.coagulate.SL.HTML.ServiceTile;
 
@@ -98,4 +99,11 @@ public abstract class SLModule {
             throw t;
         }
     }
+
+    /** Called when this node is becomming the primary node */
+    public void promote() {}
+    /** Called to demote this node from being a primary node */
+    public void demote() {}
+    /** Called to process an EventQueue object */
+    public void processEvent(EventQueue event) {}
 }

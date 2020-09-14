@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 import static java.util.logging.Level.*;
 
 public class SLCore extends SLModule {
-    public static final int SLCORE_DATABASE_SCHEMA_VERSION=3;
+    public static final int SLCORE_DATABASE_SCHEMA_VERSION=5;
     public static final boolean DEBUG_URLS=false;
     public final int majorVersion() { return SLCoreBuildInfo.MAJORVERSION; }
     public final int minorVersion() { return SLCoreBuildInfo.MINORVERSION; }
@@ -154,6 +154,19 @@ public class SLCore extends SLModule {
                     "  INDEX `eventqueue_expires` (`expires` ASC),\n" +
                     "  INDEX `eventqueue_claimed` (`claimed` ASC));");
         }
+        if (currentVersion==3) {
+            currentVersion = 4;
+            SL.log("SLCore").log(CONFIG, "Upgrading schema from 3 to 4");
+            SL.log("SLCore").log(CONFIG, "Schema: Rename ID column to id in eventqueue");
+            db.d("ALTER TABLE `eventqueue` CHANGE COLUMN `eventid` `id` INT(11) NOT NULL AUTO_INCREMENT");
+        }
+        if (currentVersion==4) {
+            currentVersion = 5;
+            SL.log("SLCore").log(CONFIG, "Upgrading schema from 4 to 5");
+            SL.log("SLCore").log(CONFIG, "Schema: Add column to eventqueue to log server that executed event");
+            db.d("ALTER TABLE `eventqueue` ADD COLUMN `executor` VARCHAR(64) NULL DEFAULT NULL AFTER `structureddata`");
+        }
+        // don't forget to update  SLCORE_DATABASE_SCHEMA_VERSION
         return currentVersion;
     }
 

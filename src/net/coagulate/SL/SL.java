@@ -17,6 +17,7 @@ import net.coagulate.Core.HTML.Elements.Table;
 import net.coagulate.Core.HTTP.HTTPListener;
 import net.coagulate.Core.HTTP.URLDistribution;
 import net.coagulate.Core.Tools.*;
+import net.coagulate.SL.Data.EventQueue;
 import net.coagulate.SL.Data.SystemManagement;
 import net.coagulate.SL.HTML.ServiceTile;
 import org.apache.http.Header;
@@ -143,6 +144,11 @@ public class SL extends Thread {
                         SL.reportString("Maintenance DISABLED for " + module.getName(),null,"Module exceeded 5 fail counts");
                     }
                 }
+            }
+        }
+        for (EventQueue event:EventQueue.getOutstandingEvents()) {
+            if (SL.hasModule(event.getModuleName())) {
+                SL.getModule(event.getModuleName()).processEvent(event);
             }
         }
     }

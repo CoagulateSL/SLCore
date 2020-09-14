@@ -1,6 +1,8 @@
 package net.coagulate.SL.Data;
 
 import net.coagulate.Core.Database.ResultsRow;
+import net.coagulate.Core.Tools.UnixTime;
+import net.coagulate.SL.Config;
 import net.coagulate.SL.SL;
 import org.json.JSONObject;
 
@@ -24,9 +26,9 @@ import java.util.List;
 
 public class EventQueue extends StandardSLTable{
 
-    public List<EventQueue> getOutstandingEvents() {
+    public static List<EventQueue> getOutstandingEvents() {
         List<EventQueue> set=new ArrayList<>();
-        for (ResultsRow row:getDatabase().dq("select * from eventqueue where expires>UNIX_TIMESTAMP() and claimed is null order by id asc")) {
+        for (ResultsRow row:SL.getDB().dq("select * from eventqueue where expires>UNIX_TIMESTAMP() and claimed is null order by id asc")) {
             set.add(new EventQueue(row));
         }
         return set;
@@ -36,9 +38,17 @@ public class EventQueue extends StandardSLTable{
         this(SL.getDB().dqOne("select * from eventqueue where id=?",id));
     }
 
-    private String moduleName;
-    private String commandName;
-    private JSONObject structuredData;
+    private String moduleName; public String getModuleName() { return moduleName; }
+    private String commandName; public String getCommandName() { return commandName; }
+    private JSONObject structuredData; public JSONObject getData() { return structuredData; }
+    public void claim() {
+        set("claimed", UnixTime.getUnixTime());
+        set("executor", Config.getHostName()) ;
+    }
+    public void complete(String status) {
+        set("completed",UnixTime.getUnixTime());
+        set("status",status);
+    }
 
     public EventQueue(ResultsRow row) {
         super(row.getInt("id"));

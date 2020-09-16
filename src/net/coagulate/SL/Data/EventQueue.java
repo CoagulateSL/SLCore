@@ -1,6 +1,8 @@
 package net.coagulate.SL.Data;
 
 import net.coagulate.Core.Database.ResultsRow;
+import net.coagulate.Core.HTML.Elements.Table;
+import net.coagulate.Core.Tools.JsonTools;
 import net.coagulate.Core.Tools.UnixTime;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.SL;
@@ -38,9 +40,9 @@ public class EventQueue extends StandardSLTable{
         this(SL.getDB().dqOne("select * from eventqueue where id=?",id));
     }
 
-    private String moduleName; public String getModuleName() { return moduleName; }
-    private String commandName; public String getCommandName() { return commandName; }
-    private JSONObject structuredData; public JSONObject getData() { return structuredData; }
+    private final String moduleName; public String getModuleName() { return moduleName; }
+    private final String commandName; public String getCommandName() { return commandName; }
+    private final JSONObject structuredData; public JSONObject getData() { return structuredData; }
     public void claim() {
         set("claimed", UnixTime.getUnixTime());
         set("executor", Config.getHostName()) ;
@@ -61,5 +63,28 @@ public class EventQueue extends StandardSLTable{
     @Override
     public String getTableName() {
         return "eventqueue";
+    }
+    public static void queue(String modulename,String commandname,int expiresInMinutes,JSONObject structureddata) {
+        SL.getDB().d("insert into eventqueue(modulename,commandname,queued,expires,structureddata) values(?,?,?,?,?)",modulename,commandname,UnixTime.getUnixTime(),UnixTime.getUnixTime()+(expiresInMinutes*60),structureddata.toString());
+    }
+
+    public static Table tabulate() {
+        Table t=new Table();
+        t.collapsedBorder();
+        t.row().header("ID").header("Module").header("Command").header("Queued").header("Expires").header("Claimed").header("Completed").header("Status").header("Executor").header("JSON");
+        for (ResultsRow row:SL.getDB().dq("select * from eventqueue order by id desc")) {
+            t.row().
+                add(row.getInt("id")+"").
+                add(row.getString("modulename")).
+                add(row.getString("commandname")).
+                add(UnixTime.fromUnixTime(row.getInt("queued"),"Europe/London").replaceAll(" ","&nbsp;")).
+                add(UnixTime.fromUnixTime(row.getInt("expires"),"Europe/London").replaceAll(" ","&nbsp;")).
+                add(UnixTime.fromUnixTime(row.getInt("claimed"),"Europe/London").replaceAll(" ","&nbsp;")).
+                add(UnixTime.fromUnixTime(row.getInt("completed"),"Europe/London").replaceAll(" ","&nbsp;")).
+                add(row.getString("status")).
+                add(row.getString("executor")).
+                add("<pre>"+ JsonTools.jsonToString(new JSONObject(row.getString("structureddata")))+"</pre>");
+        }
+        return t;
     }
 }

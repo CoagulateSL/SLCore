@@ -14,6 +14,7 @@ import net.coagulate.Core.Tools.ExceptionTools;
 import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.TraceProfiler;
 import net.coagulate.SL.*;
+import net.coagulate.SL.Data.EventQueue;
 import net.coagulate.SL.HTTPPipelines.SLPageTemplate;
 import net.coagulate.SL.HTTPPipelines.Url;
 
@@ -32,7 +33,7 @@ public class ControlPanel {
 		if (!state.user().isSuperAdmin()) {
 			throw new UserAccessDeniedException("Unauthorised access to Control Panel from "+state.userNullable());
 		}
-		Page.page().template(new SLPageTemplate(SLPageTemplate.PAGELAYOUT.CENTERCOLUMN));
+		Page.page().template(new SLPageTemplate(SLPageTemplate.PAGELAYOUT.NONE));
 		Container page=state.page().root();
 		page.header1("Control Panel");
 		if ("NameAPI".equals(state.parameter("NameAPI"))) {
@@ -128,6 +129,7 @@ public class ControlPanel {
 			//noinspection deprecation
 			page.add(new Raw(TraceProfiler.reportProfile(traceProfile)));
 		}
+		page.add(EventQueue.tabulate());
 	}
 
 }

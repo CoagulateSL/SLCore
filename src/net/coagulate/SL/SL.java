@@ -24,6 +24,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpInetConnection;
 import org.apache.http.HttpRequest;
 import org.apache.http.protocol.HttpContext;
+import org.json.JSONObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -405,7 +406,10 @@ public class SL extends Thread {
     public static boolean canIM() { return hasModule("JSLBotBridge") || hasModule("GPHUD"); }
     public static void im(String uuid, String message) {
         if (hasModule("JSLBotBridge")) {
-            weakInvoke("JSLBotBridge", "im", uuid, message);
+            JSONObject json=new JSONObject();
+            json.put("uuid",uuid);
+            json.put("message",message);
+            EventQueue.queue("JSLBotBridge","im",1,json);
             return;
         }
         if (hasModule("GPHUD")) {

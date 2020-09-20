@@ -47,6 +47,7 @@ public class EventQueue extends StandardSLTable{
         set("claimed", UnixTime.getUnixTime());
         set("executor", Config.getHostName()) ;
     }
+    public void complete() { complete("OK"); }
     public void complete(String status) {
         set("completed",UnixTime.getUnixTime());
         set("status",status);
@@ -86,5 +87,9 @@ public class EventQueue extends StandardSLTable{
                 add("<pre>"+ JsonTools.jsonToString(new JSONObject(row.getString("structureddata")))+"</pre>");
         }
         return t;
+    }
+
+    public void failed() {
+        complete("Error");
     }
 }

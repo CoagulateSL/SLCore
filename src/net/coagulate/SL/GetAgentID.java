@@ -36,6 +36,7 @@ public class GetAgentID {
 		// validate the name a bit and we need to break it down into a firstname (called username in modern LL nomenclature, apparently)
 		// and a last name
 		// "Usernames can contain only letters and numbers" (and when concatenated a single space or dot separator)
+		SL.log("GetAgentID").info("Performing SL getAgentID lookup for "+name);
 		name=name.trim();
 		if (Pattern.compile(".*[^A-Za-z0-9. ].*").matcher(name).matches()) {
 			throw new UserInputValidationFilterException("Name '"+name+"' contains invalid characters");

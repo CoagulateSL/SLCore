@@ -265,7 +265,24 @@ public class User extends StandardSLTable implements Comparable<User> {
 		return avatarNames;
     }
 
-    // ---------- INSTANCE ----------
+	public static String reformatUsernames() {
+		StringBuilder s=new StringBuilder();
+		for (ResultsRow row:SL.getDB().dq("select id,username from users")) {
+			String username=row.getString("username");
+			try {
+				if (!username.equals(formatUsername(username)))
+				{
+					String newusername = formatUsername(username);
+					s.append(username).append(" -> ").append(newusername).append("\n");
+					SL.getDB().d("update users set username=? where id=?", newusername, row.getInt("id"));
+				}
+			}
+			catch (Exception e) { s.append(username).append(" exceptioned ").append(e.toString()).append("\n"); }
+		}
+		return s.toString();
+	}
+
+	// ---------- INSTANCE ----------
 	@Nonnull
 	public String getGPHUDLink() { return getGPHUDLink(getUsername(),getId()); }
 

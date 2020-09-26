@@ -15,6 +15,7 @@ import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.TraceProfiler;
 import net.coagulate.SL.*;
 import net.coagulate.SL.Data.EventQueue;
+import net.coagulate.SL.Data.User;
 import net.coagulate.SL.HTTPPipelines.SLPageTemplate;
 import net.coagulate.SL.HTTPPipelines.Url;
 
@@ -39,6 +40,20 @@ public class ControlPanel {
 		if ("NameAPI".equals(state.parameter("NameAPI"))) {
 			try {
 				final String ret= GetAgentID.getAgentID(state.parameter("input"));
+				page.p(new Preformatted(state.parameter("input")+" resolved to "+ret));
+			}
+			catch (final Throwable t) { page.add(new Paragraph(new Preformatted(t.getLocalizedMessage()))); }
+		}
+		if ("ReFormatUsernames".equals(state.parameter("ReFormatUsernames"))) {
+			try {
+				final String ret= User.reformatUsernames();
+				page.p(new Preformatted("Output: "+ret));
+			}
+			catch (final Throwable t) { page.add(new Paragraph(new Preformatted(t.getLocalizedMessage()))); }
+		}
+		if ("FormatUsername".equals(state.parameter("FormatUsername"))) {
+			try {
+				final String ret= User.formatUsername(state.parameter("input"));
 				page.p(new Preformatted(state.parameter("input")+" resolved to "+ret));
 			}
 			catch (final Throwable t) { page.add(new Paragraph(new Preformatted(t.getLocalizedMessage()))); }
@@ -121,6 +136,8 @@ public class ControlPanel {
 					submit("LoggedOnlyException").
 				    submit("Shutdown").
 					submit("ForceMaintenance").
+					submit("FormatUsername").
+					submit("ReFormatUsernames").
 				    submit("NameAPI").submit("Out of permit SQL");
 
 		for (String traceProfile: TraceProfiler.profiles()) {

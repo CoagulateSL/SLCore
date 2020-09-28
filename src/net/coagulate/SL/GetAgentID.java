@@ -13,12 +13,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class GetAgentID {
 
 	private static final String SERVICE_URL="https://api.secondlife.com/get_agent_id";
-
+	private static Map<String,String> alreadyResolved=new HashMap<>();
 	// ---------- STATICS ----------
 
 	/**
@@ -31,6 +33,11 @@ public class GetAgentID {
 	 */
 	@Nonnull
 	public static String getAgentID(@Nonnull String name) {
+		final String rawname=name;
+		if (alreadyResolved.containsKey(rawname)) {
+			SL.log("GetAgentID").info("NOT Performing DUPLICATE SL getAgentID lookup for "+rawname);
+			return alreadyResolved.get(rawname);
+		}
 		if (Config.getGrid()!= Config.GRID.SECONDLIFE) { throw new UserConfigurationException("Unable to try resolve this name on this grid type"); }
 		if (Config.getSecondLifeAPIKey().isEmpty()) { throw new UserConfigurationException("Unable to try resolve this name due to lack of Name Service API Key"); }
 		// validate the name a bit and we need to break it down into a firstname (called username in modern LL nomenclature, apparently)
@@ -77,11 +84,17 @@ public class GetAgentID {
 
 			switch (responsecode) {
 				case 403:
-					throw new SystemRemoteFailureException("SL Name API Rate Limited");
+					SystemRemoteFailureException urfe=new SystemRemoteFailureException("SL Name API Rate Limited");
+					SL.report("Name API IO Error",urfe,null);
+					throw urfe;
 				case 405:
-					throw new SystemRemoteFailureException("SL Name API said Malformed Request");
+					SystemRemoteFailureException srfe=new SystemRemoteFailureException("SL Name API said Malformed Request");
+					SL.report("Name API IO Error",srfe,null);
+					throw srfe;
 				case 500:
-					throw new UserRemoteFailureException("SL Name API service errored");
+					UserRemoteFailureException error=new UserRemoteFailureException("SL Name API service errored");
+					SL.report("Name API IO Error",error,null);
+					throw error;
 			}
 
 			final BufferedReader rd;
@@ -102,7 +115,7 @@ public class GetAgentID {
 			if (responsecode==404) {
 				throw new UserRemoteFailureException("SL Name API - "+json.optString("error","???")+" - "+json.optString("message","NoErrorMessage"));
 			}
-
+			alreadyResolved.put(rawname,json.getString("agent_id"));
 			return json.getString("agent_id");
 		}
 		catch (final IOException ex) {

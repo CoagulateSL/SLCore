@@ -81,10 +81,10 @@ public class EventQueue extends StandardSLTable{
                 add(row.getString("commandname")).
                 add(UnixTime.fromUnixTime(row.getInt("queued"),"Europe/London").replaceAll(" ","&nbsp;")).
                 add(UnixTime.fromUnixTime(row.getInt("expires"),"Europe/London").replaceAll(" ","&nbsp;")).
-                add(UnixTime.fromUnixTime(row.getInt("claimed"),"Europe/London").replaceAll(" ","&nbsp;")).
-                add(UnixTime.fromUnixTime(row.getInt("completed"),"Europe/London").replaceAll(" ","&nbsp;")).
+                add(UnixTime.fromUnixTime(row.getIntNullable("claimed"),"Europe/London").replaceAll(" ","&nbsp;")).
+                add(UnixTime.fromUnixTime(row.getIntNullable("completed"),"Europe/London").replaceAll(" ","&nbsp;")).
                 add(row.getString("status")).
-                add(row.getString("executor")).
+                add(row.getStringNullable("executor")).
                 add("<pre>"+ JsonTools.jsonToString(new JSONObject(row.getString("structureddata")))+"</pre>");
         }
         return t;

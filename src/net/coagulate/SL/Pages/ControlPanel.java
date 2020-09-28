@@ -44,6 +44,20 @@ public class ControlPanel {
 			}
 			catch (final Throwable t) { page.add(new Paragraph(new Preformatted(t.getLocalizedMessage()))); }
 		}
+		if ("FindUserName".equals(state.parameter("FindUserName"))) {
+			try {
+				User user=User.findUsername(state.parameter("input"),false);
+				page.p(new Preformatted(state.parameter("input")+" username resolved to "+user));
+			}
+			catch (final Throwable t) { page.add(new Paragraph(new Preformatted(t.getLocalizedMessage()))); }
+		}
+		if ("FindUserKey".equals(state.parameter("FindUserKey"))) {
+			try {
+				User user=User.findUserKeyNullable(state.parameter("input"));
+				page.p(new Preformatted(state.parameter("input")+" username resolved to "+user));
+			}
+			catch (final Throwable t) { page.add(new Paragraph(new Preformatted(t.getLocalizedMessage()))); }
+		}
 		if ("ReFormatUsernames".equals(state.parameter("ReFormatUsernames"))) {
 			try {
 				final String ret= User.reformatUsernames();
@@ -138,6 +152,7 @@ public class ControlPanel {
 					submit("ForceMaintenance").
 					submit("FormatUsername").
 					submit("ReFormatUsernames").
+					submit("FindUserKey").submit("FindUserName").
 				    submit("NameAPI").submit("Out of permit SQL");
 
 		for (String traceProfile: TraceProfiler.profiles()) {

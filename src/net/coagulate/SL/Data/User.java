@@ -282,6 +282,15 @@ public class User extends StandardSLTable implements Comparable<User> {
 		return s.toString();
 	}
 
+	/** A horrible method that is not to be used much.  Thanks. */
+	public static Set<User> getAllUsers() {
+		Set<User> ret=new HashSet<>();
+		for (ResultsRow row: SL.getDB().dq("select id from users")) {
+			ret.add(User.get(row.getInt("id")));
+		}
+		return ret;
+	}
+
 	// ---------- INSTANCE ----------
 	@Nonnull
 	public String getGPHUDLink() { return getGPHUDLink(getUsername(),getId()); }
@@ -480,10 +489,9 @@ public class User extends StandardSLTable implements Comparable<User> {
 		return getUsername().compareToIgnoreCase(o.getUsername());
 	}
 
-	// ----- Internal Instance -----
-	private void setUsername(@Nonnull String username) {
-		username=formatUsername(username);
+	public void setUsername(@Nonnull String username) {
 		d("update users set username=? where id=?",username,getId());
 		userNameCache =username;
 	}
+
 }

@@ -69,17 +69,11 @@ public class User extends StandardSLTable implements Comparable<User> {
 			throw new SystemImplementationException("Formatting username '"+original+"' gave '"+username+"' which has "+parts.length+" parts, which is not 2...");
 		}
 		// convert to "uppercase-first"
-		final String firstname=parts[0].toLowerCase();
-		final String lastname=parts[1].toLowerCase();
-		String newFirstName="";
-		if (firstname.length()>0) { newFirstName+=firstname.substring(0,1).toUpperCase(); }
-		if (firstname.length()>1) { newFirstName+=firstname.substring(1); }
-		String newLastName="";
-		if (lastname.length()>0) { newLastName+=lastname.substring(0,1).toUpperCase(); }
-		if (lastname.length()>1) { newLastName+=lastname.substring(1); }
+		final String firstName=parts[0];
+		final String lastName=parts[1];
 		// only append the surname if /not/ resident
-		String output=newFirstName;
-		if (!"Resident".equalsIgnoreCase(newLastName)) { output=output+" "+newLastName; } // redundant ignores case
+		String output=firstName;
+		if (!"Resident".equalsIgnoreCase(lastName)) { output=output+" "+lastName; }
 		return output;
 	}
 

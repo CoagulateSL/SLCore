@@ -18,6 +18,7 @@ import net.coagulate.SL.Data.EventQueue;
 import net.coagulate.SL.Data.User;
 import net.coagulate.SL.HTTPPipelines.SLPageTemplate;
 import net.coagulate.SL.HTTPPipelines.Url;
+import org.json.JSONObject;
 
 import javax.annotation.Nonnull;
 import javax.mail.MessagingException;
@@ -120,6 +121,10 @@ public class ControlPanel {
 				    add(stacktrace.toString());
 			}
 		}
+		if ("Recalc Names".equals(state.parameter("Recalc Names"))) {
+			EventQueue.queue("JSLBotBridge","recalcnames",60,new JSONObject());
+			page.form().add("Added recalcnames to event queue");
+		}
 		if ("Out of permit SQL".equals(state.parameter("Out of permit SQL"))) {
 			SL.getDB().d("select count(*) from users");
 			page.form().add("Did a database thing naughtily!");
@@ -153,7 +158,7 @@ public class ControlPanel {
 					submit("FormatUsername").
 					submit("ReFormatUsernames").
 					submit("FindUserKey").submit("FindUserName").
-				    submit("NameAPI").submit("Out of permit SQL");
+				    submit("NameAPI").submit("Out of permit SQL").submit("Recalc Names");
 
 		for (String traceProfile: TraceProfiler.profiles()) {
 			page.header1(traceProfile);

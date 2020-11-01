@@ -8,6 +8,7 @@
 #define COMMS_DEVKEY "xxxxxxxxxxxx"
 #define COMMS_DONT_CHECK_CALLBACK
 #define COMMS_PROTOCOL "xx"
+#define COMMS_SUPPRESS_LINK_MESSAGES
 #include "SLCore/LSL/CommsV3.lsl"
 
 call comms_setup() at "go"
@@ -123,7 +124,10 @@ integer comms_http_request(key id,string method) {
 		#ifndef COMMS_DONT_CHECK_CALLBACK
 		comms_do_callback();
 		#else
-		BOOTSTAGE++; llMessageLinked(LINK_THIS,LINK_SET_STAGE,(string)BOOTSTAGE,NULL_KEY);
+		BOOTSTAGE++;
+		#ifndef COMMS_SUPPRESS_LINK_MESSAGES
+		llMessageLinked(LINK_THIS,LINK_SET_STAGE,(string)BOOTSTAGE,NULL_KEY);
+		#endif
 		#ifdef DEBUG
 		llOwnerSay("URL request granted comms V3 calling setup()");
 		#endif
@@ -134,7 +138,10 @@ integer comms_http_request(key id,string method) {
 	if (jsonget("command")=="CallBack" && jsonget("url")==comms_url) {
 		if (BOOTSTAGE==BOOT_COMMS) {
 			llHTTPResponse(id,200,json);
-			BOOTSTAGE++; llMessageLinked(LINK_THIS,LINK_SET_STAGE,(string)BOOTSTAGE,NULL_KEY);
+			BOOTSTAGE++;
+			#ifndef COMMS_SUPPRESS_LINK_MESSAGES
+			llMessageLinked(LINK_THIS,LINK_SET_STAGE,(string)BOOTSTAGE,NULL_KEY);
+			#endif
 			#ifdef DEBUG
 			llOwnerSay("Callback complete, return to setup in stage 1!");
 			#endif

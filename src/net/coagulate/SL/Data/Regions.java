@@ -35,6 +35,20 @@ public class Regions extends StandardSLTable {
 		}
 	}
 
+    public static void checkDiff(final String description,
+                                 @Nonnull final Regions r,
+                                 final String column,
+                                 @Nonnull final String value) {
+		final String oldValue=r.getStringNullable(column);
+		if (value.equals(oldValue)) { return; }
+		r.set(column,value);
+		RegionLog.log(r.getId(),description,oldValue,value);
+	}
+
+	public static void set(Regions r, String key, int value) {
+		r.set(key,value);
+	}
+
 	// ---------- INSTANCE ----------
 	@Nonnull
 	@Override

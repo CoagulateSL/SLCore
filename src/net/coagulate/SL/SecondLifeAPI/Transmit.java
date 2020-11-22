@@ -1,6 +1,7 @@
 package net.coagulate.SL.SecondLifeAPI;
 
 import net.coagulate.Core.Tools.ByteTools;
+import net.coagulate.SL.Config;
 import net.coagulate.SL.SL;
 import org.json.JSONObject;
 
@@ -22,12 +23,12 @@ import static java.util.logging.Level.*;
  * @author Iain Price <gphud@predestined.net>
  */
 public class Transmit extends Thread {
-	public static boolean debugspawn;
+	public static boolean debugSpawn;
 	final String url;
 	@Nullable
 	final JSONObject json;
 	@Nullable
-	JSONObject jsonresponse;
+	JSONObject jsonResponse;
 	int delay;
 
 	public Transmit(@Nullable final JSONObject json,
@@ -46,14 +47,13 @@ public class Transmit extends Thread {
 
 	// ---------- INSTANCE ----------
 	@Nullable
-	public JSONObject getResponse() { return jsonresponse; }
+	public JSONObject getResponse() { return jsonResponse; }
 
 	// can call .start() to background run this, or .run() to async run inline/inthread
 	@Override
 	public void run() {
-		final boolean debug=false;
 		if (delay>0) {
-			try { Thread.sleep(delay*1000); } catch (@Nonnull final InterruptedException e) {}
+			try { Thread.sleep(delay*1000); } catch (@Nonnull final InterruptedException ignored) {}
 		}
 		int retries=5;
 		String response=null;
@@ -73,13 +73,13 @@ public class Transmit extends Thread {
 			catch (@Nonnull final IOException e) {
 				retries--;
 				getLogger().log(INFO,"IOException "+e.getMessage()+" retries="+retries+" left");
-				try { Thread.sleep(5*1000); } catch (@Nonnull final InterruptedException ee) {}
+				try { Thread.sleep(5*1000); } catch (@Nonnull final InterruptedException ignored) {}
 			}
 		}
 		if (response==null) { getLogger().log(WARNING,"Failed all retransmission attempts for "+json); }
 		if (response!=null && !response.isEmpty()) {
 			try {
-				jsonresponse=new JSONObject(response);
+				jsonResponse =new JSONObject(response);
 				// process response?
 			}
 			catch (@Nonnull final Exception e) {
@@ -93,7 +93,6 @@ public class Transmit extends Thread {
 
 	@Nonnull
 	private String sendAttempt() throws IOException {
-		final boolean debug=false;
 		final URLConnection transmission=new URL(url).openConnection();
 		transmission.setDoOutput(true);
 		transmission.setAllowUserInteraction(false);
@@ -106,7 +105,8 @@ public class Transmit extends Thread {
 		out.write(json+"\n");
 		out.flush();
 		out.close();
-		@SuppressWarnings("UnnecessaryLocalVariable") final String response=ByteTools.convertStreamToString(transmission.getInputStream());
+		final String response=ByteTools.convertStreamToString(transmission.getInputStream());
+		if (Config.logRequests()) { System.out.println("ReqLog:OUTBOUND - "+Thread.currentThread().getName()+" - "+response.length()+"b/"+(json==null?"-":json.length())+"b"); }
 		return response;
 	}
 }

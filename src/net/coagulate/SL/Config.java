@@ -190,6 +190,8 @@ public class Config {
     public static String getQLRFastBotSeat() { return getString("lslr-fast-seat",""); }
     public static String getQLRSlowBotSeat() { return getString("lslr-slow-seat",""); }
 
+    public static boolean logRequests() { return getBoolean("log-requests",false); }
+
     public enum GRID {SECONDLIFE,OSGRID}
 
     public static String getBrandingName() { return getString("branding-name",""); }

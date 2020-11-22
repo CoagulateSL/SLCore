@@ -188,7 +188,7 @@ public class SLAPIMapper extends URLMapper<Method> {
     }
 
     @Override
-    protected void processOutput(HttpResponse response, Method content) {
+    protected int processOutput(HttpResponse response, Method content) {
         String stringOutput;
         try {
             if (State.get().jsonOutNullable()==null) { throw new SystemImplementationException("No response set up by "+content.getDeclaringClass().getCanonicalName()+"."+content.getName()); }
@@ -201,7 +201,7 @@ public class SLAPIMapper extends URLMapper<Method> {
         }
         response.setEntity(new StringEntity(stringOutput, ContentType.APPLICATION_JSON));
         response.setStatusCode(HttpStatus.SC_OK);
-
+        return stringOutput.length();
     }
 
     @Override

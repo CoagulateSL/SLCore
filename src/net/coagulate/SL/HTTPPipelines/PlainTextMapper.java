@@ -89,7 +89,7 @@ public class PlainTextMapper extends URLMapper<Method> {
 
 
     @Override
-    protected void processOutput(HttpResponse response, Method content) {
+    protected int processOutput(HttpResponse response, Method content) {
         String stringOutput;
         try {
             stringOutput = Page.page().render();
@@ -101,7 +101,7 @@ public class PlainTextMapper extends URLMapper<Method> {
         }
         response.setEntity(new StringEntity(stringOutput, ContentType.TEXT_PLAIN));
         response.setStatusCode(HttpStatus.SC_OK);
-
+        return stringOutput.length();
     }
 
     @Override

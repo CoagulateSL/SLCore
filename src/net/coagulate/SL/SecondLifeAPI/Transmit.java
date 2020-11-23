@@ -106,7 +106,7 @@ public class Transmit extends Thread {
 		out.flush();
 		out.close();
 		final String response=ByteTools.convertStreamToString(transmission.getInputStream());
-		if (Config.logRequests()) { System.out.println("ReqLog:SLAPI/OUTBOUND - "+Thread.currentThread().getName()+" - "+response.length()+"b/"+(json==null?"-":json.length())+"b"); }
+		if (Config.logRequests()) { System.out.println("ReqLog:'SLAPI/OUTBOUND','"+Thread.currentThread().getName()+"',"+response.length()+","+(json==null?"-":json.length())+",-1"); }
 		return response;
 	}
 }

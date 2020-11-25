@@ -15,6 +15,7 @@ import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.TraceProfiler;
 import net.coagulate.SL.*;
 import net.coagulate.SL.Data.EventQueue;
+import net.coagulate.SL.Data.RegionStats;
 import net.coagulate.SL.Data.User;
 import net.coagulate.SL.HTTPPipelines.SLPageTemplate;
 import net.coagulate.SL.HTTPPipelines.Url;
@@ -141,6 +142,9 @@ public class ControlPanel {
 		if ("SystemException".equals(state.parameter("SystemException"))) {
 			throw new SystemImplementationException("Manually triggered system exception");
 		}
+		if ("RegionStatsArchival".equals(state.parameter("RegionStatsArchival"))) {
+			RegionStats.archiveOld();
+		}
 		if ("Shutdown".equals(state.parameter("Shutdown"))) {
 			SL.shutdown();
 		}
@@ -154,6 +158,7 @@ public class ControlPanel {
 				    submit("SystemException").
 					submit("LoggedOnlyException").
 				    submit("Shutdown").
+					submit("RegionStatsArchival").
 					submit("ForceMaintenance").
 					submit("FormatUsername").
 					submit("ReFormatUsernames").

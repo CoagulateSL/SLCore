@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 import static java.util.logging.Level.*;
 
 public class SLCore extends SLModule {
-    public static final int SLCORE_DATABASE_SCHEMA_VERSION=5;
     public static final boolean DEBUG_URLS=false;
     public final int majorVersion() { return SLCoreBuildInfo.MAJORVERSION; }
     public final int minorVersion() { return SLCoreBuildInfo.MINORVERSION; }
@@ -132,6 +131,7 @@ public class SLCore extends SLModule {
         }
     }
 
+    public static final int SLCORE_DATABASE_SCHEMA_VERSION=5;
     @Override
     protected int schemaUpgrade(DBConnection db, String schemaName, int currentVersion)
     {

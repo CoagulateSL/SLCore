@@ -131,7 +131,7 @@ public class SLCore extends SLModule {
         }
     }
 
-    public static final int SLCORE_DATABASE_SCHEMA_VERSION=5;
+    public static final int SLCORE_DATABASE_SCHEMA_VERSION=6;
     @Override
     protected int schemaUpgrade(DBConnection db, String schemaName, int currentVersion)
     {
@@ -172,6 +172,12 @@ public class SLCore extends SLModule {
             SL.log("SLCore").log(CONFIG, "Upgrading schema from 4 to 5");
             SL.log("SLCore").log(CONFIG, "Schema: Add column to eventqueue to log server that executed event");
             db.d("ALTER TABLE `eventqueue` ADD COLUMN `executor` VARCHAR(64) NULL DEFAULT NULL AFTER `structureddata`");
+        }
+        if (currentVersion==5) {
+            currentVersion = 6;
+            SL.log("SLCore").log(CONFIG, "Upgrading schema from 5 to 6");
+            SL.log("SLCore").log(CONFIG, "Schema: Add column suspended to users table");
+            db.d("ALTER TABLE `users` ADD COLUMN `suspended` tinyint(4) NOT NULL DEFAULT 0");
         }
         // don't forget to update  SLCORE_DATABASE_SCHEMA_VERSION
         return currentVersion;

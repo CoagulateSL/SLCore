@@ -488,4 +488,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 		userNameCache =username;
 	}
 
+    public boolean isSuspended() {
+		return getBool("suspended");
+    }
 }

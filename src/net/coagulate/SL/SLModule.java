@@ -64,6 +64,16 @@ public abstract class SLModule {
     public void schemaCheck(DBConnection db, String schemaName, int requiredVersion) {
         try {
             int currentVersion = getSchemaVersion(db,schemaName);
+            if (currentVersion>requiredVersion) {
+                // if the schema is "too new"
+                if (Config.getDevelopment()) {
+                    logger.warning("Schema for " + schemaName + " is too new " + currentVersion + " > " + requiredVersion + " (current>required), continuing as in DEVELOPMENT mode.  No schema upgrade is executed.");
+                    return;
+                } else {
+                    logger.config("Schema for " + schemaName + " is too new " + currentVersion + " > " + requiredVersion + " (current>required)");
+                    throw new SystemImplementationException("Schema version too new on "+schemaName+" - current #"+currentVersion+" > required #"+requiredVersion+", terminating as a safety measure");
+                }
+            }
             while (currentVersion != requiredVersion) {
                 logger.config("Schema " + currentVersion + " is not of required version " + requiredVersion + ", calling schemaUpgrade");
                 int newVersion = schemaUpgrade(db,schemaName, currentVersion);

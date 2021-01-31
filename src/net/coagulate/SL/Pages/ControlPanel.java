@@ -10,6 +10,7 @@ import net.coagulate.Core.HTML.Elements.Preformatted;
 import net.coagulate.Core.HTML.Elements.Raw;
 import net.coagulate.Core.HTML.Elements.Table;
 import net.coagulate.Core.HTML.Page;
+import net.coagulate.Core.Tools.Cache;
 import net.coagulate.Core.Tools.ExceptionTools;
 import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.TraceProfiler;
@@ -23,6 +24,7 @@ import org.json.JSONObject;
 
 import javax.annotation.Nonnull;
 import javax.mail.MessagingException;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -139,6 +141,28 @@ public class ControlPanel {
 			//noinspection deprecation
 			page.form().add(new Raw("<p>Sent event</P>"));
 		}
+		if ("CacheStats".equals(state.parameter("CacheStats"))) {
+			List<Cache.CacheStats> stats=Cache.getStats();
+			StringBuilder output=new StringBuilder();
+			output.append("<table><tr><th>Cache Name</th><th>Elements</th><th>Cache Hits</th><th>Cache Misses</th></tr>");
+			for (Cache.CacheStats stat:stats) {
+				output.append("<tr><td>");
+				output.append(stat.cacheName);
+				output.append("</td><td>");
+				output.append(stat.size);
+				output.append("</td><td>");
+				output.append(stat.cacheHit);
+				output.append("</td><td>");
+				output.append(stat.cacheMiss);
+				output.append("</td><td>");
+				if (stat.cacheHit+stat.cacheMiss > 0) {
+					output.append((stat.cacheHit * 100) / (stat.cacheMiss + stat.cacheHit)).append("%");
+				}
+				output.append("</td></tr>");
+			}
+			output.append("</table>");
+			page.form().add(new Raw(output.toString()));
+		}
 		if ("SystemException".equals(state.parameter("SystemException"))) {
 			throw new SystemImplementationException("Manually triggered system exception");
 		}
@@ -163,7 +187,7 @@ public class ControlPanel {
 					submit("FormatUsername").
 					submit("ReFormatUsernames").
 					submit("FindUserKey").submit("FindUserName").
-				    submit("NameAPI").submit("Out of permit SQL").submit("Recalc Names");
+				    submit("NameAPI").submit("Out of permit SQL").submit("Recalc Names").submit("CacheStats");
 
 		for (String traceProfile: TraceProfiler.profiles()) {
 			page.header1(traceProfile);

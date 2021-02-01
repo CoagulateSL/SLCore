@@ -142,7 +142,7 @@ public class ControlPanel {
 			page.form().add(new Raw("<p>Sent event</P>"));
 		}
 		if ("CacheStats".equals(state.parameter("CacheStats"))) {
-			List<Cache.CacheStats> stats=Cache.getStats();
+			List<Cache.CacheStats> stats=Cache.getSummarisedStats();
 			StringBuilder output=new StringBuilder();
 			output.append("<table><tr><th>Cache Name</th><th>Elements</th><th>Cache Hits</th><th>Cache Misses</th></tr>");
 			for (Cache.CacheStats stat:stats) {

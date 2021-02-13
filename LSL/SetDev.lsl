@@ -1,3 +1,5 @@
+#ifndef _INCLUDE_SETDEV_HEADER
+#define _INCLUDE_SETDEV_HEADER
 integer DEV=0;
 string DEV_INJECT="";
 setDev(integer noisy) {
@@ -8,3 +10,4 @@ setDev(integer noisy) {
 		DEV=0; DEV_INJECT="";
 	}
 }
+#endif

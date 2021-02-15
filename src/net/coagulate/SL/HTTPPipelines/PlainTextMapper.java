@@ -99,9 +99,13 @@ public class PlainTextMapper extends URLMapper<Method> {
             error.put("error",ue.getLocalizedMessage());
             stringOutput = error.toString();
         }
-        response.setEntity(new StringEntity(stringOutput, ContentType.TEXT_PLAIN));
+        response.setEntity(new StringEntity(stringOutput, getContentType()));
         response.setStatusCode(HttpStatus.SC_OK);
         return stringOutput.length();
+    }
+
+    protected ContentType getContentType() {
+        return Page.page().contentType()==null?ContentType.TEXT_PLAIN:Page.page().contentType();
     }
 
     @Override
@@ -115,7 +119,7 @@ public class PlainTextMapper extends URLMapper<Method> {
         SL.report("PText UnkEx: "+t.getLocalizedMessage(),t,state());
         String text="Error: Sorry, an unhandled internal error occurred.\n";
         text+="Type: UnhandledException";
-        response.setEntity(new StringEntity(text,ContentType.TEXT_PLAIN));
+        response.setEntity(new StringEntity(text, getContentType()));
         response.setStatusCode(200);
     }
 

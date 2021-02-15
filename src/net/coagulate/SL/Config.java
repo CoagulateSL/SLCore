@@ -192,6 +192,9 @@ public class Config {
 
     public static boolean logRequests() { return getBoolean("log-requests",false); }
 
+    public static int getQuotaLimit() { return getInt("report-quota-limit",10); }
+    public static int getQuotaInterval() { return getInt("report-quota-interval",43200); }
+
     public enum GRID {SECONDLIFE,OSGRID}
 
     public static String getBrandingName() { return getString("branding-name",""); }

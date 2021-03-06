@@ -2,6 +2,7 @@ package net.coagulate.SL;
 
 import net.coagulate.Core.Exceptions.System.SystemRemoteFailureException;
 import net.coagulate.Core.Exceptions.User.UserConfigurationException;
+import net.coagulate.Core.Exceptions.User.UserInputLookupFailureException;
 import net.coagulate.Core.Exceptions.User.UserInputValidationFilterException;
 import net.coagulate.Core.Exceptions.User.UserRemoteFailureException;
 import org.json.JSONObject;
@@ -33,6 +34,9 @@ public class GetAgentID {
 	 */
 	@Nonnull
 	public static String getAgentID(@Nonnull String name) {
+		if (name.isBlank()) {
+			throw new UserInputLookupFailureException("Will not attempt to resolve the blank Agent name");
+		}
 		final String rawname=name;
 		if (alreadyResolved.containsKey(rawname)) {
 			SL.log("GetAgentID").info("NOT Performing DUPLICATE SL getAgentID lookup for "+rawname);

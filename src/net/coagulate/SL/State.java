@@ -144,9 +144,11 @@ public class State extends DumpableState {
 		return in;
 	}
 	private JSONObject out=null;
+	private SystemImplementationException outset=null;
 	public void jsonOut(JSONObject json) {
-		if (out!=null) { throw new SystemImplementationException("JSON OUT already set"); }
+		if (out!=null) { throw new SystemImplementationException("JSON OUT already set",outset); }
 		out=json;
+		outset=new SystemImplementationException("Set here");
 	}
 	public JSONObject jsonOut() {
 		if (out==null) { throw new SystemImplementationException("JSON OUT is null"); }

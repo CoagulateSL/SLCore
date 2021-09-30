@@ -37,6 +37,9 @@ public class JavaCore extends SLModule {
     public void maintenance() {}
 
     @Override
+    public void maintenanceInternal() {}
+
+    @Override
     public int majorVersion() { return JavaCoreBuildInfo.MAJORVERSION; }
 
     @Override

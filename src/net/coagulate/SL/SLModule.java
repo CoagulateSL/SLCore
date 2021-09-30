@@ -39,7 +39,8 @@ public abstract class SLModule {
     public abstract void shutdown();
     public abstract void startup();
     public abstract void initialise();
-    public abstract void maintenance();
+    public abstract void maintenance(); // called only if we're the master node
+    public abstract void maintenanceInternal(); // called regardless
     public abstract int majorVersion();
     public abstract int minorVersion();
     public abstract int bugFixVersion();

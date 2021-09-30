@@ -130,13 +130,14 @@ public class SL extends Thread {
 
     private static final Map<String,Integer> maintenanceFails =new HashMap<>();
     private static void runMaintenance() {
-        if (!SystemManagement.primaryNode()) { return; }
+        boolean activeNode=SystemManagement.primaryNode();
         for (SLModule module:modules.values()) {
             if (!maintenanceFails.containsKey(module.getName())) { maintenanceFails.put(module.getName(),0); }
             int failCount= maintenanceFails.get(module.getName());
             if (failCount<5) {
                 try {
-                    module.maintenance();
+                    module.maintenanceInternal();
+                    if (activeNode) { module.maintenance(); }
                 } catch (Throwable t) {
                     SL.report("Maintenance Exception in "+module.getName(),t,null);
                     failCount++;
@@ -147,9 +148,11 @@ public class SL extends Thread {
                 }
             }
         }
-        for (EventQueue event:EventQueue.getOutstandingEvents()) {
-            if (SL.hasModule(event.getModuleName())) {
-                SL.getModule(event.getModuleName()).processEvent(event);
+        if (activeNode) {
+            for (EventQueue event : EventQueue.getOutstandingEvents()) {
+                if (SL.hasModule(event.getModuleName())) {
+                    SL.getModule(event.getModuleName()).processEvent(event);
+                }
             }
         }
     }

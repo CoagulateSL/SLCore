@@ -118,12 +118,23 @@ public class SLCore extends SLModule {
     }
 
     @Override
+    public void maintenanceInternal() {
+        if (nextRun("SLCore-Cache-Clear", 60, 30)) {
+            Cache.maintenance();
+        }
+        if (Config.enableZabbix() && nextRun("SLCore-DBStats-maintenance", 60, 0)) {
+            reportDBStats();
+        }
+        if (nextRun("SLCore-Page-Thread-Cleaner", 60, 30)) {
+            Page.maintenance();
+        }
+        if (nextRun("SLCore-State-Cleaner", 60, 30)) {
+            State.maintenance();
+        }
+    }
+    @Override
     public void maintenance() {
-        if (nextRun("SLCore-Cache-Clear",60,30)) { Cache.maintenance(); }
-        if (Config.enableZabbix() && nextRun("SLCore-DBStats-maintenance",60,0)) { reportDBStats(); }
-        if (nextRun("SLCore-Page-Thread-Cleaner",60,30)) { Page.maintenance(); }
-        if (nextRun("SLCore-State-Cleaner",60,30)) { State.maintenance(); }
-        for (EventQueue event: EventQueue.getOutstandingEvents()) {
+    for (EventQueue event: EventQueue.getOutstandingEvents()) {
             String module=event.getModuleName();
             if (SL.hasModule(module)) {
                 SL.getModule(module).processEvent(event);

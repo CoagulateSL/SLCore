@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 public class GetAgentID {
 
 	private static final String SERVICE_URL="https://api.secondlife.com/get_agent_id";
-	private static Map<String,String> alreadyResolved=new HashMap<>();
+	private static final Map<String,String> alreadyResolved=new HashMap<>();
 	// ---------- STATICS ----------
 
 	/**

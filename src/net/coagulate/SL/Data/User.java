@@ -271,7 +271,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 					SL.getDB().d("update users set username=? where id=?", newusername, row.getInt("id"));
 				}
 			}
-			catch (Exception e) { s.append(username).append(" exceptioned ").append(e.toString()).append("\n"); }
+			catch (Exception e) { s.append(username).append(" exceptioned ").append(e).append("\n"); }
 		}
 		return s.toString();
 	}

@@ -64,6 +64,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 		username=username.replaceAll("\\."," "); // merge "user.resident" and "user resident"
 		// for simplicity, force to "double barrel"
 		if (!username.contains(" ")) { username=username+" Resident"; } // merge "user" and "user resident"
+		username=username.trim();
 		final String[] parts=username.split(" ");
 		if (parts.length!=2) {
 			throw new SystemImplementationException("Formatting username '"+original+"' gave '"+username+"' which has "+parts.length+" parts, which is not 2...");

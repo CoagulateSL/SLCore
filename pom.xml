@@ -16,7 +16,7 @@
         <repository>
             <id>javacore</id>
             <name>GitHub JavaCore Maven Repo</name>
-            <url>https://maven.pkg.github.com/iprice/JavaCore/</url>
+            <url>https://maven.pkg.github.com/CoagulateSL/JavaCore/</url>
         </repository>	    
     </repositories>         
     <build>

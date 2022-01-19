@@ -1,4 +1,4 @@
-name: SLCore Release
+name: Release
 
 on: 
   push:

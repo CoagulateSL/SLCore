@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.coagulate.SL</groupId>
-    <artifactId>SLCore</artifactId>
+    <artifactId>slcore</artifactId>
     <version>1.1.5</version>
     <repositories>
         <repository>

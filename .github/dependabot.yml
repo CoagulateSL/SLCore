@@ -13,6 +13,8 @@ registries:
 updates:
   - package-ecosystem: "maven" # See documentation for possible values
     directory: "/" # Location of package manifests
+    registries:
+      - github
     schedule:
       interval: "daily"
     assignees:

@@ -4,6 +4,11 @@
 # https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 
 version: 2
+registries:
+  type: maven-repository
+  url: https://maven.pkg.github.com/
+  username: iprice
+  password: ${{secrets.PACKAGE_READ}}
 updates:
   - package-ecosystem: "maven" # See documentation for possible values
     directory: "/" # Location of package manifests

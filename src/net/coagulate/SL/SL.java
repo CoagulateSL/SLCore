@@ -2,7 +2,8 @@ package net.coagulate.SL;
 
 import net.coagulate.Core.Database.DB;
 import net.coagulate.Core.Database.DBConnection;
-import net.coagulate.Core.Database.MariaDBConnection;
+
+import net.coagulate.Core.Database.MySqlDBConnection;
 import net.coagulate.Core.Exceptions.System.SystemBadValueException;
 import net.coagulate.Core.Exceptions.System.SystemImplementationException;
 import net.coagulate.Core.Exceptions.System.SystemInitialisationException;
@@ -306,7 +307,7 @@ public class SL extends Thread {
             } else {
                 log().config("SL DEVELOPMENT Services starting up on " + Config.getHostName());
             }
-            db = new MariaDBConnection("SL" + (Config.getDevelopment() ? "DEV" : ""), Config.getJdbc());
+            db = new MySqlDBConnection("SL" + (Config.getDevelopment() ? "DEV" : ""), Config.getJdbc());
             for (SLModule module : modules.values()) {
                 log().config("Initialising module - " + module.getName());
                 module.initialise();

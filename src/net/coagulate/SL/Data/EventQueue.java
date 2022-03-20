@@ -29,7 +29,7 @@ import java.util.List;
 public class EventQueue extends StandardSLTable{
 
     public static List<EventQueue> getOutstandingEvents() {
-        SL.getDB().dq("delete from eventqueue where expires<UNIX_TIMESTAMP() and status like 'OK'");
+        SL.getDB().d("delete from eventqueue where expires<UNIX_TIMESTAMP() and status like 'OK'");
         List<EventQueue> set=new ArrayList<>();
         for (ResultsRow row:SL.getDB().dq("select * from eventqueue where expires>UNIX_TIMESTAMP() and claimed is null order by id asc")) {
             set.add(new EventQueue(row));

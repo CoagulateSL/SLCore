@@ -9,6 +9,7 @@ import net.coagulate.Core.HTTP.URLDistribution;
 import net.coagulate.Core.Tools.ByteTools;
 import net.coagulate.Core.Tools.Cache;
 import net.coagulate.Core.Tools.ClassTools;
+import net.coagulate.Core.Tools.StackTraceProfiler;
 import net.coagulate.SL.Data.EventQueue;
 import net.coagulate.SL.HTML.ServiceTile;
 import net.coagulate.SL.HTTPPipelines.*;
@@ -131,6 +132,7 @@ public class SLCore extends SLModule {
         if (nextRun("SLCore-State-Cleaner", 60, 30)) {
             State.maintenance();
         }
+        StackTraceProfiler.profile();
     }
     @Override
     public void maintenance() {

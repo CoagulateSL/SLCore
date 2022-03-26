@@ -10,10 +10,7 @@ import net.coagulate.Core.HTML.Elements.Preformatted;
 import net.coagulate.Core.HTML.Elements.Raw;
 import net.coagulate.Core.HTML.Elements.Table;
 import net.coagulate.Core.HTML.Page;
-import net.coagulate.Core.Tools.Cache;
-import net.coagulate.Core.Tools.ExceptionTools;
-import net.coagulate.Core.Tools.MailTools;
-import net.coagulate.Core.Tools.TraceProfiler;
+import net.coagulate.Core.Tools.*;
 import net.coagulate.SL.*;
 import net.coagulate.SL.Data.EventQueue;
 import net.coagulate.SL.Data.RegionStats;
@@ -101,6 +98,9 @@ public class ControlPanel {
 				module.maintenance();
 			}
 		}
+		if ("Thread Profile Info".equals(state.parameter("Thread Profile Info"))) {
+			page.add(StackTraceProfiler.htmlDump());
+		}
 		if ("Thread Info".equals(state.parameter("Thread Info"))) {
 			final Table t=new Table();
 			t.border(); t.collapsedBorder();
@@ -177,6 +177,7 @@ public class ControlPanel {
 		page.form().add(new Raw("<input type=text name=input>")).
 				submit("GS Test").
 				    submit("Thread Info").
+					submit("Thread Profile Info").
 				    submit("Test Mail").
 				    submit("UserException").
 				    submit("SystemException").

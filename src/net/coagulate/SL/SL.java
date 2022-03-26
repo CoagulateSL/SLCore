@@ -323,7 +323,7 @@ public class SL extends Thread {
                 module.startup();
             }
             // something about mails may break later on so we send a test mail here...
-            MailTools.mail("CoagulateSL "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" (v"+getStackVersion()+" "+SL.getStackBuildDate()+")", htmlVersionDump().toString());
+            MailTools.mail("CoagulateSL "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" ("+SL.getStackBuildDate()+")", htmlVersionDump().toString());
             // TODO Pricing.initialise();
             listener = new HTTPListener(Config.getPort(), URLDistribution.getPageMapper());
             log().info("Startup complete.");
@@ -331,10 +331,10 @@ public class SL extends Thread {
             log().info(outerPad("=====[ Coagulate " + (Config.getDevelopment() ? "DEVELOPMENT " : "") + "Second Life Services ]======"));
             log().info("========================================================================================================================");
             for (SLModule module : modules.values()) {
-                log().info(spacePad(spacePrePad(module.getVersion())+" - "+module.getBuildDateString()+" - "+module.commitId()+" - " +module.getName() + " - "+ module.getDescription()));
+                log().info(spacePad(module.getBuildDateString()+" - "+module.commitId()+" - " +module.getName() + " - "+ module.getDescription()));
             }
             log().info("------------------------------------------------------------------------------------------------------------------------");
-            log().info(spacePad(spacePrePad(getStackVersion())+" - "+SL.getStackBuildDate()+" - CoagulateSL Stack Version"));
+            log().info(spacePad(SL.getStackBuildDate()+" - CoagulateSL Stack"));
             log().info("========================================================================================================================");
         }
         // print stack trace is discouraged, but the log handler may not be ready yet.
@@ -353,19 +353,16 @@ public class SL extends Thread {
         p.add(t);
         t.collapsedBorder();
         t.row().header("Name").
-                header("Version").
                 header("Commit Date").
                 header("Commit Hash").
                 header("Description");
         for (SLModule module:modules()) {
             t.row().data(module.getName()).
-                    data(module.getVersion()).alignCell("right").
                     data(module.getBuildDateString()).
                     data(module.commitId()).
                     data(module.getDescription());
         }
         t.row().header("CoagulateSL").alignCell("left").
-                header(getStackVersion()).alignCell("right").
                 header(SL.getStackBuildDate()).alignCell("left").
                 header("Coagulate SL Stack Build Information").alignCell("left").spanCell(2);
         t.styleCascade("padding: 2px");
@@ -468,15 +465,5 @@ public class SL extends Thread {
     @SuppressWarnings("UnusedReturnValue")
     public static Object weakInvoke(String module, String command, Object... arguments) {
         return getModule(module).weakInvoke(command,arguments);
-    }
-
-    public static String getStackVersion() {
-        int maj=0; int min=0; int bug=0;
-        for (SLModule module:modules.values()) {
-            maj+=module.majorVersion();
-            min+=module.minorVersion();
-            bug+=module.bugFixVersion();
-        }
-        return maj+"."+min+"."+bug;
     }
 }

@@ -1,5 +1,7 @@
 package net.coagulate.SL;
 
+import net.coagulate.Core.BuildInfo.GPHUDBuildInfo;
+import net.coagulate.Core.BuildInfo.SLCoreBuildInfo;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Exceptions.System.SystemImplementationException;
 import net.coagulate.Core.Tools.UnixTime;
@@ -41,9 +43,6 @@ public abstract class SLModule {
     public abstract void initialise();
     public abstract void maintenance(); // called only if we're the master node
     public abstract void maintenanceInternal(); // called regardless
-    public abstract int majorVersion();
-    public abstract int minorVersion();
-    public abstract int bugFixVersion();
     public abstract String commitId();
     public String getBuildDateString() { return convertDate(getBuildDate()); }
     public abstract Date getBuildDate();
@@ -60,7 +59,7 @@ public abstract class SLModule {
     // it's a bodge/hack.
     public Object weakInvoke(String command,Object... arguments){return null;}
 
-    public final String getVersion() { return majorVersion()+"."+ minorVersion()+"."+ bugFixVersion(); }
+    public final String getBuild() { return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(SLCoreBuildInfo.BUILDDATE)+" @"+SLCoreBuildInfo.COMMITID; }
 
     public void schemaCheck(DBConnection db, String schemaName, int requiredVersion) {
         try {

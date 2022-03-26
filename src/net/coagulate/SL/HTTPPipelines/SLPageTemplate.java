@@ -1,5 +1,6 @@
 package net.coagulate.SL.HTTPPipelines;
 
+import net.coagulate.Core.BuildInfo.SLCoreBuildInfo;
 import net.coagulate.Core.HTML.PageTemplate;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.SL;
@@ -38,7 +39,7 @@ public class SLPageTemplate extends PageTemplate {
         String ret="<div style='position:absolute;bottom:5;right:5;left:5;'><hr>";
         ret+=(Config.getDevelopment()?"DEVELOPMENT":"Production");
         ret+=" // "+Config.getHostName();
-        ret+=" // <a href=\"/versions\">Stack v"+ SL.getStackVersion()+" built "+SL.getStackBuildDate()+"</a>";
+        ret+=" // <a href=\"/versions\">Stack "+SL.getStackBuildDate()+" @"+ SLCoreBuildInfo.COMMITID+" </a>";
         if (!Config.isOfficial()) {
             ret+=" // Operated by "+Config.getBrandingOwnerHumanReadable();
         }

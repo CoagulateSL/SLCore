@@ -29,9 +29,6 @@ import static java.util.logging.Level.*;
 
 public class SLCore extends SLModule {
     public static final boolean DEBUG_URLS=false;
-    public final int majorVersion() { return SLCoreBuildInfo.MAJORVERSION; }
-    public final int minorVersion() { return SLCoreBuildInfo.MINORVERSION; }
-    public final int bugFixVersion() { return SLCoreBuildInfo.BUGFIXVERSION; }
     public final String commitId() { return SLCoreBuildInfo.COMMITID; }
     public Date getBuildDate() { return SLCoreBuildInfo.BUILDDATE; }
 

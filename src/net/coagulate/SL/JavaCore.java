@@ -40,15 +40,6 @@ public class JavaCore extends SLModule {
     public void maintenanceInternal() {}
 
     @Override
-    public int majorVersion() { return JavaCoreBuildInfo.MAJORVERSION; }
-
-    @Override
-    public int minorVersion() { return JavaCoreBuildInfo.MINORVERSION; }
-
-    @Override
-    public int bugFixVersion() { return JavaCoreBuildInfo.BUGFIXVERSION; }
-
-    @Override
     public String commitId() { return JavaCoreBuildInfo.COMMITID; }
 
     @Override

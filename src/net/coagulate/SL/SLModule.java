@@ -1,6 +1,5 @@
 package net.coagulate.SL;
 
-import net.coagulate.Core.BuildInfo.GPHUDBuildInfo;
 import net.coagulate.Core.BuildInfo.SLCoreBuildInfo;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Exceptions.System.SystemImplementationException;

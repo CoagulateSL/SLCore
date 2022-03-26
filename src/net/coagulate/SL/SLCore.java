@@ -132,7 +132,6 @@ public class SLCore extends SLModule {
         if (nextRun("SLCore-State-Cleaner", 60, 30)) {
             State.maintenance();
         }
-        StackTraceProfiler.profile();
     }
     @Override
     public void maintenance() {

@@ -106,6 +106,7 @@ public class SL extends Thread {
         try {
             startup();
             Runtime.getRuntime().addShutdownHook(new SL());
+            new StackTraceProfiler().start();
             while (!shutdown) {
                 try { //noinspection BusyWait
                     Thread.sleep(1000); } catch (final InterruptedException ignored) {}

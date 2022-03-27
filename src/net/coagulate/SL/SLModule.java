@@ -58,8 +58,6 @@ public abstract class SLModule {
     // it's a bodge/hack.
     public Object weakInvoke(String command,Object... arguments){return null;}
 
-    public final String getBuild() { return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(SLCoreBuildInfo.BUILDDATE)+" @"+SLCoreBuildInfo.COMMITID; }
-
     public void schemaCheck(DBConnection db, String schemaName, int requiredVersion) {
         try {
             int currentVersion = getSchemaVersion(db,schemaName);

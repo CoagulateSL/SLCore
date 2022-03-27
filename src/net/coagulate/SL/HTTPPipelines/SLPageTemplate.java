@@ -39,7 +39,7 @@ public class SLPageTemplate extends PageTemplate {
         String ret="<div style='position:absolute;bottom:5;right:5;left:5;'><hr>";
         ret+=(Config.getDevelopment()?"DEVELOPMENT":"Production");
         ret+=" // "+Config.getHostName();
-        ret+=" // <a href=\"/versions\">Stack "+SL.getStackBuildDate()+" @"+ SLCoreBuildInfo.COMMITID+" </a>";
+        ret+=" // <a href=\"/versions\">"+SL.getStackBuildDate()+" </a>";
         if (!Config.isOfficial()) {
             ret+=" // Operated by "+Config.getBrandingOwnerHumanReadable();
         }

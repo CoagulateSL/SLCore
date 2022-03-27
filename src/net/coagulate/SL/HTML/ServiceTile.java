@@ -7,17 +7,15 @@ public class ServiceTile extends Container {
 
     private final String commitId;
     private final String buildDate;
-    private final String version;
     private final String description;
     private final String moduleName;
     private final String url;
     private final String imageUrl;
 
-    public ServiceTile(String moduleName, String description, String url, String imageUrl, String version, String buildDate, String commitId) {
+    public ServiceTile(String moduleName, String description, String url, String imageUrl, String commitId, String buildDate) {
         super();
         this.moduleName=moduleName;
         this.description=description;
-        this.version=version;
         this.buildDate=buildDate;
         this.commitId=commitId;
         this.url=url;
@@ -36,8 +34,7 @@ public class ServiceTile extends Container {
         s.append("<p><table height="+fixedHeight+"px valign=top align=center><tr height="+fixedHeight+"px valign=top align=center><td height="+fixedHeight+"px valign=top align=center>");
         s.append("<b>").append(moduleName).append("</b><br>&nbsp;<br>").append(description);
         s.append("</td></tr></table></p>");
-        s.append("<p style=\"text-align: left; margin: 0px; font-size: 10px;\">").append(version)
-                .append(" ").append(commitId)
+        s.append("<p style=\"text-align: left; margin: 0px; font-size: 10px;\">").append(commitId)
                 //.append("<span style=\"float:center;\">").append("hello").append("</span>")
                 .append("<span style=\"float:right;\">").append(buildDate).append("</span>")
                 .append("</p>");

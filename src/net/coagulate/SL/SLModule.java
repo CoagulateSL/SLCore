@@ -113,4 +113,6 @@ public abstract class SLModule {
     public void demote() {}
     /** Called to process an EventQueue object */
     public void processEvent(EventQueue event) {}
+
+    public void registerChanges() {}
 }

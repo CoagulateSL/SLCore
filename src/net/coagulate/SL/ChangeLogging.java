@@ -38,11 +38,16 @@ public class ChangeLogging {
     public static String asHtml(String application) {
         StringBuilder s=new StringBuilder();
         s.append("<table><tr><th>Date</th><th></th><th>Component</th><th>Change</th></tr>");
+        String oldDate=null;
         for (Map<String, Map<String, Set<Change>>> byDate:changes.values()) {
             for (Map<String, Set<Change>> byDateApp:byDate.values()) {
                 for (Set<Change> byDateAppComponent:byDateApp.values()) {
                     for (Change c:byDateAppComponent) {
                         if (c.application().equalsIgnoreCase(application)) {
+                            if (oldDate!=null && !oldDate.equals(c.date())) {
+                                s.append("<tr><td colspan=999><hr></td></tr>");
+                            }
+                            oldDate=c.date();
                             s.append("<tr><td>");
                             s.append(c.date().replaceAll("-", "&#8209;"));
                             s.append("</td><td><img src=\"/resources/");

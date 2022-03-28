@@ -321,6 +321,7 @@ public class SL extends Thread {
             for (SLModule module : modules.values()) {
                 log().config("Starting module - " + module.getName());
                 module.startup();
+                module.registerChanges();
             }
             // something about mails may break later on so we send a test mail here...
             MailTools.mail("CoagulateSL "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" ("+SL.getStackBuildDate()+")", htmlVersionDump().toString());

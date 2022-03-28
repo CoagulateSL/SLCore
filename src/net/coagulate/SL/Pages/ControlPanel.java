@@ -172,6 +172,9 @@ public class ControlPanel {
 		if ("Shutdown".equals(state.parameter("Shutdown"))) {
 			SL.shutdown();
 		}
+		if ("ChangeLog".equals(state.parameter("ChangeLog"))) {
+			page.form().add(new Raw(ChangeLogging.asHtml()));
+		}
 		//todo
 		//noinspection deprecation
 		page.form().add(new Raw("<input type=text name=input>")).
@@ -188,7 +191,7 @@ public class ControlPanel {
 					submit("FormatUsername").
 					submit("ReFormatUsernames").
 					submit("FindUserKey").submit("FindUserName").
-				    submit("NameAPI").submit("Out of permit SQL").submit("Recalc Names").submit("CacheStats");
+				    submit("NameAPI").submit("Out of permit SQL").submit("Recalc Names").submit("CacheStats").submit("ChangeLog");
 
 		for (String traceProfile: TraceProfiler.profiles()) {
 			page.header1(traceProfile);

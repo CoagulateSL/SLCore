@@ -312,10 +312,10 @@ public class SL extends Thread {
             log().config("Scanning for modules");
             findModules();
             log().config("Initialising Core URL DistributorPageMapper");
-            if (!Config.getDevelopment()) {
-                log().config("SL Services starting up on " + Config.getHostName());
-            } else {
+            if (Config.getDevelopment()) {
                 log().config("SL DEVELOPMENT Services starting up on " + Config.getHostName());
+            } else {
+                log().config("SL Services starting up on " + Config.getHostName());
             }
             db = new MySqlDBConnection("SL" + (Config.getDevelopment() ? "DEV" : ""), Config.getJdbc());
             for (final SLModule module : modules.values()) {

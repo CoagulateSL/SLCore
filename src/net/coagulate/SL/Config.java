@@ -176,7 +176,9 @@ public class Config {
 
     public static GRID getGrid() {
         final String gridname = getString("grid", "SecondLife").toLowerCase();
-        if (gridname.equals("osgrid")) { return GRID.OSGRID; }
+        if ("osgrid".equals(gridname)) {
+            return GRID.OSGRID;
+        }
         return GRID.SECONDLIFE;
     }
 

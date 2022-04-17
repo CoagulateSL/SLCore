@@ -29,7 +29,7 @@ public class State extends DumpableState {
 	private static final Map<Thread,State> stateMap =new ConcurrentHashMap<>();
 
 	public static void maintenance() {
-		try {
+        try {
             for (final Thread entry : stateMap.keySet()) {
                 if (!entry.isAlive()) {
                     stateMap.remove(entry);
@@ -37,16 +37,20 @@ public class State extends DumpableState {
             }
         } catch (final ConcurrentModificationException ignored) {
         }
-	}
-	public synchronized static State get() {
+    }
+
+    public static synchronized State get() {
         final Thread thread = Thread.currentThread();
-		if (!stateMap.containsKey(thread)) { stateMap.put(thread,new State()); }
-		return stateMap.get(thread);
-	}
-	public static void cleanup() {
-		Page.cleanup();
-		stateMap.remove(Thread.currentThread());
-	}
+        if (!stateMap.containsKey(thread)) {
+            stateMap.put(thread, new State());
+        }
+        return stateMap.get(thread);
+    }
+
+    public static void cleanup() {
+        Page.cleanup();
+        stateMap.remove(Thread.currentThread());
+    }
 
 
 	// We love HTTP :P

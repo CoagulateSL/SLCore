@@ -12,20 +12,20 @@ public class ServiceTile extends Container {
     private final String url;
     private final String imageUrl;
 
-    public ServiceTile(String moduleName, String description, String url, String imageUrl, String commitId, String buildDate) {
+    public ServiceTile(final String moduleName, final String description, final String url, final String imageUrl, final String commitId, final String buildDate) {
         super();
-        this.moduleName=moduleName;
-        this.description=description;
-        this.buildDate=buildDate;
-        this.commitId=commitId;
-        this.url=url;
-        this.imageUrl=imageUrl;
+        this.moduleName = moduleName;
+        this.description = description;
+        this.buildDate = buildDate;
+        this.commitId = commitId;
+        this.url = url;
+        this.imageUrl = imageUrl;
     }
 
     @Override
     public String toString() {
-        final String fixedHeight="130";
-        StringBuilder s=new StringBuilder();
+        final String fixedHeight = "130";
+        final StringBuilder s = new StringBuilder();
         if (url!=null) { s.append("<a href=\"").append(url).append("\">"); }
         s.append("<li style=\"vertical-align: top; white-space: normal; color:black; border-style: solid; border-width: 5px; min-height: 250px; width: 200px; text-align: center; margin: 5px; padding: 5px; list-style-type: none; display: inline-block;\">\n");
         if (imageUrl==null) { s.append("<h3 align=\"center\">").append(moduleName); }

@@ -253,7 +253,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 	}
 
     public static Map<Integer, String> getIdToNameMap() {
-		Map<Integer,String> avatarNames=new TreeMap<>();
+		final Map<Integer, String> avatarNames = new TreeMap<>();
 		for (final ResultsRow r: SL.getDB().dq("select id,username from users")) {
 			avatarNames.put(r.getInt("id"),r.getString("username"));
 		}
@@ -261,30 +261,30 @@ public class User extends StandardSLTable implements Comparable<User> {
     }
 
 	public static String reformatUsernames() {
-		StringBuilder s=new StringBuilder();
-		for (ResultsRow row:SL.getDB().dq("select id,username from users")) {
-			String username=row.getString("username");
-			try {
-				if (!username.equals(formatUsername(username)))
-				{
-					String newusername = formatUsername(username);
-					s.append(username).append(" -> ").append(newusername).append("\n");
-					SL.getDB().d("update users set username=? where id=?", newusername, row.getInt("id"));
-				}
-			}
-			catch (Exception e) { s.append(username).append(" exceptioned ").append(e).append("\n"); }
-		}
+        final StringBuilder s = new StringBuilder();
+        for (final ResultsRow row : SL.getDB().dq("select id,username from users")) {
+            final String username = row.getString("username");
+            try {
+                if (!username.equals(formatUsername(username))) {
+                    final String newusername = formatUsername(username);
+                    s.append(username).append(" -> ").append(newusername).append("\n");
+                    SL.getDB().d("update users set username=? where id=?", newusername, row.getInt("id"));
+                }
+            } catch (final Exception e) {
+                s.append(username).append(" exceptioned ").append(e).append("\n");
+            }
+        }
 		return s.toString();
 	}
 
 	/** A horrible method that is not to be used much.  Thanks. */
 	public static Set<User> getAllUsers() {
-		Set<User> ret=new HashSet<>();
-		for (ResultsRow row: SL.getDB().dq("select id from users")) {
-			ret.add(User.get(row.getInt("id")));
-		}
-		return ret;
-	}
+        final Set<User> ret = new HashSet<>();
+        for (final ResultsRow row : SL.getDB().dq("select id from users")) {
+            ret.add(User.get(row.getInt("id")));
+        }
+        return ret;
+    }
 
 	// ---------- INSTANCE ----------
 	@Nonnull
@@ -484,10 +484,10 @@ public class User extends StandardSLTable implements Comparable<User> {
 		return getUsername().compareToIgnoreCase(o.getUsername());
 	}
 
-	public void setUsername(@Nonnull String username) {
-		d("update users set username=? where id=?",username,getId());
-		userNameCache =username;
-	}
+    public void setUsername(@Nonnull final String username) {
+        d("update users set username=? where id=?", username, getId());
+        userNameCache = username;
+    }
 
     public boolean isSuspended() {
 		return getBool("suspended");

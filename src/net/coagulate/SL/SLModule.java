@@ -1,6 +1,5 @@
 package net.coagulate.SL;
 
-import net.coagulate.Core.BuildInfo.SLCoreBuildInfo;
 import net.coagulate.Core.Database.DBConnection;
 import net.coagulate.Core.Exceptions.System.SystemImplementationException;
 import net.coagulate.Core.Tools.UnixTime;
@@ -22,15 +21,24 @@ public abstract class SLModule {
     private final Map<String,Integer> nextRuns =new HashMap<>();
     private final Logger logger;
 
-    protected final boolean nextRun(String name,int interval,int variance) {
-        if (!nextRuns.containsKey(name)) { nextRuns.put(name,UnixTime.getUnixTime()); } // why am i doing unix time stuff here...
-        if (UnixTime.getUnixTime()< nextRuns.get(name)) { return false; }
-        int nextRun= nextRuns.get(name)+interval;
-        if (variance>0) { nextRun+=ThreadLocalRandom.current().nextInt(variance*2)-variance; }
-        nextRuns.put(name,nextRun);
+    protected final boolean nextRun(final String name, final int interval, final int variance) {
+        if (!nextRuns.containsKey(name)) {
+            nextRuns.put(name, UnixTime.getUnixTime());
+        } // why am i doing unix time stuff here...
+        if (UnixTime.getUnixTime() < nextRuns.get(name)) {
+            return false;
+        }
+        int nextRun = nextRuns.get(name) + interval;
+        if (variance > 0) {
+            nextRun += ThreadLocalRandom.current().nextInt(variance * 2) - variance;
+        }
+        nextRuns.put(name, nextRun);
         return true;
     }
-    public SLModule() {logger=SL.log(getClass().getSimpleName());}
+
+    public SLModule() {
+        logger = SL.log(getClass().getSimpleName());
+    }
 
     @Nullable
     public abstract Map<ServiceTile,Integer> getServices();
@@ -44,8 +52,12 @@ public abstract class SLModule {
     public abstract void maintenanceInternal(); // called regardless
     public abstract String commitId();
     public String getBuildDateString() { return convertDate(getBuildDate()); }
+
     public abstract Date getBuildDate();
-    public static String convertDate(Date date) { return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(date); }
+
+    public static String convertDate(final Date date) {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(date);
+    }
 
     // this is a lame mechanism.  It allows a module to be invoked even if it might not be present
     // because weakInvoke is part of the CoagulateSL module everything knows about this
@@ -56,24 +68,26 @@ public abstract class SLModule {
     // dynamically look up the module, error if it doesn't exist, and call weakInvoke with some very generic arguments
     // This shouldn't be used for many things otherwise it needs a strong redesign...  but for 2-3 bot related method calls
     // it's a bodge/hack.
-    public Object weakInvoke(String command,Object... arguments){return null;}
+    public Object weakInvoke(final String command, final Object... arguments) {
+        return null;
+    }
 
-    public void schemaCheck(DBConnection db, String schemaName, int requiredVersion) {
+    public void schemaCheck(final DBConnection db, final String schemaName, final int requiredVersion) {
         try {
-            int currentVersion = getSchemaVersion(db,schemaName);
-            if (currentVersion>requiredVersion) {
+            int currentVersion = getSchemaVersion(db, schemaName);
+            if (currentVersion > requiredVersion) {
                 // if the schema is "too new"
                 if (Config.getDevelopment()) {
                     logger.warning("Schema for " + schemaName + " is too new " + currentVersion + " > " + requiredVersion + " (current>required), continuing as in DEVELOPMENT mode.  No schema upgrade is executed.");
                     return;
                 } else {
                     logger.config("Schema for " + schemaName + " is too new " + currentVersion + " > " + requiredVersion + " (current>required)");
-                    throw new SystemImplementationException("Schema version too new on "+schemaName+" - current #"+currentVersion+" > required #"+requiredVersion+", terminating as a safety measure");
+                    throw new SystemImplementationException("Schema version too new on " + schemaName + " - current #" + currentVersion + " > required #" + requiredVersion + ", terminating as a safety measure");
                 }
             }
             while (currentVersion != requiredVersion) {
                 logger.config("Schema " + currentVersion + " is not of required version " + requiredVersion + ", calling schemaUpgrade");
-                int newVersion = schemaUpgrade(db,schemaName, currentVersion);
+                final int newVersion = schemaUpgrade(db, schemaName, currentVersion);
                 if (newVersion == currentVersion) {
                     throw new SystemImplementationException("Schema upgrade failed ; requested upgrade from " + currentVersion + " and remained at " + newVersion + ", the target is version " + requiredVersion);
                 }
@@ -82,10 +96,12 @@ public abstract class SLModule {
                 currentVersion = newVersion;
             }
             logger.config("DB Schema '" + schemaName + "' is at required version " + currentVersion);
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             t.printStackTrace();
-            logger.config("Schema upgrade FAILED for "+schemaName+" version "+requiredVersion+".  Terminating as a safety measure.  It is advised you keep these logs to diagnose and resolve the failed upgrade.  You will probably need to manually resolve this condition.");
-            if (Error.class.isAssignableFrom(t.getClass())) { throw t; }
+            logger.config("Schema upgrade FAILED for " + schemaName + " version " + requiredVersion + ".  Terminating as a safety measure.  It is advised you keep these logs to diagnose and resolve the failed upgrade.  You will probably need to manually resolve this condition.");
+            if (Error.class.isAssignableFrom(t.getClass())) {
+                throw t;
+            }
             System.exit(1);
         }
     }
@@ -99,20 +115,29 @@ public abstract class SLModule {
      */
     protected abstract int schemaUpgrade(DBConnection db,String schemaName, int currentVersion);
 
-    public int getSchemaVersion(DBConnection db,String schemaName) {
-        try { return SystemManagement.get(db,schemaName); }
-        catch (Throwable t) {
-            System.err.println("Exception thrown during Schema Version query on schema "+schemaName);
+    public int getSchemaVersion(final DBConnection db, final String schemaName) {
+        try {
+            return SystemManagement.get(db, schemaName);
+        } catch (final Throwable t) {
+            System.err.println("Exception thrown during Schema Version query on schema " + schemaName);
             throw t;
         }
     }
 
     /** Called when this node is becomming the primary node */
     public void promote() {}
-    /** Called to demote this node from being a primary node */
-    public void demote() {}
-    /** Called to process an EventQueue object */
-    public void processEvent(EventQueue event) {}
+
+    /**
+     * Called to demote this node from being a primary node
+     */
+    public void demote() {
+    }
+
+    /**
+     * Called to process an EventQueue object
+     */
+    public void processEvent(final EventQueue event) {
+    }
 
     public void registerChanges() {}
 }

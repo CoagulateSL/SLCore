@@ -88,15 +88,15 @@ public class GetAgentID {
 
 			switch (responsecode) {
 				case 403:
-					SystemRemoteFailureException urfe=new SystemRemoteFailureException("SL Name API Rate Limited");
+					final SystemRemoteFailureException urfe = new SystemRemoteFailureException("SL Name API Rate Limited");
 					SL.report("Name API IO Error",urfe,null);
 					throw urfe;
 				case 405:
-					SystemRemoteFailureException srfe=new SystemRemoteFailureException("SL Name API said Malformed Request");
+					final SystemRemoteFailureException srfe = new SystemRemoteFailureException("SL Name API said Malformed Request");
 					SL.report("Name API IO Error",srfe,null);
 					throw srfe;
 				case 500:
-					UserRemoteFailureException error=new UserRemoteFailureException("SL Name API service errored");
+					final UserRemoteFailureException error = new UserRemoteFailureException("SL Name API service errored");
 					SL.report("Name API IO Error",error,null);
 					throw error;
 			}

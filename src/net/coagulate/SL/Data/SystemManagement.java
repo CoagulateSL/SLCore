@@ -8,13 +8,13 @@ import net.coagulate.SL.SL;
 public class SystemManagement {
     private static boolean wasMasterNode =false;
 
-    public static int get(DBConnection database, String schemaName) {
-        return database.dqiNotNull("select max(version) from schemaversions where name like ?",schemaName);
+    public static int get(final DBConnection database, final String schemaName) {
+        return database.dqiNotNull("select max(version) from schemaversions where name like ?", schemaName);
     }
 
     public static boolean primaryNode() {
         // default schema has this being empty :P
-        int rowCount= SL.getDB().dqiNotNull("select count(*) from masternode");
+        final int rowCount = SL.getDB().dqiNotNull("select count(*) from masternode");
         if (rowCount==0) {
             SL.getDB().d("insert into masternode(name) values(?)", Config.getHostName());
             SL.log("Maintenance").config("Claimed the master node role as it was unset");

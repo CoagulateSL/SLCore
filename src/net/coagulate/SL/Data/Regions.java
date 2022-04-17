@@ -45,8 +45,8 @@ public class Regions extends StandardSLTable {
 		RegionLog.log(r.getId(),description,oldValue,value);
 	}
 
-	public static void set(Regions r, String key, int value) {
-		r.set(key,value);
+	public static void set(final Regions r, final String key, final int value) {
+		r.set(key, value);
 	}
 
 	// ---------- INSTANCE ----------

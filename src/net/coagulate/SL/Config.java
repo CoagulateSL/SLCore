@@ -15,10 +15,10 @@ public class Config {
 
     static void load(@Nonnull final String file) {
         System.out.println("Coagulate SL: Loading configuration file from "+file);
-        try (FileInputStream fis= new FileInputStream(file)){
+        try (final FileInputStream fis = new FileInputStream(file)) {
             config.load(new InputStreamReader(fis));
-        } catch (IOException e) {
-            System.err.println("Failed to read config file : "+e.getLocalizedMessage());
+        } catch (final IOException e) {
+            System.err.println("Failed to read config file : " + e.getLocalizedMessage());
             System.exit(1);
         }
     }
@@ -31,16 +31,16 @@ public class Config {
     public static boolean getBoolean(@Nonnull final String key) {
         try {
             return ValueMapper.toBoolean(config.getProperty(key));
-        } catch (UserInputValidationParseException e) {
-            throw new SystemBadValueException("Config error in '"+key+"' - "+e.getLocalizedMessage(),e);
+        } catch (final UserInputValidationParseException e) {
+            throw new SystemBadValueException("Config error in '" + key + "' - " + e.getLocalizedMessage(), e);
         }
     }
 
     @Nonnull public static String getString(@Nonnull final String key) {
         try {
             return config.getProperty(key);
-        } catch (UserInputValidationParseException e) {
-            throw new SystemBadValueException("Config error in '"+key+"' - "+e.getLocalizedMessage(),e);
+        } catch (final UserInputValidationParseException e) {
+            throw new SystemBadValueException("Config error in '" + key + "' - " + e.getLocalizedMessage(), e);
         }
     }
 
@@ -48,16 +48,18 @@ public class Config {
         if (config.containsKey(key)) { return getString(key); }
         return defaultValue;
     }
+
     public static int getInt(@Nonnull final String key) {
         try {
             return Integer.parseInt(config.getProperty(key));
-        } catch (NumberFormatException|UserInputValidationParseException e) {
-            throw new SystemBadValueException("Config error in '"+key+"' - "+e.getLocalizedMessage(),e);
+        } catch (final NumberFormatException | UserInputValidationParseException e) {
+            throw new SystemBadValueException("Config error in '" + key + "' - " + e.getLocalizedMessage(), e);
         }
     }
-    public static int getInt(@Nonnull final String key,int defaultValue) {
+
+    public static int getInt(@Nonnull final String key, final int defaultValue) {
         if (config.containsKey(key)) {
-             return getInt(key);
+            return getInt(key);
         }
         return defaultValue;
     }
@@ -173,7 +175,7 @@ public class Config {
     }
 
     public static GRID getGrid() {
-        String gridname=getString("grid","SecondLife").toLowerCase();
+        final String gridname = getString("grid", "SecondLife").toLowerCase();
         if (gridname.equals("osgrid")) { return GRID.OSGRID; }
         return GRID.SECONDLIFE;
     }

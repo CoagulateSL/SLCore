@@ -34,9 +34,9 @@ public class HTMLMapper extends URLMapper<Method> {
     }
 
     @Override
-    protected void initialiseState(HttpRequest request, HttpContext context, Map<String, String> parameters, Map<String, String> cookies) {
-        State state=State.get();
-        state.setupHTTP(request,context);
+    protected void initialiseState(final HttpRequest request, final HttpContext context, final Map<String, String> parameters, final Map<String, String> cookies) {
+        final State state = State.get();
+        state.setupHTTP(request, context);
         state.parameters(parameters);
         state.cookies(cookies);
         state.page(Page.page());
@@ -51,17 +51,17 @@ public class HTMLMapper extends URLMapper<Method> {
     }
 
     @Override
-    protected boolean checkAuthenticationNeeded(@Nonnull Method content) {
+    protected boolean checkAuthenticationNeeded(@Nonnull final Method content) {
         //System.out.println("Check authentication needed on "+content);
-        Url url=content.getAnnotation(Url.class);
-        if (url!=null) {
+        final Url url = content.getAnnotation(Url.class);
+        if (url != null) {
             if (!url.authenticate()) {
                 //System.out.println("Check authentication needed on "+content+" url noauth");
                 return false;
             }
         }
-        UrlPrefix urlprefix=content.getAnnotation(UrlPrefix.class);
-        if (urlprefix!=null) {
+        final UrlPrefix urlprefix = content.getAnnotation(UrlPrefix.class);
+        if (urlprefix != null) {
             if (!urlprefix.authenticate()) {
                 //System.out.println("Check authentication needed on "+content+" urlprefix noauth");
                 return false;
@@ -79,17 +79,22 @@ public class HTMLMapper extends URLMapper<Method> {
     }
 
     private void logon() {
-        State state=State.get();
-        Map<String, String> parameters = state.parameters();
+        final State state = State.get();
+        final Map<String, String> parameters = state.parameters();
 
-        String username=parameters.getOrDefault("login_username","");
-        String password=parameters.getOrDefault("login_password","");
-        if (!password.isEmpty()) { state.parameters().put("login_password","***CENSORED***"); }
+        final String username = parameters.getOrDefault("login_username", "");
+        final String password = parameters.getOrDefault("login_password", "");
+        if (!password.isEmpty()) {
+            state.parameters().put("login_password", "***CENSORED***");
+        }
 
         if (!username.isBlank() && !password.isBlank()) {
             // direct password authentication!
             User u = null;
-            try { u = User.findUsernameNullable(username, false); } catch (@Nonnull final NoDataException ignore) {}
+            try {
+                u = User.findUsernameNullable(username, false);
+            } catch (@Nonnull final NoDataException ignore) {
+            }
             if (u == null) {
                 SL.log().warning("Attempt to authenticate as invalid user '" + username + "' from " + state.getClientIP());
                 return; // no login attempted
@@ -119,11 +124,11 @@ public class HTMLMapper extends URLMapper<Method> {
     }
 
     @Override
-    protected void executePage(Method content) throws InvocationTargetException{
+    protected void executePage(final Method content) throws InvocationTargetException {
         // it's a static method with no parameters :)
         try {
-            content.invoke(null,State.get());
-        } catch (IllegalAccessException e) {
+            content.invoke(null, State.get());
+        } catch (final IllegalAccessException e) {
             throw new SystemImplementationException("Method " + content.getDeclaringClass().getCanonicalName() + "." + content.getName() + " does not have public access");
         }
     }
@@ -136,10 +141,10 @@ public class HTMLMapper extends URLMapper<Method> {
     // ---------- INSTANCE ----------
     @Url(url = "/login",authenticate = false) // note the url part is irrelevant as this intercepts authentication required URLs.  You can go here too for fun.
     public static void getAuthenticationPage(@Nonnull final State state) {
-        Container content=new Container();
-        Form form=content.form();
+        final Container content = new Container();
+        final Form form = content.form();
         form.alignment("center");
-        Table table=form.table();
+        final Table table = form.table();
         table.row().data(getTop()).spanCell(2);
         table.row();
         table.row().data(new HorizontalRule()).spanCell(2).alignCell("center");
@@ -147,7 +152,7 @@ public class HTMLMapper extends URLMapper<Method> {
         table.row().data(new Header2("Login")).spanCell(2).alignCell("center");
         table.row();
         table.row().header("Avatar Name:").alignCell("right").data(new InputText("login_username").size(20).autofocus());
-        table.row().header(SL.brandNameUniversal()+" Password:").alignCell("right").data(new InputPassword("login_password").size(20));
+        table.row().header(SL.brandNameUniversal() + " Password:").alignCell("right").data(new InputPassword("login_password").size(20));
         if (SL.canIM()) {
             table.row().data("If you do not enter a password, your avatar will be IMed a login in "+ Config.getGridName()).spanCell(2).alignCell("center");
         }
@@ -157,7 +162,7 @@ public class HTMLMapper extends URLMapper<Method> {
     }
 
     private static Container getTop() {
-        Container top=new Container();
+        final Container top = new Container();
         top.add(new Paragraph(new Header1("Welcome to "+SL.brandNameUniversal())));
         if (Config.isOfficial()) {
             top.p("SL.Coagulate.net is an umbrella service that contains a set of different services used in Second Life.").
@@ -180,43 +185,46 @@ public class HTMLMapper extends URLMapper<Method> {
         return top;
     }
 
-    private State state() { return State.get(); }
+    private State state() {
+        return State.get();
+    }
+
     @Override
-    protected void renderUnhandledError(HttpRequest request, HttpContext context, HttpResponse response, Throwable t) {
-        SL.report("SL UnkEx: "+t.getLocalizedMessage(),t,state());
-        Page page=Page.page();
+    protected void renderUnhandledError(final HttpRequest request, final HttpContext context, final HttpResponse response, final Throwable t) {
+        SL.report("SL UnkEx: " + t.getLocalizedMessage(), t, state());
+        final Page page = Page.page();
         page.template(new SLPageTemplate(SLPageTemplate.PAGELAYOUT.CENTERCOLUMN));
         page.resetRoot();
         page.root().header1("Unhandled Internal Error");
         page.root().p("Sorry, an unhandled internal error occurred.");
         page.root().p("A developer has been notified of this issue.");
         page.responseCode(HttpStatus.SC_OK);
-        processOutput(response,null);
+        processOutput(response, null);
     }
 
     @Override
-    protected void renderSystemError(HttpRequest request, HttpContext context, HttpResponse response, SystemException t) {
-        SL.report("SL SysEx: "+t.getLocalizedMessage(),t,state());
-        Page page=Page.page();
+    protected void renderSystemError(final HttpRequest request, final HttpContext context, final HttpResponse response, final SystemException t) {
+        SL.report("SL SysEx: " + t.getLocalizedMessage(), t, state());
+        final Page page = Page.page();
         page.template(new SLPageTemplate(SLPageTemplate.PAGELAYOUT.CENTERCOLUMN));
         page.resetRoot();
         page.root().header1("Internal Error");
         page.root().p("Sorry, an internal error occurred.");
         page.root().p("A developer has been notified of this issue.");
         page.responseCode(HttpStatus.SC_OK);
-        processOutput(response,null);
+        processOutput(response, null);
     }
 
     @Override
-    protected void renderUserError(HttpRequest request, HttpContext context, HttpResponse response, UserException t) {
-        SL.report("SL User: "+t.getLocalizedMessage(),t,state());
-        Page page=Page.page();
+    protected void renderUserError(final HttpRequest request, final HttpContext context, final HttpResponse response, final UserException t) {
+        SL.report("SL User: " + t.getLocalizedMessage(), t, state());
+        final Page page = Page.page();
         page.template(new SLPageTemplate(SLPageTemplate.PAGELAYOUT.CENTERCOLUMN));
         page.resetRoot();
         page.root().header1("Error");
         page.root().p("Sorry, your request could not be completed, please review your data and try again");
-        page.root().p("Error: "+t.getLocalizedMessage());
+        page.root().p("Error: " + t.getLocalizedMessage());
         page.responseCode(HttpStatus.SC_OK);
-        processOutput(response,null);
+        processOutput(response, null);
     }
 }

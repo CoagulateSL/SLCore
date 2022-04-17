@@ -49,12 +49,13 @@ public class PlainTextMapper extends URLMapper<Method> {
     }
 
     @Override
-    protected void processPostEntity(HttpEntity entity, Map<String, String> parameters) {}
+    protected void processPostEntity(final HttpEntity entity, final Map<String, String> parameters) {
+    }
 
     @Override
-    protected void initialiseState(HttpRequest request, HttpContext context, Map<String, String> parameters, Map<String, String> cookies) {
-        State state=State.get();
-        state.setupHTTP(request,context);
+    protected void initialiseState(final HttpRequest request, final HttpContext context, final Map<String, String> parameters, final Map<String, String> cookies) {
+        final State state = State.get();
+        state.setupHTTP(request, context);
         state.parameters(parameters);
         state.cookies(cookies);
         state.page(Page.page());
@@ -66,7 +67,7 @@ public class PlainTextMapper extends URLMapper<Method> {
     }
 
     @Override
-    protected boolean checkAuthenticationNeeded(Method content) {
+    protected boolean checkAuthenticationNeeded(final Method content) {
         return false;
     }
 
@@ -76,27 +77,27 @@ public class PlainTextMapper extends URLMapper<Method> {
     }
 
     @Override
-    protected void executePage(Method content) {
+    protected void executePage(final Method content) {
         // it's a static method with no parameters :)
         try {
-            content.invoke(null,State.get());
-        } catch (IllegalAccessException e) {
-            throw new SystemImplementationException("Method "+content.getDeclaringClass().getCanonicalName()+"."+content.getName()+" does not have public access");
-        } catch (InvocationTargetException e) {
-            throw new SystemImplementationException("Method "+content.getDeclaringClass().getCanonicalName()+"."+content.getName()+" thew an exception",e);// todo
+            content.invoke(null, State.get());
+        } catch (final IllegalAccessException e) {
+            throw new SystemImplementationException("Method " + content.getDeclaringClass().getCanonicalName() + "." + content.getName() + " does not have public access");
+        } catch (final InvocationTargetException e) {
+            throw new SystemImplementationException("Method " + content.getDeclaringClass().getCanonicalName() + "." + content.getName() + " thew an exception", e);// todo
         }
     }
 
 
     @Override
-    protected int processOutput(HttpResponse response, Method content) {
+    protected int processOutput(final HttpResponse response, final Method content) {
         String stringOutput;
         try {
             stringOutput = Page.page().render();
         } catch (@Nonnull final UserException ue) {
             SL.log().log(WARNING, "PageHandlerCaught", ue);
-            JSONObject error=new JSONObject();
-            error.put("error",ue.getLocalizedMessage());
+            final JSONObject error = new JSONObject();
+            error.put("error", ue.getLocalizedMessage());
             stringOutput = error.toString();
         }
         response.setEntity(new StringEntity(stringOutput, getContentType()));
@@ -113,32 +114,35 @@ public class PlainTextMapper extends URLMapper<Method> {
         State.cleanup();
     }
 
-    private State state() { return State.get(); }
+    private State state() {
+        return State.get();
+    }
+
     @Override
-    protected void renderUnhandledError(HttpRequest request, HttpContext context, HttpResponse response, Throwable t) {
-        SL.report("PText UnkEx: "+t.getLocalizedMessage(),t,state());
-        String text="Error: Sorry, an unhandled internal error occurred.\n";
-        text+="Type: UnhandledException";
+    protected void renderUnhandledError(final HttpRequest request, final HttpContext context, final HttpResponse response, final Throwable t) {
+        SL.report("PText UnkEx: " + t.getLocalizedMessage(), t, state());
+        String text = "Error: Sorry, an unhandled internal error occurred.\n";
+        text += "Type: UnhandledException";
         response.setEntity(new StringEntity(text, getContentType()));
         response.setStatusCode(200);
     }
 
     @Override
-    protected void renderSystemError(HttpRequest request, HttpContext context, HttpResponse response, SystemException t) {
-        SL.report("PText SysEx: "+t.getLocalizedMessage(),t,state());
-        String text="Error: Sorry, an internal error occurred.\n";
-        text+="Type: SystemException";
-        response.setEntity(new StringEntity(text,ContentType.TEXT_PLAIN));
+    protected void renderSystemError(final HttpRequest request, final HttpContext context, final HttpResponse response, final SystemException t) {
+        SL.report("PText SysEx: " + t.getLocalizedMessage(), t, state());
+        String text = "Error: Sorry, an internal error occurred.\n";
+        text += "Type: SystemException";
+        response.setEntity(new StringEntity(text, ContentType.TEXT_PLAIN));
         response.setStatusCode(200);
     }
 
     @Override
-    protected void renderUserError(HttpRequest request, HttpContext context, HttpResponse response, UserException t) {
-        SL.report("PText User: "+t.getLocalizedMessage(),t,state());
-        String text="Error: "+t.getLocalizedMessage()+"\n";
-        text+="Type: UserException\n";
-        text+="Class: "+t.getClass().getName();
-        response.setEntity(new StringEntity(text,ContentType.TEXT_PLAIN));
+    protected void renderUserError(final HttpRequest request, final HttpContext context, final HttpResponse response, final UserException t) {
+        SL.report("PText User: " + t.getLocalizedMessage(), t, state());
+        String text = "Error: " + t.getLocalizedMessage() + "\n";
+        text += "Type: UserException\n";
+        text += "Class: " + t.getClass().getName();
+        response.setEntity(new StringEntity(text, ContentType.TEXT_PLAIN));
         response.setStatusCode(200);
     }
 }

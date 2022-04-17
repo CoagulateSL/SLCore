@@ -19,7 +19,7 @@ public class TimeStampOrDuration extends TimeStamp {
 		final int value = Integer.parseInt(strvalue);
 		final int now = UnixTime.getUnixTime();
 		final int diff = now - value;
-		boolean historic = now > value;
+		final boolean historic = now > value;
 		if (diff > (-4 * UnixTime.WEEK) && diff < (4 * UnixTime.WEEK)) {
 			return (historic ? "" : "in ") + UnixTime.durationRelativeToNow(value, false) + (historic ? " ago" : "");
 		}

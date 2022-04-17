@@ -114,7 +114,9 @@ public class ControlPanel {
 				for (final StackTraceElement element: stack) {
 					final String className=element.getClassName();
 					if (className.startsWith("net.coagulate.")) {
-                        if (stacktrace.length()>0) { stacktrace.append("<br>"); }
+                        if (!stacktrace.isEmpty()) {
+							stacktrace.append("<br>");
+						}
 						stacktrace.append(className).append("/").append(element.getMethodName()).append(":").append(element.getLineNumber());
 					}
 				}

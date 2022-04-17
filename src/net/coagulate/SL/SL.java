@@ -255,7 +255,7 @@ public class SL extends Thread {
             for (final Header header : headers) {
                 final String value = header.getValue();
                 if (!(value.equals("127.0.0.1"))) {
-                    if (ret.length() > 0) {
+                    if (!ret.isEmpty()) {
                         ret.append(", ");
                     }
                     ret.append(value);

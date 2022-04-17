@@ -13,7 +13,6 @@ public class ServiceTile extends Container {
     private final String imageUrl;
 
     public ServiceTile(final String moduleName, final String description, final String url, final String imageUrl, final String commitId, final String buildDate) {
-        super();
         this.moduleName = moduleName;
         this.description = description;
         this.buildDate = buildDate;

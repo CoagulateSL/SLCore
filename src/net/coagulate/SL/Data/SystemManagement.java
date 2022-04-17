@@ -6,7 +6,7 @@ import net.coagulate.SL.Config;
 import net.coagulate.SL.SL;
 
 public class SystemManagement {
-    private static boolean wasMasterNode =false;
+    private static boolean wasMasterNode;
 
     public static int get(final DBConnection database, final String schemaName) {
         return database.dqiNotNull("select max(version) from schemaversions where name like ?", schemaName);

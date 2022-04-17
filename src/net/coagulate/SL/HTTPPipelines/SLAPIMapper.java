@@ -29,7 +29,7 @@ import static java.util.logging.Level.WARNING;
 
 public class SLAPIMapper extends URLMapper<Method> {
 
-    private static SLAPIMapper singleton=null;
+    private static SLAPIMapper singleton;
     public static synchronized URLMapper<Method> get() {
         if (singleton==null) { singleton=new SLAPIMapper(); }
         return singleton;

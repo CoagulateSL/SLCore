@@ -51,8 +51,8 @@ public class SL extends Thread {
     private static DBConnection db;
     @Nullable
     private static HTTPListener listener;
-    private static final Map<String,SLModule> modules=new TreeMap<>();
-    private static boolean imWarned =false;
+    private static final Map<String, SLModule> modules = new TreeMap<>();
+    private static boolean imWarned;
 
     private SL() {}
 

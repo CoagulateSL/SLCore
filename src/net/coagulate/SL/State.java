@@ -53,11 +53,12 @@ public class State extends DumpableState {
     }
 
 
-	// We love HTTP :P
-	private State(){}
+    // We love HTTP :P
+    private State() {
+    }
 
-	private HttpRequest request=null;
-	private HttpContext context=null;
+    private HttpRequest request;
+    private HttpContext context;
 
     public void setupHTTP(final HttpRequest request, final HttpContext context) {
         if (this.request != null) {
@@ -87,7 +88,7 @@ public class State extends DumpableState {
 		return "";
 	}
 
-	private Map<String,String> cookies=null;
+    private Map<String, String> cookies;
 
     public void cookies(final Map<String, String> cookieMap) {
         if (cookies != null) {
@@ -112,7 +113,7 @@ public class State extends DumpableState {
         return parameters;
     }
 
-	private Session session=null;
+    private Session session;
 	public void logout() {
 		if (session!=null) { session.logout(); }
 		session=null;
@@ -138,7 +139,7 @@ public class State extends DumpableState {
         return session.token();
     }
 
-	private User user=null;
+    private User user;
 
 	@Nullable
 	public User userNullable() { return user; }
@@ -169,7 +170,7 @@ public class State extends DumpableState {
         return clientIp;
     }
 
-	private JSONObject in=null;
+    private JSONObject in;
 
     public void jsonIn(final JSONObject json) {
         if (in != null) {
@@ -184,8 +185,9 @@ public class State extends DumpableState {
         }
         return in;
     }
-	private JSONObject out=null;
-	private SystemImplementationException outset=null;
+
+    private JSONObject out;
+    private SystemImplementationException outset;
 
     public void jsonOut(final JSONObject json) {
         if (out != null) {
@@ -201,7 +203,8 @@ public class State extends DumpableState {
         }
         return out;
     }
-	private Page page=null;
+
+    private Page page;
 
     public void page(final Page page) {
         if (this.page != null) {
@@ -236,8 +239,8 @@ public class State extends DumpableState {
         parameters.put(name, value);
     }
 
-	// adhoc storage for one http entity.  used for outputting weird stuff like PNGs :P
-	HttpEntity entity=null;
+    // adhoc storage for one http entity.  used for outputting weird stuff like PNGs :P
+    HttpEntity entity;
 
     public void entity(final HttpEntity setTo) {
         if (entity != null) {

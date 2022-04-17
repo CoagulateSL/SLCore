@@ -39,7 +39,7 @@ public class PlainTextMapper extends URLMapper<Method> {
         }
     }
 
-    private static PlainTextMapper singleton=null;
+    private static PlainTextMapper singleton;
     public static synchronized URLMapper<Method> get() {
         if (singleton==null) { singleton=new PlainTextMapper(); }
         return singleton;

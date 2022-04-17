@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class HTMLMapper extends URLMapper<Method> {
 
-    private static HTMLMapper singleton=null;
+    private static HTMLMapper singleton;
     public static synchronized URLMapper<Method> get() {
         if (singleton==null) { singleton=new HTMLMapper(); }
         return singleton;

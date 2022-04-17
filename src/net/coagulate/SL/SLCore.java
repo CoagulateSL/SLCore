@@ -252,7 +252,7 @@ public class SLCore extends SLModule {
             zabbix.getErrorStream().close();
             zabbix.getOutputStream().close();
             if (!zabbix.waitFor(5, TimeUnit.SECONDS)) {
-                log(Level.WARNING,"Zabbix task did not exit promptly");
+                log(WARNING, "Zabbix task did not exit promptly");
                 zabbix.destroy();
                 if (!zabbix.waitFor(5,TimeUnit.SECONDS)) {
                     log(WARNING,"Zabbix task did not destroy either...");
@@ -263,9 +263,9 @@ public class SLCore extends SLModule {
                 }
             }
         } catch (@Nonnull final IOException e) {
-            log(Level.WARNING, "Error while passing stats to zabbix", e);
+            log(WARNING, "Error while passing stats to zabbix", e);
         } catch (@Nonnull final InterruptedException e) {
-            log(Level.WARNING, "Interrupted while passing stats to zabbix", e);
+            log(WARNING, "Interrupted while passing stats to zabbix", e);
         }
     }
 

@@ -11,7 +11,6 @@ import net.coagulate.Core.Exceptions.User.*;
 import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.Passwords;
 import net.coagulate.Core.Tools.Tokens;
-import net.coagulate.Core.Tools.UnixTime;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.GetAgentID;
 import net.coagulate.SL.SL;
@@ -99,7 +98,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 	@Nullable
 	public static User getSSO(final String token) {
 		// purge old tokens
-		SL.getDB().d("update users set ssotoken=null,ssoexpires=null where ssoexpires<?",UnixTime.getUnixTime());
+		SL.getDB().d("update users set ssotoken=null,ssoexpires=null where ssoexpires<?", getUnixTime());
 		try {
 			final int match=SL.getDB().dqiNotNull("select id from users where ssotoken=?",token);
 			SL.getDB().d("update users set ssotoken=null,ssoexpires=null where id=?",match);
@@ -323,8 +322,8 @@ public class User extends StandardSLTable implements Comparable<User> {
 
 	@Nonnull
 	public String generateSSO() {
-		final String token=Tokens.generateToken();
-		final int expires=UnixTime.getUnixTime()+Config.getSSOWindow();
+		final String token = Tokens.generateToken();
+		final int expires = getUnixTime() + Config.getSSOWindow();
 		d("update users set ssotoken=?,ssoexpires=? where "+getIdColumn()+"=?",token,expires,getId());
 		return token;
 	}
@@ -362,7 +361,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 		if (balance<ammount) {
 			throw new UserInsufficientCreditException("Insufficient balance (L$"+balance+") to pay charge L$"+ammount);
 		}
-		d("insert into journal(tds,userid,ammount,description) values(?,?,?,?)",UnixTime.getUnixTime(),getId(),-ammount,description);
+		d("insert into journal(tds,userid,ammount,description) values(?,?,?,?)", getUnixTime(), getId(), -ammount, description);
 	}
 
 	public boolean checkPassword(@Nonnull final String password) {
@@ -419,8 +418,8 @@ public class User extends StandardSLTable implements Comparable<User> {
 	 */
 	@Nonnull
 	public String setNewEmail(final String newemail) {
-		final int expires=UnixTime.getUnixTime()+Config.emailTokenLifespan();
-		final String token=Tokens.generateToken();
+		final int expires = getUnixTime() + Config.emailTokenLifespan();
+		final String token = Tokens.generateToken();
 		d("update users set newemail=?,newemailtoken=?,newemailexpires=? where id=?",newemail,token,expires,getId());
 		return token;
 	}
@@ -441,8 +440,10 @@ public class User extends StandardSLTable implements Comparable<User> {
 		final String newToken=r.getStringNullable("newemailtoken");
 		final int expires=r.getInt("newemailexpires");
 		if (token==null || token.isEmpty()) { throw new UserInputEmptyException("No token passed"); }
-		if (!token.equals(newToken)) { throw new UserInputStateException("Email token does not match"); }
-		if (expires<UnixTime.getUnixTime()) {
+		if (!token.equals(newToken)) {
+			throw new UserInputStateException("Email token does not match");
+		}
+		if (expires < getUnixTime()) {
 			throw new UserInputStateException("Email token has expired, please register new email address again");
 		}
 		// token matches, not expired, promote the address

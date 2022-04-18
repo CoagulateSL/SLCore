@@ -36,7 +36,7 @@ public abstract class SLModule {
         return true;
     }
 
-    public SLModule() {
+    protected SLModule() {
         logger = SL.log(getClass().getSimpleName());
     }
 

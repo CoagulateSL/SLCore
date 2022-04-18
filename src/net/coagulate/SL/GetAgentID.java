@@ -87,18 +87,21 @@ public class GetAgentID {
 			responsecode=transmission.getResponseCode();
 
 			switch (responsecode) {
-				case 403:
+				case 403 -> {
 					final SystemRemoteFailureException urfe = new SystemRemoteFailureException("SL Name API Rate Limited");
-					SL.report("Name API IO Error",urfe,null);
+					SL.report("Name API IO Error", urfe, null);
 					throw urfe;
-				case 405:
+				}
+				case 405 -> {
 					final SystemRemoteFailureException srfe = new SystemRemoteFailureException("SL Name API said Malformed Request");
-					SL.report("Name API IO Error",srfe,null);
+					SL.report("Name API IO Error", srfe, null);
 					throw srfe;
-				case 500:
+				}
+				case 500 -> {
 					final UserRemoteFailureException error = new UserRemoteFailureException("SL Name API service errored");
-					SL.report("Name API IO Error",error,null);
+					SL.report("Name API IO Error", error, null);
 					throw error;
+				}
 			}
 
 			final BufferedReader rd;

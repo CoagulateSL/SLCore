@@ -16,7 +16,4 @@ public abstract class StandardSLTable extends StandardTableRow {
 		return SL.getDB();
 	}
 
-	@Nonnull
-	@Override
-	public abstract String getTableName();
 }

@@ -115,22 +115,22 @@ public class SLCore extends SLModule {
     }
 
     private void checkMethod(final Method m) {
-        final String fullyQualifiedMethodName = m.getDeclaringClass().getCanonicalName() + "." + m.getName();
+        final String qualifiedMethodName = m.getDeclaringClass().getCanonicalName() + "." + m.getName();
         try {
             if (!m.canAccess(null)) {
-                throw new SystemImplementationException("No public access on " + fullyQualifiedMethodName + " during URL setup");
+                throw new SystemImplementationException("No public access on " + qualifiedMethodName + " during URL setup");
             }
         } catch (final IllegalArgumentException e) {
-            throw new SystemImplementationException("Not a static method? on URL setup for " + fullyQualifiedMethodName, e);
+            throw new SystemImplementationException("Not a static method? on URL setup for " + qualifiedMethodName, e);
         }
         if (m.getParameterCount() != 1) {
-            throw new SystemImplementationException("Incorrect parameters on " + fullyQualifiedMethodName + " during URL setup (Should be singular state)");
+            throw new SystemImplementationException("Incorrect parameters on " + qualifiedMethodName + " during URL setup (Should be singular state)");
         }
         if (!m.getParameters()[0].getType().equals(State.class)) {
-            throw new SystemImplementationException("Parameter on " + fullyQualifiedMethodName + " is not of correct type during URL setup");
+            throw new SystemImplementationException("Parameter on " + qualifiedMethodName + " is not of correct type during URL setup");
         }
         if (!m.getReturnType().equals(void.class)) {
-            throw new SystemImplementationException("Wrong return type on " + fullyQualifiedMethodName + " during URL setup");
+            throw new SystemImplementationException("Wrong return type on " + qualifiedMethodName + " during URL setup");
         }
     }
 

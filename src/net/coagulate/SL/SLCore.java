@@ -231,8 +231,8 @@ public class SLCore extends SLModule {
         }
         float queryAverage=0;
         float updateAverage=0;
-        if (queries>0) { queryAverage=((float) queryTime)/((float) queries); }
-        if (updates>0) { updateAverage=((float) updateTime)/((float) updates); }
+        if (queries>0) { queryAverage=((float) queryTime)/ queries; }
+        if (updates>0) { updateAverage=((float) updateTime)/ updates; }
         String results="";
         results+=Config.getHostName().toLowerCase()+" mariadb.cluster.queries "+queries+"\n";
         results+=Config.getHostName().toLowerCase()+" mariadb.cluster.queryavg "+queryAverage+"\n";

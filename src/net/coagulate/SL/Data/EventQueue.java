@@ -82,7 +82,7 @@ public class EventQueue extends StandardSLTable{
         t.row().header("ID").header("Module").header("Command").header("Queued").header("Expires").header("Claimed").header("Completed").header("Status").header("Executor").header("JSON");
         for (final ResultsRow row : SL.getDB().dq("select * from eventqueue order by id desc")) {
             t.row().
-                    add(row.getInt("id") + "").
+                    add(String.valueOf(row.getInt("id"))).
                     add(row.getString("modulename")).
                     add(row.getString("commandname")).
                     add(UnixTime.fromUnixTime(row.getInt("queued"), "Europe/London").replaceAll(" ", "&nbsp;")).

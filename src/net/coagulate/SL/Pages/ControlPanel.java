@@ -121,9 +121,9 @@ public class ControlPanel {
 					}
 				}
                 t.row().
-                    add(thread.getName()).
-                    add(thread.isDaemon()+"").
-				    add(stacktrace.toString());
+						add(thread.getName()).
+						add(String.valueOf(thread.isDaemon())).
+						add(stacktrace.toString());
 			}
 		}
 		if ("Recalc Names".equals(state.parameter("Recalc Names"))) {

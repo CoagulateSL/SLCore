@@ -241,7 +241,7 @@ public class SLCore extends SLModule {
         results+=Config.getHostName().toLowerCase()+" mariadb.cluster.updateavg "+updateAverage+"\n";
         results+=Config.getHostName().toLowerCase()+" mariadb.cluster.updatemax "+updateMax+"\n";
         try {
-            final Process zabbix=Runtime.getRuntime().exec(new String[]{"/usr/bin/zabbix_sender","-z",Config.getZabbixServer(),"-i-"});
+            @SuppressWarnings("CallToRuntimeExec") final Process zabbix=Runtime.getRuntime().exec(new String[]{"/usr/bin/zabbix_sender","-z",Config.getZabbixServer(),"-i-"});
             zabbix.getOutputStream().write(results.getBytes(StandardCharsets.UTF_8));
             zabbix.getOutputStream().close();
             //final String output=

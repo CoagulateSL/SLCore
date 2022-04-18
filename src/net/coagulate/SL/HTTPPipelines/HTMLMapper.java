@@ -203,8 +203,8 @@ public class HTMLMapper extends URLMapper<Method> {
     }
 
     @Override
-    protected void renderSystemError(final HttpRequest request, final HttpContext context, final HttpResponse response, final SystemException t) {
-        SL.report("SL SysEx: " + t.getLocalizedMessage(), t, state());
+    protected void renderSystemError(final HttpRequest request, final HttpContext context, final HttpResponse response, final SystemException systemException) {
+        SL.report("SL SysEx: " + systemException.getLocalizedMessage(), systemException, state());
         final Page page = Page.page();
         page.template(new SLPageTemplate(SLPageTemplate.PAGELAYOUT.CENTERCOLUMN));
         page.resetRoot();
@@ -216,14 +216,14 @@ public class HTMLMapper extends URLMapper<Method> {
     }
 
     @Override
-    protected void renderUserError(final HttpRequest request, final HttpContext context, final HttpResponse response, final UserException t) {
-        SL.report("SL User: " + t.getLocalizedMessage(), t, state());
+    protected void renderUserError(final HttpRequest request, final HttpContext context, final HttpResponse response, final UserException userException) {
+        SL.report("SL User: " + userException.getLocalizedMessage(), userException, state());
         final Page page = Page.page();
         page.template(new SLPageTemplate(SLPageTemplate.PAGELAYOUT.CENTERCOLUMN));
         page.resetRoot();
         page.root().header1("Error");
         page.root().p("Sorry, your request could not be completed, please review your data and try again");
-        page.root().p("Error: " + t.getLocalizedMessage());
+        page.root().p("Error: " + userException.getLocalizedMessage());
         page.responseCode(HttpStatus.SC_OK);
         processOutput(response, null);
     }

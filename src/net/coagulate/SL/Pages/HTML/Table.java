@@ -74,12 +74,14 @@ public class Table extends Container {
 	}
 
 	@Nonnull
-	public Table add(final Element e) {
-		checkRow();
-		if (row==null) { openRow(); }
-		row.add(e);
-		return this;
-	}
+    public Table add(final Element element) {
+        checkRow();
+        if (row == null) {
+            openRow();
+        }
+        row.add(element);
+        return this;
+    }
 
 	@Nonnull
 	public Table rowGenerator(final TRGenerator generator) {

@@ -128,8 +128,8 @@ public class PlainTextMapper extends URLMapper<Method> {
     }
 
     @Override
-    protected void renderSystemError(final HttpRequest request, final HttpContext context, final HttpResponse response, final SystemException t) {
-        SL.report("PText SysEx: " + t.getLocalizedMessage(), t, state());
+    protected void renderSystemError(final HttpRequest request, final HttpContext context, final HttpResponse response, final SystemException systemException) {
+        SL.report("PText SysEx: " + systemException.getLocalizedMessage(), systemException, state());
         String text = "Error: Sorry, an internal error occurred.\n";
         text += "Type: SystemException";
         response.setEntity(new StringEntity(text, ContentType.TEXT_PLAIN));
@@ -137,11 +137,11 @@ public class PlainTextMapper extends URLMapper<Method> {
     }
 
     @Override
-    protected void renderUserError(final HttpRequest request, final HttpContext context, final HttpResponse response, final UserException t) {
-        SL.report("PText User: " + t.getLocalizedMessage(), t, state());
-        String text = "Error: " + t.getLocalizedMessage() + "\n";
+    protected void renderUserError(final HttpRequest request, final HttpContext context, final HttpResponse response, final UserException userException) {
+        SL.report("PText User: " + userException.getLocalizedMessage(), userException, state());
+        String text = "Error: " + userException.getLocalizedMessage() + "\n";
         text += "Type: UserException\n";
-        text += "Class: " + t.getClass().getName();
+        text += "Class: " + userException.getClass().getName();
         response.setEntity(new StringEntity(text, ContentType.TEXT_PLAIN));
         response.setStatusCode(200);
     }

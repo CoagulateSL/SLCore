@@ -228,8 +228,8 @@ public class SLAPIMapper extends URLMapper<Method> {
     }
 
     @Override
-    protected void renderSystemError(final HttpRequest request, final HttpContext context, final HttpResponse response, final SystemException t) {
-        SL.report("SLAPI SysEx: " + t.getLocalizedMessage(), t, state());
+    protected void renderSystemError(final HttpRequest request, final HttpContext context, final HttpResponse response, final SystemException systemException) {
+        SL.report("SLAPI SysEx: " + systemException.getLocalizedMessage(), systemException, state());
         final JSONObject json = new JSONObject();
         json.put("error", "Sorry, an internal error occurred.");
         json.put("responsetype", "SystemException");
@@ -238,12 +238,12 @@ public class SLAPIMapper extends URLMapper<Method> {
     }
 
     @Override
-    protected void renderUserError(final HttpRequest request, final HttpContext context, final HttpResponse response, final UserException t) {
-        SL.report("SLAPI User: " + t.getLocalizedMessage(), t, state());
+    protected void renderUserError(final HttpRequest request, final HttpContext context, final HttpResponse response, final UserException userException) {
+        SL.report("SLAPI User: " + userException.getLocalizedMessage(), userException, state());
         final JSONObject json = new JSONObject();
-        json.put("error", t.getLocalizedMessage());
+        json.put("error", userException.getLocalizedMessage());
         json.put("responsetype", "UserException");
-        json.put("errorclass", t.getClass().getSimpleName());
+        json.put("errorclass", userException.getClass().getSimpleName());
         response.setEntity(new StringEntity(json.toString(2), ContentType.APPLICATION_JSON));
         response.setStatusCode(200);
     }

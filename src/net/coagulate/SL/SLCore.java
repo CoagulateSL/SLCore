@@ -172,22 +172,23 @@ public class SLCore extends SLModule {
         if (currentVersion == 2) {
             currentVersion = 3;
             SL.log("SLCore").log(CONFIG, "Upgrading schema from 2 to 3");
-            SL.log("SLCore").log(CONFIG,"Schema: Introduce the eventqueue table");
-            db.d("CREATE TABLE `eventqueue` (\n" +
-                    "  `eventid` INT NOT NULL AUTO_INCREMENT,\n" +
-                    "  `modulename` VARCHAR(64) NOT NULL,\n" +
-                    "  `commandname` VARCHAR(64) NOT NULL,\n" +
-                    "  `queued` INT NOT NULL,\n" +
-                    "  `expires` INT NOT NULL,\n" +
-                    "  `claimed` INT NULL DEFAULT NULL,\n" +
-                    "  `completed` INT NULL DEFAULT NULL,\n" +
-                    "  `status` VARCHAR(64) NOT NULL DEFAULT '',\n" +
-                    "  `structureddata` VARCHAR(4096) NOT NULL DEFAULT '{}',\n" +
-                    "  PRIMARY KEY (`eventid`),\n" +
-                    "  UNIQUE INDEX `eventid_UNIQUE` (`eventid` ASC),\n" +
-                    "  INDEX `eventqueue_queued` (`queued` ASC),\n" +
-                    "  INDEX `eventqueue_expires` (`expires` ASC),\n" +
-                    "  INDEX `eventqueue_claimed` (`claimed` ASC));");
+            SL.log("SLCore").log(CONFIG, "Schema: Introduce the eventqueue table");
+            db.d("""
+                    CREATE TABLE `eventqueue` (
+                      `eventid` INT NOT NULL AUTO_INCREMENT,
+                      `modulename` VARCHAR(64) NOT NULL,
+                      `commandname` VARCHAR(64) NOT NULL,
+                      `queued` INT NOT NULL,
+                      `expires` INT NOT NULL,
+                      `claimed` INT NULL DEFAULT NULL,
+                      `completed` INT NULL DEFAULT NULL,
+                      `status` VARCHAR(64) NOT NULL DEFAULT '',
+                      `structureddata` VARCHAR(4096) NOT NULL DEFAULT '{}',
+                      PRIMARY KEY (`eventid`),
+                      UNIQUE INDEX `eventid_UNIQUE` (`eventid` ASC),
+                      INDEX `eventqueue_queued` (`queued` ASC),
+                      INDEX `eventqueue_expires` (`expires` ASC),
+                      INDEX `eventqueue_claimed` (`claimed` ASC));""");
         }
         if (currentVersion==3) {
             currentVersion = 4;

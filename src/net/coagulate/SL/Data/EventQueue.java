@@ -12,16 +12,17 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Generic event queue.
+/**
+ * Generic event queue.
  * This class probably doesn't make a lot of sense to most users.
  * It's used for multi-node clusters, it allows a low-effort means of ensuring either node can queue events and only one
  * will dequeue them.
- *
+ * <p>
  * This mechanism is only intended to be for singleton resources, e.g. SL bots or Discord bots, stuff that either node
  * can do at any time (e.g. SL Name API) shouldn't be going through this.
- *
+ * <p>
  * Dequeued by the maintenance thread, which only runs on the "primary node"
- *
+ * <p>
  * TODO: create some way of a node handing over its primary status
  * TODO: there needs to be a cache-disable mode
  */

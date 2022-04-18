@@ -109,7 +109,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 
 	/**
 	 * Find or create a user entry in the database.
-	 *
+	 * <p>
 	 * Call will filter "usernames" of ??? (???) (Loading...) or Loading.. all of which seem to be garbage SL generates.
 	 * Note trustName should be set to false if the username is retrieved from HTTP headers from Objects which seem to update later than other methods.
 	 * For usernames retrieved from the new GetAgentID LL API this should be set to TRUE to update the database with the new name.

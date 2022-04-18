@@ -16,7 +16,7 @@ public class Shutdown  {
 	@Url(url="/shutdown",authenticate = false)
 	public static void shutdown(@Nonnull final State state) {
 		final String ip=State.get().getClientIP();
-		if ("".equals(ip)) {
+		if (ip != null && ip.isEmpty()) {
 			SL.shutdown();
 			state.add(new Paragraph("SHUTDOWN INITIATED"));
 		} else {

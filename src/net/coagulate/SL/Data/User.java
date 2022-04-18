@@ -85,7 +85,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 
 	@Nullable
 	public static User resolveDeveloperKey(@Nullable final String key) {
-		if (key==null || "".equals(key)) {
+		if (key == null || key.isEmpty()) {
 			return null;
 		}
 		try {

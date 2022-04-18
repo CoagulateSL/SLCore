@@ -129,7 +129,7 @@ public class HTMLMapper extends URLMapper<Method> {
         try {
             content.invoke(null, State.get());
         } catch (final IllegalAccessException e) {
-            throw new SystemImplementationException("Method " + content.getDeclaringClass().getCanonicalName() + "." + content.getName() + " does not have public access");
+            throw new SystemImplementationException("Method " + content.getDeclaringClass().getCanonicalName() + "." + content.getName() + " does not have public access", e);
         }
     }
 

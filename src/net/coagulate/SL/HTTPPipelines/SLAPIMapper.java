@@ -136,7 +136,7 @@ public class SLAPIMapper extends URLMapper<Method> {
         try {
             return getClass().getMethod("getAuthenticationPage");
         } catch (final NoSuchMethodException e) {
-            throw new SystemImplementationException("Authentication page went missing");
+            throw new SystemImplementationException("Authentication page went missing", e);
         }
     }
 
@@ -152,7 +152,7 @@ public class SLAPIMapper extends URLMapper<Method> {
             }
             content.invoke(null, State.get());
         } catch (final IllegalAccessException e) {
-            throw new SystemImplementationException("Method " + content.getDeclaringClass().getCanonicalName() + "." + content.getName() + " does not have public access");
+            throw new SystemImplementationException("Method " + content.getDeclaringClass().getCanonicalName() + "." + content.getName() + " does not have public access", e);
         } catch (final InvocationTargetException e) {
             throw new SystemImplementationException("Method " + content.getDeclaringClass().getCanonicalName() + "." + content.getName() + " thew an exception", e);// todo
         }

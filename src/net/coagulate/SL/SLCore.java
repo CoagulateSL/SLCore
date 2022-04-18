@@ -121,7 +121,7 @@ public class SLCore extends SLModule {
                 throw new SystemImplementationException("No public access on " + fullyQualifiedMethodName + " during URL setup");
             }
         } catch (final IllegalArgumentException e) {
-            throw new SystemImplementationException("Not a static method? on URL setup for " + fullyQualifiedMethodName);
+            throw new SystemImplementationException("Not a static method? on URL setup for " + fullyQualifiedMethodName, e);
         }
         if (m.getParameterCount() != 1) {
             throw new SystemImplementationException("Incorrect parameters on " + fullyQualifiedMethodName + " during URL setup (Should be singular state)");

@@ -49,7 +49,7 @@ public class GetAgentID {
 		// "Usernames can contain only letters and numbers" (and when concatenated a single space or dot separator)
 		SL.log("GetAgentID").info("Performing SL getAgentID lookup for "+name);
 		name=name.trim();
-		if (Pattern.compile(".*[^A-Za-z0-9. ].*").matcher(name).matches()) {
+		if (Pattern.compile(".*[^A-Za-z\\d. ].*").matcher(name).matches()) {
 			throw new UserInputValidationFilterException("Name '"+name+"' contains invalid characters");
 		}
 		if (Pattern.compile(".+[ .].+[ .].+").matcher(name).matches()) {

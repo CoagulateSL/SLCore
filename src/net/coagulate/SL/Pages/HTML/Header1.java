@@ -24,10 +24,10 @@ public class Header1 extends Container {
 	}
 
 	@Nonnull
-	public Header1 add(final Element e) {
-		super.add(e);
-		return this;
-	}
+    public Header1 add(final Element element) {
+        super.add(element);
+        return this;
+    }
 
 	@Nonnull
 	public Header1 name(final String name) {

@@ -11,7 +11,6 @@ import net.coagulate.Core.Exceptions.User.*;
 import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.Passwords;
 import net.coagulate.Core.Tools.Tokens;
-import net.coagulate.Core.Tools.UnixTime;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.GetAgentID;
 import net.coagulate.SL.SL;
@@ -86,7 +85,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 
 	@Nullable
 	public static User resolveDeveloperKey(@Nullable final String key) {
-		if (key==null || "".equals(key)) {
+		if (key == null || key.isEmpty()) {
 			return null;
 		}
 		try {
@@ -99,7 +98,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 	@Nullable
 	public static User getSSO(final String token) {
 		// purge old tokens
-		SL.getDB().d("update users set ssotoken=null,ssoexpires=null where ssoexpires<?",UnixTime.getUnixTime());
+		SL.getDB().d("update users set ssotoken=null,ssoexpires=null where ssoexpires<?", getUnixTime());
 		try {
 			final int match=SL.getDB().dqiNotNull("select id from users where ssotoken=?",token);
 			SL.getDB().d("update users set ssotoken=null,ssoexpires=null where id=?",match);
@@ -110,7 +109,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 
 	/**
 	 * Find or create a user entry in the database.
-	 *
+	 * <p>
 	 * Call will filter "usernames" of ??? (???) (Loading...) or Loading.. all of which seem to be garbage SL generates.
 	 * Note trustName should be set to false if the username is retrieved from HTTP headers from Objects which seem to update later than other methods.
 	 * For usernames retrieved from the new GetAgentID LL API this should be set to TRUE to update the database with the new name.
@@ -253,7 +252,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 	}
 
     public static Map<Integer, String> getIdToNameMap() {
-		Map<Integer,String> avatarNames=new TreeMap<>();
+		final Map<Integer, String> avatarNames = new TreeMap<>();
 		for (final ResultsRow r: SL.getDB().dq("select id,username from users")) {
 			avatarNames.put(r.getInt("id"),r.getString("username"));
 		}
@@ -261,30 +260,30 @@ public class User extends StandardSLTable implements Comparable<User> {
     }
 
 	public static String reformatUsernames() {
-		StringBuilder s=new StringBuilder();
-		for (ResultsRow row:SL.getDB().dq("select id,username from users")) {
-			String username=row.getString("username");
-			try {
-				if (!username.equals(formatUsername(username)))
-				{
-					String newusername = formatUsername(username);
-					s.append(username).append(" -> ").append(newusername).append("\n");
-					SL.getDB().d("update users set username=? where id=?", newusername, row.getInt("id"));
-				}
-			}
-			catch (Exception e) { s.append(username).append(" exceptioned ").append(e).append("\n"); }
-		}
+        final StringBuilder s = new StringBuilder();
+        for (final ResultsRow row : SL.getDB().dq("select id,username from users")) {
+            final String username = row.getString("username");
+            try {
+                if (!username.equals(formatUsername(username))) {
+                    final String newusername = formatUsername(username);
+                    s.append(username).append(" -> ").append(newusername).append("\n");
+                    SL.getDB().d("update users set username=? where id=?", newusername, row.getInt("id"));
+                }
+            } catch (final Exception e) {
+                s.append(username).append(" exceptioned ").append(e).append("\n");
+            }
+        }
 		return s.toString();
 	}
 
 	/** A horrible method that is not to be used much.  Thanks. */
 	public static Set<User> getAllUsers() {
-		Set<User> ret=new HashSet<>();
-		for (ResultsRow row: SL.getDB().dq("select id from users")) {
-			ret.add(User.get(row.getInt("id")));
-		}
-		return ret;
-	}
+        final Set<User> ret = new HashSet<>();
+        for (final ResultsRow row : SL.getDB().dq("select id from users")) {
+            ret.add(User.get(row.getInt("id")));
+        }
+        return ret;
+    }
 
 	// ---------- INSTANCE ----------
 	@Nonnull
@@ -323,8 +322,8 @@ public class User extends StandardSLTable implements Comparable<User> {
 
 	@Nonnull
 	public String generateSSO() {
-		final String token=Tokens.generateToken();
-		final int expires=UnixTime.getUnixTime()+Config.getSSOWindow();
+		final String token = Tokens.generateToken();
+		final int expires = getUnixTime() + Config.getSSOWindow();
 		d("update users set ssotoken=?,ssoexpires=? where "+getIdColumn()+"=?",token,expires,getId());
 		return token;
 	}
@@ -362,7 +361,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 		if (balance<ammount) {
 			throw new UserInsufficientCreditException("Insufficient balance (L$"+balance+") to pay charge L$"+ammount);
 		}
-		d("insert into journal(tds,userid,ammount,description) values(?,?,?,?)",UnixTime.getUnixTime(),getId(),-ammount,description);
+		d("insert into journal(tds,userid,ammount,description) values(?,?,?,?)", getUnixTime(), getId(), -ammount, description);
 	}
 
 	public boolean checkPassword(@Nonnull final String password) {
@@ -419,8 +418,8 @@ public class User extends StandardSLTable implements Comparable<User> {
 	 */
 	@Nonnull
 	public String setNewEmail(final String newemail) {
-		final int expires=UnixTime.getUnixTime()+Config.emailTokenLifespan();
-		final String token=Tokens.generateToken();
+		final int expires = getUnixTime() + Config.emailTokenLifespan();
+		final String token = Tokens.generateToken();
 		d("update users set newemail=?,newemailtoken=?,newemailexpires=? where id=?",newemail,token,expires,getId());
 		return token;
 	}
@@ -441,8 +440,10 @@ public class User extends StandardSLTable implements Comparable<User> {
 		final String newToken=r.getStringNullable("newemailtoken");
 		final int expires=r.getInt("newemailexpires");
 		if (token==null || token.isEmpty()) { throw new UserInputEmptyException("No token passed"); }
-		if (!token.equals(newToken)) { throw new UserInputStateException("Email token does not match"); }
-		if (expires<UnixTime.getUnixTime()) {
+		if (!token.equals(newToken)) {
+			throw new UserInputStateException("Email token does not match");
+		}
+		if (expires < getUnixTime()) {
 			throw new UserInputStateException("Email token has expired, please register new email address again");
 		}
 		// token matches, not expired, promote the address
@@ -484,10 +485,10 @@ public class User extends StandardSLTable implements Comparable<User> {
 		return getUsername().compareToIgnoreCase(o.getUsername());
 	}
 
-	public void setUsername(@Nonnull String username) {
-		d("update users set username=? where id=?",username,getId());
-		userNameCache =username;
-	}
+    public void setUsername(@Nonnull final String username) {
+        d("update users set username=? where id=?", username, getId());
+        userNameCache = username;
+    }
 
     public boolean isSuspended() {
 		return getBool("suspended");

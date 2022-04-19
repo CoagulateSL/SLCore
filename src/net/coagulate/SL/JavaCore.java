@@ -46,5 +46,7 @@ public class JavaCore extends SLModule {
     public Date getBuildDate() { return JavaCoreBuildInfo.BUILDDATE; }
 
     @Override
-    protected int schemaUpgrade(DBConnection db, String schemaName, int currentVersion) { return currentVersion; }
+    protected int schemaUpgrade(final DBConnection db, final String schemaName, final int currentVersion) {
+        return currentVersion;
+    }
 }

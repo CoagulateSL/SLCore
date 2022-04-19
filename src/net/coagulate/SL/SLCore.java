@@ -9,7 +9,6 @@ import net.coagulate.Core.HTTP.URLDistribution;
 import net.coagulate.Core.Tools.ByteTools;
 import net.coagulate.Core.Tools.Cache;
 import net.coagulate.Core.Tools.ClassTools;
-import net.coagulate.Core.Tools.StackTraceProfiler;
 import net.coagulate.SL.Data.EventQueue;
 import net.coagulate.SL.HTML.ServiceTile;
 import net.coagulate.SL.HTTPPipelines.*;
@@ -60,59 +59,79 @@ public class SLCore extends SLModule {
 
     @Override
     public void initialise() {
-        Logger logger=Logger.getLogger(getClass().getCanonicalName());
-        schemaCheck(SL.getDB(),"slcore",SLCORE_DATABASE_SCHEMA_VERSION);
+        final Logger logger = Logger.getLogger(getClass().getCanonicalName());
+        schemaCheck(SL.getDB(), "slcore", SLCORE_DATABASE_SCHEMA_VERSION);
         URLDistribution.register("", HTMLMapper.get());
-        for (Method method: ClassTools.getAnnotatedMethods(Url.class)) {
-            Url annotation=method.getAnnotation(Url.class);
+        for (final Method method : ClassTools.getAnnotatedMethods(Url.class)) {
+            final Url annotation = method.getAnnotation(Url.class);
             checkMethod(method);
-            if (annotation.pageType()== PageType.HTML) {
-                URLDistribution.register(annotation.url(),HTMLMapper.get());
+            if (annotation.pageType() == PageType.HTML) {
+                URLDistribution.register(annotation.url(), HTMLMapper.get());
                 HTMLMapper.get().exact(annotation.url(), method);
-                if (DEBUG_URLS) { logger.fine("HTTPMapper exact URL "+annotation.url()+" to "+method); }
+                if (DEBUG_URLS) {
+                    logger.fine("HTTPMapper exact URL " + annotation.url() + " to " + method);
+                }
             }
-            if (annotation.pageType()== PageType.SLAPI) {
+            if (annotation.pageType() == PageType.SLAPI) {
                 URLDistribution.register(annotation.url(), SLAPIMapper.get());
                 SLAPIMapper.get().exact(annotation.url(), method);
-                if (DEBUG_URLS) { logger.fine("SLAPIMapper exact URL "+annotation.url()+" to "+method); }
+                if (DEBUG_URLS) {
+                    logger.fine("SLAPIMapper exact URL " + annotation.url() + " to " + method);
+                }
             }
-            if (annotation.pageType()== PageType.PLAINTEXT) {
+            if (annotation.pageType() == PageType.PLAINTEXT) {
                 URLDistribution.register(annotation.url(), PlainTextMapper.get());
                 PlainTextMapper.get().exact(annotation.url(), method);
-                if (DEBUG_URLS) { logger.fine("PlainTextMapper exact URL "+annotation.url()+" to "+method); }
+                if (DEBUG_URLS) {
+                    logger.fine("PlainTextMapper exact URL " + annotation.url() + " to " + method);
+                }
             }
         }
-        for (Method method:ClassTools.getAnnotatedMethods(UrlPrefix.class)) {
-            UrlPrefix annotation=method.getAnnotation(UrlPrefix.class);
+        for (final Method method : ClassTools.getAnnotatedMethods(UrlPrefix.class)) {
+            final UrlPrefix annotation = method.getAnnotation(UrlPrefix.class);
             checkMethod(method);
-            if (annotation.pageType()== PageType.HTML) {
-                URLDistribution.register(annotation.url(),HTMLMapper.get());
+            if (annotation.pageType() == PageType.HTML) {
+                URLDistribution.register(annotation.url(), HTMLMapper.get());
                 HTMLMapper.get().prefix(annotation.url(), method);
-                if (DEBUG_URLS) { logger.fine("HTTPMapper prefix URL "+annotation.url()+" to "+method); }
+                if (DEBUG_URLS) {
+                    logger.fine("HTTPMapper prefix URL " + annotation.url() + " to " + method);
+                }
             }
-            if (annotation.pageType()== PageType.SLAPI) {
+            if (annotation.pageType() == PageType.SLAPI) {
                 URLDistribution.register(annotation.url(), SLAPIMapper.get());
                 SLAPIMapper.get().prefix(annotation.url(), method);
-                if (DEBUG_URLS) { logger.fine("SLAPIMapper prefix URL "+annotation.url()+" to "+method); }
+                if (DEBUG_URLS) {
+                    logger.fine("SLAPIMapper prefix URL " + annotation.url() + " to " + method);
+                }
             }
-            if (annotation.pageType()== PageType.PLAINTEXT) {
+            if (annotation.pageType() == PageType.PLAINTEXT) {
                 URLDistribution.register(annotation.url(), PlainTextMapper.get());
                 PlainTextMapper.get().exact(annotation.url(), method);
-                if (DEBUG_URLS) { logger.fine("PlainTextMapper exact URL "+annotation.url()+" to "+method); }
+                if (DEBUG_URLS) {
+                    logger.fine("PlainTextMapper exact URL " + annotation.url() + " to " + method);
+                }
             }
         }
     }
 
-    private void checkMethod(Method m) {
-        String fullyQualifiedMethodName=m.getDeclaringClass().getCanonicalName()+"."+m.getName();
+    private void checkMethod(final Method m) {
+        final String qualifiedMethodName = m.getDeclaringClass().getCanonicalName() + "." + m.getName();
         try {
-            if (!m.canAccess(null)) { throw new SystemImplementationException("No public access on "+fullyQualifiedMethodName+" during URL setup"); }
-        } catch (IllegalArgumentException e) {
-            throw new SystemImplementationException("Not a static method? on URL setup for "+fullyQualifiedMethodName);
+            if (!m.canAccess(null)) {
+                throw new SystemImplementationException("No public access on " + qualifiedMethodName + " during URL setup");
+            }
+        } catch (final IllegalArgumentException e) {
+            throw new SystemImplementationException("Not a static method? on URL setup for " + qualifiedMethodName, e);
         }
-        if (m.getParameterCount()!=1) { throw new SystemImplementationException("Incorrect parameters on "+fullyQualifiedMethodName+" during URL setup (Should be singular state)"); }
-        if (!m.getParameters()[0].getType().equals(State.class)) { throw new SystemImplementationException("Parameter on "+fullyQualifiedMethodName+" is not of correct type during URL setup"); }
-        if (!m.getReturnType().equals(void.class)) { throw new SystemImplementationException("Wrong return type on "+fullyQualifiedMethodName+" during URL setup"); }
+        if (m.getParameterCount() != 1) {
+            throw new SystemImplementationException("Incorrect parameters on " + qualifiedMethodName + " during URL setup (Should be singular state)");
+        }
+        if (!m.getParameters()[0].getType().equals(State.class)) {
+            throw new SystemImplementationException("Parameter on " + qualifiedMethodName + " is not of correct type during URL setup");
+        }
+        if (!m.getReturnType().equals(void.class)) {
+            throw new SystemImplementationException("Wrong return type on " + qualifiedMethodName + " during URL setup");
+        }
     }
 
     @Override
@@ -132,8 +151,8 @@ public class SLCore extends SLModule {
     }
     @Override
     public void maintenance() {
-    for (EventQueue event: EventQueue.getOutstandingEvents()) {
-            String module=event.getModuleName();
+        for (final EventQueue event : EventQueue.getOutstandingEvents()) {
+            final String module = event.getModuleName();
             if (SL.hasModule(module)) {
                 SL.getModule(module).processEvent(event);
             }
@@ -141,34 +160,35 @@ public class SLCore extends SLModule {
     }
 
     public static final int SLCORE_DATABASE_SCHEMA_VERSION=6;
+
     @Override
-    protected int schemaUpgrade(DBConnection db, String schemaName, int currentVersion)
-    {
-        if (currentVersion ==1) {
-            currentVersion =2;
-            SL.log("SLCore").log(CONFIG,"Upgrading schema from 1 to 2");
-            SL.log("SLCore").log(CONFIG,"Schema: Change lastrun in masternode to default 0 and not null");
+    protected int schemaUpgrade(final DBConnection db, final String schemaName, int currentVersion) {
+        if (currentVersion == 1) {
+            currentVersion = 2;
+            SL.log("SLCore").log(CONFIG, "Upgrading schema from 1 to 2");
+            SL.log("SLCore").log(CONFIG, "Schema: Change lastrun in masternode to default 0 and not null");
             db.d("alter table masternode modify column lastrun int default 0 not null");
         }
-        if (currentVersion==2) {
-            currentVersion=3;
-            SL.log("SLCore").log(CONFIG,"Upgrading schema from 2 to 3");
-            SL.log("SLCore").log(CONFIG,"Schema: Introduce the eventqueue table");
-            db.d("CREATE TABLE `eventqueue` (\n" +
-                    "  `eventid` INT NOT NULL AUTO_INCREMENT,\n" +
-                    "  `modulename` VARCHAR(64) NOT NULL,\n" +
-                    "  `commandname` VARCHAR(64) NOT NULL,\n" +
-                    "  `queued` INT NOT NULL,\n" +
-                    "  `expires` INT NOT NULL,\n" +
-                    "  `claimed` INT NULL DEFAULT NULL,\n" +
-                    "  `completed` INT NULL DEFAULT NULL,\n" +
-                    "  `status` VARCHAR(64) NOT NULL DEFAULT '',\n" +
-                    "  `structureddata` VARCHAR(4096) NOT NULL DEFAULT '{}',\n" +
-                    "  PRIMARY KEY (`eventid`),\n" +
-                    "  UNIQUE INDEX `eventid_UNIQUE` (`eventid` ASC),\n" +
-                    "  INDEX `eventqueue_queued` (`queued` ASC),\n" +
-                    "  INDEX `eventqueue_expires` (`expires` ASC),\n" +
-                    "  INDEX `eventqueue_claimed` (`claimed` ASC));");
+        if (currentVersion == 2) {
+            currentVersion = 3;
+            SL.log("SLCore").log(CONFIG, "Upgrading schema from 2 to 3");
+            SL.log("SLCore").log(CONFIG, "Schema: Introduce the eventqueue table");
+            db.d("""
+                    CREATE TABLE `eventqueue` (
+                      `eventid` INT NOT NULL AUTO_INCREMENT,
+                      `modulename` VARCHAR(64) NOT NULL,
+                      `commandname` VARCHAR(64) NOT NULL,
+                      `queued` INT NOT NULL,
+                      `expires` INT NOT NULL,
+                      `claimed` INT NULL DEFAULT NULL,
+                      `completed` INT NULL DEFAULT NULL,
+                      `status` VARCHAR(64) NOT NULL DEFAULT '',
+                      `structureddata` VARCHAR(4096) NOT NULL DEFAULT '{}',
+                      PRIMARY KEY (`eventid`),
+                      UNIQUE INDEX `eventid_UNIQUE` (`eventid` ASC),
+                      INDEX `eventqueue_queued` (`queued` ASC),
+                      INDEX `eventqueue_expires` (`expires` ASC),
+                      INDEX `eventqueue_claimed` (`claimed` ASC));""");
         }
         if (currentVersion==3) {
             currentVersion = 4;
@@ -211,8 +231,8 @@ public class SLCore extends SLModule {
         }
         float queryAverage=0;
         float updateAverage=0;
-        if (queries>0) { queryAverage=((float) queryTime)/((float) queries); }
-        if (updates>0) { updateAverage=((float) updateTime)/((float) updates); }
+        if (queries>0) { queryAverage=((float) queryTime)/ queries; }
+        if (updates>0) { updateAverage=((float) updateTime)/ updates; }
         String results="";
         results+=Config.getHostName().toLowerCase()+" mariadb.cluster.queries "+queries+"\n";
         results+=Config.getHostName().toLowerCase()+" mariadb.cluster.queryavg "+queryAverage+"\n";
@@ -221,7 +241,7 @@ public class SLCore extends SLModule {
         results+=Config.getHostName().toLowerCase()+" mariadb.cluster.updateavg "+updateAverage+"\n";
         results+=Config.getHostName().toLowerCase()+" mariadb.cluster.updatemax "+updateMax+"\n";
         try {
-            final Process zabbix=Runtime.getRuntime().exec(new String[]{"/usr/bin/zabbix_sender","-z",Config.getZabbixServer(),"-i-"});
+            @SuppressWarnings("CallToRuntimeExec") final Process zabbix=Runtime.getRuntime().exec(new String[]{"/usr/bin/zabbix_sender","-z",Config.getZabbixServer(),"-i-"});
             zabbix.getOutputStream().write(results.getBytes(StandardCharsets.UTF_8));
             zabbix.getOutputStream().close();
             //final String output=
@@ -233,7 +253,7 @@ public class SLCore extends SLModule {
             zabbix.getErrorStream().close();
             zabbix.getOutputStream().close();
             if (!zabbix.waitFor(5, TimeUnit.SECONDS)) {
-                log(Level.WARNING,"Zabbix task did not exit promptly");
+                log(WARNING, "Zabbix task did not exit promptly");
                 zabbix.destroy();
                 if (!zabbix.waitFor(5,TimeUnit.SECONDS)) {
                     log(WARNING,"Zabbix task did not destroy either...");
@@ -243,17 +263,20 @@ public class SLCore extends SLModule {
                     }
                 }
             }
-        }
-        catch (@Nonnull final IOException e) {
-            log(Level.WARNING,"Error while passing stats to zabbix",e);
-        }
-        catch (@Nonnull final InterruptedException e) {
-            log(Level.WARNING,"Interrupted while passing stats to zabbix",e);
+        } catch (@Nonnull final IOException e) {
+            log(WARNING, "Error while passing stats to zabbix", e);
+        } catch (@Nonnull final InterruptedException e) {
+            log(WARNING, "Interrupted while passing stats to zabbix", e);
         }
     }
 
-    private void log(Level warning, String s, Exception e) { SL.log("DBStats").log(warning,s,e); }
-    private void log(Level warning, String s) { SL.log("DBStats").log(warning,s); }
+    private void log(final Level warning, final String s, final Exception e) {
+        SL.log("DBStats").log(warning, s, e);
+    }
+
+    private void log(final Level warning, final String s) {
+        SL.log("DBStats").log(warning, s);
+    }
 }
 
 

@@ -2,7 +2,6 @@ package net.coagulate.SL;
 
 import net.coagulate.Core.Database.DB;
 import net.coagulate.Core.Database.DBConnection;
-
 import net.coagulate.Core.Database.MySqlDBConnection;
 import net.coagulate.Core.Exceptions.System.SystemBadValueException;
 import net.coagulate.Core.Exceptions.System.SystemImplementationException;
@@ -52,31 +51,37 @@ public class SL extends Thread {
     private static DBConnection db;
     @Nullable
     private static HTTPListener listener;
-    private static final Map<String,SLModule> modules=new TreeMap<>();
-    private static boolean imWarned =false;
+    private static final Map<String, SLModule> modules = new TreeMap<>();
+    private static boolean imWarned;
 
     private SL() {}
 
     public static List<ServiceTile> getServiceTiles() {
-        Map<ServiceTile,Integer> tiles=new HashMap<>();
-        for (SLModule module:SL.modules()) {
-            Map<ServiceTile, Integer> moduleServices = module.getServices();
-            if (moduleServices!=null) { tiles.putAll(moduleServices); }
-        }
-        List<ServiceTile> services=new ArrayList<>();
-        while (!tiles.isEmpty()) {
-            int min=999999999;
-            for (Map.Entry<ServiceTile,Integer> tile:tiles.entrySet()) {
-                if (tile.getValue()<min) { min=tile.getValue(); }
+        final Map<ServiceTile, Integer> tiles = new HashMap<>();
+        for (final SLModule module : SL.modules()) {
+            final Map<ServiceTile, Integer> moduleServices = module.getServices();
+            if (moduleServices != null) {
+                tiles.putAll(moduleServices);
             }
-            Set<ServiceTile> addedList=new HashSet<>();
-            for (Map.Entry<ServiceTile,Integer> tile:tiles.entrySet()) {
-                if (tile.getValue()==min) {
+        }
+        final List<ServiceTile> services = new ArrayList<>();
+        while (!tiles.isEmpty()) {
+            int min = 999999999;
+            for (final Map.Entry<ServiceTile, Integer> tile : tiles.entrySet()) {
+                if (tile.getValue() < min) {
+                    min = tile.getValue();
+                }
+            }
+            final Set<ServiceTile> addedList = new HashSet<>();
+            for (final Map.Entry<ServiceTile, Integer> tile : tiles.entrySet()) {
+                if (tile.getValue() == min) {
                     services.add(tile.getKey());
                     addedList.add(tile.getKey());
                 }
             }
-            for (ServiceTile processed:addedList) { tiles.remove(processed); }
+            for (final ServiceTile processed : addedList) {
+                tiles.remove(processed);
+            }
         }
         return services;
     }
@@ -132,26 +137,30 @@ public class SL extends Thread {
 
     private static final Map<String,Integer> maintenanceFails =new HashMap<>();
     private static void runMaintenance() {
-        boolean activeNode=SystemManagement.primaryNode();
-        for (SLModule module:modules.values()) {
-            if (!maintenanceFails.containsKey(module.getName())) { maintenanceFails.put(module.getName(),0); }
-            int failCount= maintenanceFails.get(module.getName());
-            if (failCount<5) {
+        final boolean activeNode = SystemManagement.primaryNode();
+        for (final SLModule module : modules.values()) {
+            if (!maintenanceFails.containsKey(module.getName())) {
+                maintenanceFails.put(module.getName(), 0);
+            }
+            int failCount = maintenanceFails.get(module.getName());
+            if (failCount < 5) {
                 try {
                     module.maintenanceInternal();
-                    if (activeNode) { module.maintenance(); }
-                } catch (Throwable t) {
-                    SL.report("Maintenance Exception in "+module.getName(),t,null);
+                    if (activeNode) {
+                        module.maintenance();
+                    }
+                } catch (final Throwable t) {
+                    SL.report("Maintenance Exception in " + module.getName(), t, null);
                     failCount++;
                     maintenanceFails.put(module.getName(), failCount);
                     if (failCount >= 5) {
-                        SL.reportString("Maintenance DISABLED for " + module.getName(),null,"Module exceeded 5 fail counts");
+                        SL.reportString("Maintenance DISABLED for " + module.getName(), null, "Module exceeded 5 fail counts");
                     }
                 }
             }
         }
         if (activeNode) {
-            for (EventQueue event : EventQueue.getOutstandingEvents()) {
+            for (final EventQueue event : EventQueue.getOutstandingEvents()) {
                 if (SL.hasModule(event.getModuleName())) {
                     SL.getModule(event.getModuleName()).processEvent(event);
                 }
@@ -245,8 +254,8 @@ public class SL extends Thread {
             }
             for (final Header header : headers) {
                 final String value = header.getValue();
-                if (!(value.equals("127.0.0.1"))) {
-                    if (ret.length() > 0) {
+                if (!("127.0.0.1".equals(value))) {
+                    if (!ret.isEmpty()) {
                         ret.append(", ");
                     }
                     ret.append(value);
@@ -264,8 +273,8 @@ public class SL extends Thread {
 
     private static void _shutdown() {
         log().config("SL Services shutting down");
-        for (SLModule module:modules.values()) {
-            log().config("Shutting down module "+module.getName());
+        for (final SLModule module : modules.values()) {
+            log().config("Shutting down module " + module.getName());
             module.shutdown();
         }
         if (listener != null) {
@@ -303,13 +312,13 @@ public class SL extends Thread {
             log().config("Scanning for modules");
             findModules();
             log().config("Initialising Core URL DistributorPageMapper");
-            if (!Config.getDevelopment()) {
-                log().config("SL Services starting up on " + Config.getHostName());
-            } else {
+            if (Config.getDevelopment()) {
                 log().config("SL DEVELOPMENT Services starting up on " + Config.getHostName());
+            } else {
+                log().config("SL Services starting up on " + Config.getHostName());
             }
             db = new MySqlDBConnection("SL" + (Config.getDevelopment() ? "DEV" : ""), Config.getJdbc());
-            for (SLModule module : modules.values()) {
+            for (final SLModule module : modules.values()) {
                 log().config("Initialising module - " + module.getName());
                 module.initialise();
             }
@@ -318,7 +327,7 @@ public class SL extends Thread {
                 log().config("Database calling path verification is enabled for SLCore and primary SL services");
                 db.permit("net.coagulate.SL.Data");
             }
-            for (SLModule module : modules.values()) {
+            for (final SLModule module : modules.values()) {
                 log().config("Starting module - " + module.getName());
                 module.startup();
                 module.registerChanges();
@@ -331,8 +340,8 @@ public class SL extends Thread {
             log().info("========================================================================================================================");
             log().info(outerPad("=====[ Coagulate " + (Config.getDevelopment() ? "DEVELOPMENT " : "") + "Second Life Services ]======"));
             log().info("========================================================================================================================");
-            for (SLModule module : modules.values()) {
-                log().info(spacePad(module.getBuildDateString()+" - "+module.commitId()+" - " +module.getName() + " - "+ module.getDescription()));
+            for (final SLModule module : modules.values()) {
+                log().info(spacePad(module.getBuildDateString() + " - " + module.commitId() + " - " + module.getName() + " - " + module.getDescription()));
             }
             log().info("------------------------------------------------------------------------------------------------------------------------");
             log().info(spacePad(SL.getStackBuildDate()+" - CoagulateSL Stack"));
@@ -348,16 +357,16 @@ public class SL extends Thread {
     }
 
     public static Container htmlVersionDump() {
-        Paragraph p=new Paragraph();
+        final Paragraph p = new Paragraph();
         p.alignment("center");
-        Table t=new Table();
+        final Table t = new Table();
         p.add(t);
         t.collapsedBorder();
         t.row().header("Name").
                 header("Commit Date").
                 header("Commit Hash").
                 header("Description");
-        for (SLModule module:modules()) {
+        for (final SLModule module : modules()) {
             t.row().data(module.getName()).
                     data(module.getBuildDateString()).
                     data(module.commitId()).
@@ -370,20 +379,25 @@ public class SL extends Thread {
         return new Preformatted().add(p);
     }
 
-    private static String spacePad(String s) {
-        StringBuilder sBuilder = new StringBuilder(s);
-        while (sBuilder.length()<120) { sBuilder.append(" "); }
-        return sBuilder.toString();
-    }
-    private static String spacePrePad(String s) {
-        StringBuilder sBuilder = new StringBuilder(s);
-        while (sBuilder.length()<8) { sBuilder.insert(0, " "); }
+    private static String spacePad(final String s) {
+        final StringBuilder sBuilder = new StringBuilder(s);
+        while (sBuilder.length() < 120) {
+            sBuilder.append(" ");
+        }
         return sBuilder.toString();
     }
 
-    private static String outerPad(String s) {
-        StringBuilder sBuilder = new StringBuilder(s);
-        while (sBuilder.length()<120) {
+    private static String spacePrePad(final String s) {
+        final StringBuilder sBuilder = new StringBuilder(s);
+        while (sBuilder.length() < 8) {
+            sBuilder.insert(0, " ");
+        }
+        return sBuilder.toString();
+    }
+
+    private static String outerPad(final String s) {
+        final StringBuilder sBuilder = new StringBuilder(s);
+        while (sBuilder.length() < 120) {
             sBuilder.insert(0, "=");
             if (sBuilder.length() == 120) {
                 return sBuilder.toString();
@@ -394,36 +408,42 @@ public class SL extends Thread {
     }
 
     private static void findModules() {
-        Set<Class<? extends SLModule>> moduleList = ClassTools.getSubclasses(SLModule.class);
-        for (Class<? extends SLModule> module:moduleList) {
-            if (modules.containsKey(module.getName())) { throw new SystemBadValueException("Conflict for module name "+module.getName()+" between "+modules.get(module.getName()).getClass().getSimpleName()+" and "+modules.get(module.getName()).getClass().getSimpleName()); }
+        final Set<Class<? extends SLModule>> moduleList = ClassTools.getSubclasses(SLModule.class);
+        for (final Class<? extends SLModule> module : moduleList) {
+            if (modules.containsKey(module.getName())) {
+                throw new SystemBadValueException("Conflict for module name " + module.getName() + " between " + modules.get(module.getName()).getClass().getSimpleName() + " and " + modules.get(module.getName()).getClass().getSimpleName());
+            }
             try {
-                SLModule instance=module.getDeclaredConstructor().newInstance();
-                modules.put(instance.getName(),instance);
-            } catch (InstantiationException|IllegalAccessException|InvocationTargetException|NoSuchMethodException e) {
-                throw new SystemImplementationException("Error instantiating module "+module.getSimpleName()+" - "+e.getLocalizedMessage(),e);
+                final SLModule instance = module.getDeclaredConstructor().newInstance();
+                modules.put(instance.getName(), instance);
+            } catch (final InstantiationException | IllegalAccessException | InvocationTargetException |
+                           NoSuchMethodException e) {
+                throw new SystemImplementationException("Error instantiating module " + module.getSimpleName() + " - " + e.getLocalizedMessage(), e);
             }
         }
     }
 
-    public static boolean canIM() { return hasModule("JSLBotBridge") || hasModule("GPHUD"); }
-    public static void im(String uuid, String message) {
+    public static boolean canIM() {
+        return hasModule("JSLBotBridge") || hasModule("GPHUD");
+    }
+
+    public static void im(final String uuid, final String message) {
         if (hasModule("JSLBotBridge")) {
-            JSONObject json=new JSONObject();
-            json.put("uuid",uuid);
-            json.put("message",message);
-            EventQueue.queue("JSLBotBridge","im",1,json);
+            final JSONObject json = new JSONObject();
+            json.put("uuid", uuid);
+            json.put("message", message);
+            EventQueue.queue("JSLBotBridge", "im", 1, json);
             return;
         }
         if (hasModule("GPHUD")) {
-            weakInvoke("GPHUD","im",uuid,message);
+            weakInvoke("GPHUD", "im", uuid, message);
             return;
         }
         if (!imWarned) { log().warning("There is no supplier configured for delivering instant messages"); imWarned =true; }
     }
 
-    public static void groupInvite(String uuid, String groupUUID, String roleUUID) {
-        weakInvoke("JSLBotBridge","groupinvite",uuid,groupUUID,roleUUID);
+    public static void groupInvite(final String uuid, final String groupUUID, final String roleUUID) {
+        weakInvoke("JSLBotBridge", "groupinvite", uuid, groupUUID, roleUUID);
     }
 
     public static Collection<SLModule> modules() { return modules.values(); }
@@ -441,8 +461,11 @@ public class SL extends Thread {
     public static String getStackBuildDate() {
         Date bd=new Date(0L);
         String bds="UNKNOWN";
-        for (SLModule module:modules.values()) {
-            if (module.getBuildDate().compareTo(bd)>0) { bd=module.getBuildDate(); bds=module.getBuildDateString(); }
+        for (final SLModule module : modules.values()) {
+            if (module.getBuildDate().compareTo(bd) > 0) {
+                bd = module.getBuildDate();
+                bds = module.getBuildDateString();
+            }
         }
         return bds;
     }
@@ -455,16 +478,20 @@ public class SL extends Thread {
         SL.shutdown = true;
     }
 
-    public static boolean hasModule(String module) {
+    public static boolean hasModule(final String module) {
         return modules.containsKey(module);
     }
+
     @Nonnull
-    public static SLModule getModule(String module) {
-        if (!hasModule(module)) { throw new SystemLookupFailureException("There is no module called "+module); }
+    public static SLModule getModule(final String module) {
+        if (!hasModule(module)) {
+            throw new SystemLookupFailureException("There is no module called " + module);
+        }
         return modules.get(module);
     }
+
     @SuppressWarnings("UnusedReturnValue")
-    public static Object weakInvoke(String module, String command, Object... arguments) {
-        return getModule(module).weakInvoke(command,arguments);
+    public static Object weakInvoke(final String module, final String command, final Object... arguments) {
+        return getModule(module).weakInvoke(command, arguments);
     }
 }

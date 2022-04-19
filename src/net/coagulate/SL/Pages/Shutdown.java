@@ -16,12 +16,11 @@ public class Shutdown  {
 	@Url(url="/shutdown",authenticate = false)
 	public static void shutdown(@Nonnull final State state) {
 		final String ip=State.get().getClientIP();
-		if (ip.equals("")) {
+		if (ip != null && ip.isEmpty()) {
 			SL.shutdown();
 			state.add(new Paragraph("SHUTDOWN INITIATED"));
-		}
-		else {
-			throw new UserAccessDeniedException("Unauthorised access to shutdown from "+State.get().getClientIP());
+		} else {
+			throw new UserAccessDeniedException("Unauthorised access to shutdown from " + State.get().getClientIP());
 		}
 	}
 

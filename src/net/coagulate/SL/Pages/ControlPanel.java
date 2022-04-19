@@ -36,7 +36,7 @@ public class ControlPanel {
 			throw new UserAccessDeniedException("Unauthorised access to Control Panel from "+state.userNullable());
 		}
 		Page.page().template(new SLPageTemplate(SLPageTemplate.PAGELAYOUT.NONE));
-		Container page=state.page().root();
+		final Container page = state.page().root();
 		page.header1("Control Panel");
 		if ("NameAPI".equals(state.parameter("NameAPI"))) {
 			try {
@@ -47,14 +47,14 @@ public class ControlPanel {
 		}
 		if ("FindUserName".equals(state.parameter("FindUserName"))) {
 			try {
-				User user=User.findUsername(state.parameter("input"),false);
+                final User user = User.findUsername(state.parameter("input"), false);
 				page.p(new Preformatted(state.parameter("input")+" username resolved to "+user));
 			}
 			catch (final Throwable t) { page.add(new Paragraph(new Preformatted(t.getLocalizedMessage()))); }
 		}
 		if ("FindUserKey".equals(state.parameter("FindUserKey"))) {
 			try {
-				User user=User.findUserKeyNullable(state.parameter("input"));
+                final User user = User.findUserKeyNullable(state.parameter("input"));
 				page.p(new Preformatted(state.parameter("input")+" username resolved to "+user));
 			}
 			catch (final Throwable t) { page.add(new Paragraph(new Preformatted(t.getLocalizedMessage()))); }
@@ -93,10 +93,10 @@ public class ControlPanel {
 			page.p("Sent mail");
 		}
 		if("ForceMaintenance".equals(state.parameter("ForceMaintenance"))) {
-			for (SLModule module:SL.modules()) {
-				SL.log("ControlPanel").warning("Forcing maintenance run on "+module.getName());
-				module.maintenance();
-			}
+            for (final SLModule module : SL.modules()) {
+                SL.log("ControlPanel").warning("Forcing maintenance run on " + module.getName());
+                module.maintenance();
+            }
 		}
 		if ("Thread Profile Info".equals(state.parameter("Thread Profile Info"))) {
 			page.add(StackTraceProfiler.htmlDump());
@@ -114,14 +114,16 @@ public class ControlPanel {
 				for (final StackTraceElement element: stack) {
 					final String className=element.getClassName();
 					if (className.startsWith("net.coagulate.")) {
-                        if (stacktrace.length()>0) { stacktrace.append("<br>"); }
+                        if (!stacktrace.isEmpty()) {
+							stacktrace.append("<br>");
+						}
 						stacktrace.append(className).append("/").append(element.getMethodName()).append(":").append(element.getLineNumber());
 					}
 				}
                 t.row().
-                    add(thread.getName()).
-                    add(thread.isDaemon()+"").
-				    add(stacktrace.toString());
+						add(thread.getName()).
+						add(String.valueOf(thread.isDaemon())).
+						add(stacktrace.toString());
 			}
 		}
 		if ("Recalc Names".equals(state.parameter("Recalc Names"))) {
@@ -142,20 +144,20 @@ public class ControlPanel {
 			page.form().add(new Raw("<p>Sent event</P>"));
 		}
 		if ("CacheStats".equals(state.parameter("CacheStats"))) {
-			List<Cache.CacheStats> stats=Cache.getSummarisedStats();
-			StringBuilder output=new StringBuilder();
-			output.append("<table><tr><th>Cache Name</th><th>Elements</th><th>Cache Hits</th><th>Cache Misses</th></tr>");
-			for (Cache.CacheStats stat:stats) {
-				output.append("<tr><td>");
-				output.append(stat.cacheName);
-				output.append("</td><td>");
-				output.append(stat.size);
-				output.append("</td><td>");
-				output.append(stat.cacheHit);
-				output.append("</td><td>");
-				output.append(stat.cacheMiss);
-				output.append("</td><td>");
-				if (stat.cacheHit+stat.cacheMiss > 0) {
+            final List<Cache.CacheStats> stats = Cache.getSummarisedStats();
+            final StringBuilder output = new StringBuilder();
+            output.append("<table><tr><th>Cache Name</th><th>Elements</th><th>Cache Hits</th><th>Cache Misses</th></tr>");
+            for (final Cache.CacheStats stat : stats) {
+                output.append("<tr><td>");
+                output.append(stat.cacheName);
+                output.append("</td><td>");
+                output.append(stat.size);
+                output.append("</td><td>");
+                output.append(stat.cacheHit);
+                output.append("</td><td>");
+                output.append(stat.cacheMiss);
+                output.append("</td><td>");
+                if (stat.cacheHit + stat.cacheMiss > 0) {
 					output.append((stat.cacheHit * 100) / (stat.cacheMiss + stat.cacheHit)).append("%");
 				}
 				output.append("</td></tr>");
@@ -193,12 +195,12 @@ public class ControlPanel {
 					submit("FindUserKey").submit("FindUserName").
 				    submit("NameAPI").submit("Out of permit SQL").submit("Recalc Names").submit("CacheStats").submit("ChangeLog");
 
-		for (String traceProfile: TraceProfiler.profiles()) {
-			page.header1(traceProfile);
-			//todo
-			//noinspection deprecation
-			page.add(new Raw(TraceProfiler.reportProfile(traceProfile)));
-		}
+        for (final String traceProfile : TraceProfiler.profiles()) {
+            page.header1(traceProfile);
+            //todo
+            //noinspection deprecation
+            page.add(new Raw(TraceProfiler.reportProfile(traceProfile)));
+        }
 		page.add(EventQueue.tabulate());
 	}
 

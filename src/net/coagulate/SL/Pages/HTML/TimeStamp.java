@@ -11,13 +11,7 @@ import javax.annotation.Nullable;
  */
 public class TimeStamp extends Renderer {
 
-	// ---------- INSTANCE ----------
-	@Nullable
-	public String toString(final State st) {
-		return value;
-	}
-
-	@Nullable
+    @Nullable
 	@Override
 	public String render(@Nonnull final State st,
 	                     @Nullable final String value) {

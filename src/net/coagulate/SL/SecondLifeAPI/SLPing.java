@@ -15,7 +15,7 @@ public class SLPing {
 
 	@Url(url="/SecondLifeAPI/Ping",pageType = PageType.SLAPI,digest=false)
 	public static void ping(@Nonnull final State state) {
-		JSONObject object=new JSONObject();
+		final JSONObject object = new JSONObject();
 		object.put("hostname",Config.getHostName()); // saturn mars neptune
 		state.jsonOut(object);
 	}

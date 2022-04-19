@@ -29,7 +29,7 @@ import static java.util.logging.Level.WARNING;
 
 public class SLAPIMapper extends URLMapper<Method> {
 
-    private static SLAPIMapper singleton=null;
+    private static SLAPIMapper singleton;
     public static synchronized URLMapper<Method> get() {
         if (singleton==null) { singleton=new SLAPIMapper(); }
         return singleton;
@@ -39,44 +39,44 @@ public class SLAPIMapper extends URLMapper<Method> {
     }
 
     @Override
-    protected void processPostEntity(HttpEntity entity, Map<String, String> parameters) {
-        JSONObject json;
-        String contentString="NOT READ";
+    protected void processPostEntity(final HttpEntity entity, final Map<String, String> parameters) {
+        final JSONObject json;
+        String contentString = "NOT READ";
         try {
             contentString = ByteTools.convertStreamToString(entity.getContent());
-            json=new JSONObject(contentString);
-        }
-        catch (final JSONException jsonError) {
-            SL.reportString("Unparsable JSON",jsonError,contentString);
-            throw new SystemRemoteFailureException("Unparsable JSON input",jsonError);
-        }
-        catch (final IOException ioError) {
+            json = new JSONObject(contentString);
+        } catch (final JSONException jsonError) {
+            SL.reportString("Unparsable JSON", jsonError, contentString);
+            throw new SystemRemoteFailureException("Unparsable JSON input", jsonError);
+        } catch (final IOException ioError) {
             throw new SystemRemoteFailureException("Input stream failed",ioError);
         }
         State.get().jsonIn(json);
     }
 
     @Override
-    protected void initialiseState(HttpRequest request, HttpContext context, Map<String, String> parameters, Map<String, String> cookies) {
-        State state=State.get();
-        state.setupHTTP(request,context);
-        processSLAPI(request,parameters);
+    protected void initialiseState(final HttpRequest request, final HttpContext context, final Map<String, String> parameters, final Map<String, String> cookies) {
+        final State state = State.get();
+        state.setupHTTP(request, context);
+        processSLAPI(request, parameters);
         state.parameters(parameters);
         state.cookies(cookies);
     }
 
     @SuppressWarnings("SpellCheckingInspection")
-    private void processSLAPI(HttpRequest request, Map<String, String> parameters) {
-        final String shard=requireHeader(request,"X-SecondLife-Shard");
-        parameters.put("slapi_shard",shard);
-        parameters.put("slapi_region",requireHeader(request,"X-SecondLife-Region"));
-        parameters.put("slapi_ownername",optionalHeader(request,"X-SecondLife-Owner-Name"));
-        parameters.put("slapi_ownerkey",requireHeader(request,"X-SecondLife-Owner-Key"));
-        if (parameters.get("slapi_ownername")==null || parameters.get("slapi_ownername").isEmpty()) {
-            final User userlookup=User.findUserKeyNullable(parameters.get("slapi_ownerkey"));
-            if (userlookup!=null) {
-                final String username=userlookup.getName();
-                if (username!=null) { parameters.put("slapi_ownername",username); }
+    private void processSLAPI(final HttpRequest request, final Map<String, String> parameters) {
+        final String shard = requireHeader(request, "X-SecondLife-Shard");
+        parameters.put("slapi_shard", shard);
+        parameters.put("slapi_region", requireHeader(request, "X-SecondLife-Region"));
+        parameters.put("slapi_ownername", optionalHeader(request, "X-SecondLife-Owner-Name"));
+        parameters.put("slapi_ownerkey", requireHeader(request, "X-SecondLife-Owner-Key"));
+        if (parameters.get("slapi_ownername") == null || parameters.get("slapi_ownername").isEmpty()) {
+            final User userlookup = User.findUserKeyNullable(parameters.get("slapi_ownerkey"));
+            if (userlookup != null) {
+                final String username = userlookup.getName();
+                if (username != null) {
+                    parameters.put("slapi_ownername", username);
+                }
             }
         }
         parameters.put("slapi_objectname",requireHeader(request,"X-SecondLife-Object-Name"));
@@ -120,14 +120,14 @@ public class SLAPIMapper extends URLMapper<Method> {
 
     @Override
     protected void loadSession() {
-        State state=State.get();
+        final State state = State.get();
         if (state.cookies().containsKey("coagulateslsessionid")) {
             state.loadSession(state.cookies().get("coagulateslsessionid"));
         }
     }
 
     @Override
-    protected boolean checkAuthenticationNeeded(Method content) {
+    protected boolean checkAuthenticationNeeded(final Method content) {
         return false;
     }
 
@@ -135,31 +135,33 @@ public class SLAPIMapper extends URLMapper<Method> {
     protected Method authenticationPage() {
         try {
             return getClass().getMethod("getAuthenticationPage");
-        } catch (NoSuchMethodException e) {
-            throw new SystemImplementationException("Authentication page went missing");
+        } catch (final NoSuchMethodException e) {
+            throw new SystemImplementationException("Authentication page went missing", e);
         }
     }
 
     @Override
-    protected void executePage(Method content) {
+    protected void executePage(final Method content) {
         // it's a static method with no parameters :)
-        Url url=content.getAnnotation(Url.class);
-        UrlPrefix urlprefix=content.getAnnotation(UrlPrefix.class);
+        final Url url = content.getAnnotation(Url.class);
+        final UrlPrefix urlprefix = content.getAnnotation(UrlPrefix.class);
         try {
-            if ((url!=null && url.digest()) ||
-                    (urlprefix!=null && urlprefix.digest())) { checkDigest(); }
-            content.invoke(null,State.get());
-        } catch (IllegalAccessException e) {
-            throw new SystemImplementationException("Method "+content.getDeclaringClass().getCanonicalName()+"."+content.getName()+" does not have public access");
-        } catch (InvocationTargetException e) {
-            throw new SystemImplementationException("Method "+content.getDeclaringClass().getCanonicalName()+"."+content.getName()+" thew an exception",e);// todo
+            if ((url != null && url.digest()) ||
+                    (urlprefix != null && urlprefix.digest())) {
+                checkDigest();
+            }
+            content.invoke(null, State.get());
+        } catch (final IllegalAccessException e) {
+            throw new SystemImplementationException("Method " + content.getDeclaringClass().getCanonicalName() + "." + content.getName() + " does not have public access", e);
+        } catch (final InvocationTargetException e) {
+            throw new SystemImplementationException("Method " + content.getDeclaringClass().getCanonicalName() + "." + content.getName() + " thew an exception", e);// todo
         }
     }
 
     private void checkDigest() {
-        final State state=State.get();
-        Map<String, String> parameters = state.parameters();
-        final String objectKey=parameters.get("slapi_objectkey");
+        final State state = State.get();
+        final Map<String, String> parameters = state.parameters();
+        final String objectKey = parameters.get("slapi_objectkey");
         if (objectKey==null) {
             throw new SystemRemoteFailureException("No object owner key provided to Second Life API");
         }
@@ -188,15 +190,17 @@ public class SLAPIMapper extends URLMapper<Method> {
     }
 
     @Override
-    protected int processOutput(HttpResponse response, Method content) {
+    protected int processOutput(final HttpResponse response, final Method content) {
         String stringOutput;
         try {
-            if (State.get().jsonOutNullable()==null) { throw new SystemImplementationException("No response set up by "+content.getDeclaringClass().getCanonicalName()+"."+content.getName()); }
+            if (State.get().jsonOutNullable() == null) {
+                throw new SystemImplementationException("No response set up by " + content.getDeclaringClass().getCanonicalName() + "." + content.getName());
+            }
             stringOutput = State.get().jsonOut().toString();
         } catch (@Nonnull final UserException ue) {
             SL.log().log(WARNING, "PageHandlerCaught", ue);
-            JSONObject error=new JSONObject();
-            error.put("error",ue.getLocalizedMessage());
+            final JSONObject error = new JSONObject();
+            error.put("error", ue.getLocalizedMessage());
             stringOutput = error.toString();
         }
         response.setEntity(new StringEntity(stringOutput, ContentType.APPLICATION_JSON));
@@ -209,35 +213,38 @@ public class SLAPIMapper extends URLMapper<Method> {
         State.cleanup();
     }
 
-    private State state() { return State.get(); }
+    private State state() {
+        return State.get();
+    }
+
     @Override
-    protected void renderUnhandledError(HttpRequest request, HttpContext context, HttpResponse response, Throwable t) {
-        SL.report("SLAPI UnkEx: "+t.getLocalizedMessage(),t,state());
-        JSONObject json=new JSONObject();
-        json.put("error","Sorry, an unhandled internal error occurred.");
-        json.put("responsetype","UnhandledException");
-        response.setEntity(new StringEntity(json.toString(2),ContentType.APPLICATION_JSON));
+    protected void renderUnhandledError(final HttpRequest request, final HttpContext context, final HttpResponse response, final Throwable t) {
+        SL.report("SLAPI UnkEx: " + t.getLocalizedMessage(), t, state());
+        final JSONObject json = new JSONObject();
+        json.put("error", "Sorry, an unhandled internal error occurred.");
+        json.put("responsetype", "UnhandledException");
+        response.setEntity(new StringEntity(json.toString(2), ContentType.APPLICATION_JSON));
         response.setStatusCode(200);
     }
 
     @Override
-    protected void renderSystemError(HttpRequest request, HttpContext context, HttpResponse response, SystemException t) {
-        SL.report("SLAPI SysEx: "+t.getLocalizedMessage(),t,state());
-        JSONObject json=new JSONObject();
-        json.put("error","Sorry, an internal error occurred.");
-        json.put("responsetype","SystemException");
-        response.setEntity(new StringEntity(json.toString(2),ContentType.APPLICATION_JSON));
+    protected void renderSystemError(final HttpRequest request, final HttpContext context, final HttpResponse response, final SystemException systemException) {
+        SL.report("SLAPI SysEx: " + systemException.getLocalizedMessage(), systemException, state());
+        final JSONObject json = new JSONObject();
+        json.put("error", "Sorry, an internal error occurred.");
+        json.put("responsetype", "SystemException");
+        response.setEntity(new StringEntity(json.toString(2), ContentType.APPLICATION_JSON));
         response.setStatusCode(200);
     }
 
     @Override
-    protected void renderUserError(HttpRequest request, HttpContext context, HttpResponse response, UserException t) {
-        SL.report("SLAPI User: "+t.getLocalizedMessage(),t,state());
-        JSONObject json=new JSONObject();
-        json.put("error",t.getLocalizedMessage());
-        json.put("responsetype","UserException");
-        json.put("errorclass",t.getClass().getSimpleName());
-        response.setEntity(new StringEntity(json.toString(2),ContentType.APPLICATION_JSON));
+    protected void renderUserError(final HttpRequest request, final HttpContext context, final HttpResponse response, final UserException userException) {
+        SL.report("SLAPI User: " + userException.getLocalizedMessage(), userException, state());
+        final JSONObject json = new JSONObject();
+        json.put("error", userException.getLocalizedMessage());
+        json.put("responsetype", "UserException");
+        json.put("errorclass", userException.getClass().getSimpleName());
+        response.setEntity(new StringEntity(json.toString(2), ContentType.APPLICATION_JSON));
         response.setStatusCode(200);
     }
 }

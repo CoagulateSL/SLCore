@@ -1,6 +1,5 @@
 package net.coagulate.SL.HTTPPipelines;
 
-import net.coagulate.Core.BuildInfo.SLCoreBuildInfo;
 import net.coagulate.Core.HTML.PageTemplate;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.SL;
@@ -18,9 +17,9 @@ public class SLPageTemplate extends PageTemplate {
 
     @Override
     public String getHeader() {
-        State state=State.get();
-        String r="<html><head><title>"+(Config.getDevelopment()?"DEV ":"")+SL.brandNameUniversal()+"</title>"+"<link rel=\"shortcut icon\" href=\"/resources/icon-cluster"+(Config.getDevelopment()?"-dev":"")+".png\">"+"</head><body>"+"<p align=center>"+SL
-                .getBannerHREF()+"</p><p><hr>";
+        final State state = State.get();
+        String r = "<html><head><title>" + (Config.getDevelopment() ? "DEV " : "") + SL.brandNameUniversal() + "</title>" + "<link rel=\"shortcut icon\" href=\"/resources/icon-cluster" + (Config.getDevelopment() ? "-dev" : "") + ".png\">" + "</head><body>" + "<p align=center>" + SL
+                .getBannerHREF() + "</p><p><hr>";
         r+="<table width=100%><tr width=100%><td align=left width=400px>"+"Greetings";
         if (state.userNullable()!=null) { r+=",&nbsp;"+state.user().getUsername().replaceAll(" ","&nbsp;"); }
         r+="</td><td align=center>";

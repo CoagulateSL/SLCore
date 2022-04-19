@@ -53,7 +53,7 @@ public class Transmit extends Thread {
 	@Override
 	public void run() {
 		if (delay>0) {
-			try { Thread.sleep(delay*1000); } catch (@Nonnull final InterruptedException ignored) {}
+			try { Thread.sleep(delay* 1000L); } catch (@Nonnull final InterruptedException ignored) {}
 		}
 		int retries=5;
 		String response=null;

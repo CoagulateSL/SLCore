@@ -49,7 +49,7 @@ public class GetAgentID {
 		// "Usernames can contain only letters and numbers" (and when concatenated a single space or dot separator)
 		SL.log("GetAgentID").info("Performing SL getAgentID lookup for "+name);
 		name=name.trim();
-		if (Pattern.compile(".*[^A-Za-z0-9. ].*").matcher(name).matches()) {
+		if (Pattern.compile(".*[^A-Za-z\\d. ].*").matcher(name).matches()) {
 			throw new UserInputValidationFilterException("Name '"+name+"' contains invalid characters");
 		}
 		if (Pattern.compile(".+[ .].+[ .].+").matcher(name).matches()) {
@@ -87,18 +87,21 @@ public class GetAgentID {
 			responsecode=transmission.getResponseCode();
 
 			switch (responsecode) {
-				case 403:
-					SystemRemoteFailureException urfe=new SystemRemoteFailureException("SL Name API Rate Limited");
-					SL.report("Name API IO Error",urfe,null);
+				case 403 -> {
+					final SystemRemoteFailureException urfe = new SystemRemoteFailureException("SL Name API Rate Limited");
+					SL.report("Name API IO Error", urfe, null);
 					throw urfe;
-				case 405:
-					SystemRemoteFailureException srfe=new SystemRemoteFailureException("SL Name API said Malformed Request");
-					SL.report("Name API IO Error",srfe,null);
+				}
+				case 405 -> {
+					final SystemRemoteFailureException srfe = new SystemRemoteFailureException("SL Name API said Malformed Request");
+					SL.report("Name API IO Error", srfe, null);
 					throw srfe;
-				case 500:
-					UserRemoteFailureException error=new UserRemoteFailureException("SL Name API service errored");
-					SL.report("Name API IO Error",error,null);
+				}
+				case 500 -> {
+					final UserRemoteFailureException error = new UserRemoteFailureException("SL Name API service errored");
+					SL.report("Name API IO Error", error, null);
 					throw error;
+				}
 			}
 
 			final BufferedReader rd;

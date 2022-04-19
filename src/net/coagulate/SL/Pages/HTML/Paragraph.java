@@ -24,10 +24,10 @@ public class Paragraph extends Container {
 	}
 
 	@Nonnull
-	public Paragraph add(final Element e) {
-		super.add(e);
-		return this;
-	}
+    public Paragraph add(final Element element) {
+        super.add(element);
+        return this;
+    }
 
 	@Nonnull
 	public Paragraph align(final ALIGNMENT alignment) {

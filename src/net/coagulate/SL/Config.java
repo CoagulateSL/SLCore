@@ -142,6 +142,9 @@ public class Config {
     public static String getDigestSalt() { return getString("digestsalt"); }
 
     public static String getDistributionRegion() { return getString("gphud-distributionregion",""); }
+    public static boolean getGPHUDAutoCleanInstances() { return getBoolean("gphud-autocleaninstances",false); }
+    public static int getGPHUDRegionTimeout() { return getInt("gphud-autocleanregion",14)*24*60*60; }
+    public static int getGPHUDInstanceTimeout() { return getInt("gphud-autocleaninstance",31)*24*60*60; }
 
     public static String getURLHost() { return getString("urlhostname",getHostName()); }
 
@@ -198,8 +201,8 @@ public class Config {
 
     public static int getQuotaLimit() { return getInt("report-quota-limit",10); }
     public static int getQuotaInterval() { return getInt("report-quota-interval",43200); }
-
-    public enum GRID {SECONDLIFE,OSGRID}
+    
+	public enum GRID {SECONDLIFE,OSGRID}
 
     public static String getBrandingName() { return getString("branding-name",""); }
 

@@ -177,6 +177,10 @@ public class ControlPanel {
 		if ("ChangeLog".equals(state.parameter("ChangeLog"))) {
 			page.form().add(new Raw(ChangeLogging.asHtml()));
 		}
+		if ("GPHUD Permit".equals(state.parameter("GPHUD Permit"))) {
+			User.findUsername(state.parameter("input"), false).setPreference("gphud","instancepermit",Integer.toString(UnixTime.getUnixTime()+(60*60*24*7)));
+		}
+		
 		//todo
 		//noinspection deprecation
 		page.form().add(new Raw("<input type=text name=input>")).
@@ -193,7 +197,7 @@ public class ControlPanel {
 					submit("FormatUsername").
 					submit("ReFormatUsernames").
 					submit("FindUserKey").submit("FindUserName").
-				    submit("NameAPI").submit("Out of permit SQL").submit("Recalc Names").submit("CacheStats").submit("ChangeLog");
+				    submit("NameAPI").submit("Out of permit SQL").submit("Recalc Names").submit("CacheStats").submit("ChangeLog").submit("GPHUD Permit");
 
         for (final String traceProfile : TraceProfiler.profiles()) {
             page.header1(traceProfile);

@@ -159,7 +159,6 @@ public class SLCore extends SLModule {
         }
     }
 
-    public static final int SLCORE_DATABASE_SCHEMA_VERSION=6;
 
     @Override
     protected int schemaUpgrade(final DBConnection db, final String schemaName, int currentVersion) {
@@ -208,9 +207,32 @@ public class SLCore extends SLModule {
             SL.log("SLCore").log(CONFIG, "Schema: Add column suspended to users table");
             db.d("ALTER TABLE `users` ADD COLUMN `suspended` tinyint(4) NOT NULL DEFAULT 0");
         }
+        if (currentVersion==6) {
+            currentVersion = 7;
+            SL.log("SLCore").log(CONFIG, "Upgrading schema from 6 to 7");
+            SL.log("SLCore").log(CONFIG, "Schema: Added user preferences table");
+            db.d("""
+                    CREATE TABLE `userpreferences` (
+                      `id` INT NOT NULL AUTO_INCREMENT,
+                      `userid` INT NOT NULL,
+                      `application` VARCHAR(64) NOT NULL,
+                      `preferencename` VARCHAR(64) NOT NULL,
+                      `preferencevalue` VARCHAR(4096) NOT NULL,
+                      PRIMARY KEY (`id`),
+                      INDEX `userpreferences_users_userid_idx` (`userid` ASC),
+                      INDEX `userpreferences_userid_index` (`userid` ASC),
+                      INDEX `userpreferences_userapplication` (`userid` ASC, `application` ASC),
+                      CONSTRAINT `userpreferences_users_userid`
+                        FOREIGN KEY (`userid`)
+                        REFERENCES `users` (`id`)
+                        ON DELETE CASCADE
+                        ON UPDATE RESTRICT);
+                    """);
+        }
         // don't forget to update  SLCORE_DATABASE_SCHEMA_VERSION
         return currentVersion;
     }
+    public static final int SLCORE_DATABASE_SCHEMA_VERSION=7;
 
     private void reportDBStats() {
         if (Config.getDevelopment()) {return;} // only log for production.

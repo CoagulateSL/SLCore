@@ -8,6 +8,7 @@ import net.coagulate.Core.Exceptions.System.SystemBadValueException;
 import net.coagulate.Core.Exceptions.System.SystemExecutionException;
 import net.coagulate.Core.Exceptions.System.SystemImplementationException;
 import net.coagulate.Core.Exceptions.User.*;
+import net.coagulate.Core.Tools.Cache;
 import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.Passwords;
 import net.coagulate.Core.Tools.Tokens;
@@ -493,4 +494,46 @@ public class User extends StandardSLTable implements Comparable<User> {
     public boolean isSuspended() {
 		return getBool("suspended");
     }
+	
+	public static Cache<User,Map<String,Map<String,String>>> preferencesCache=Cache.getCache("slcore/userpferences",60*60);
+	@Nonnull
+	public Map<String,Map<String,String>> getPreferences() {
+		return preferencesCache.get(this,()->{
+			Map<String,Map<String,String>> preferences=new TreeMap<>();
+			for (ResultsRow row:dq("select * from userpreferences where userid=?",getId())) {
+				String application=row.getString("application");
+				String pref=row.getString("preferencename");
+				String val=row.getString("preferencevalue");
+				if (!preferences.containsKey(application)) {
+					preferences.put(application,new TreeMap<String,String>());
+				}
+				preferences.get(application).put(pref,val);
+			}
+			return preferences;
+		});
+	}
+	
+	@Nonnull
+	public Map<String,String> getPreferences(@Nonnull final String application) {
+		if (getPreferences().containsKey(application.toLowerCase())) { return getPreferences().get(application.toLowerCase()); }
+		return new TreeMap<>();
+	}
+	
+	@Nullable
+	public String getPreference(@Nonnull final String application,@Nonnull final String key,@Nullable final String defaultValue) {
+		if (getPreferences(application).containsKey(key.toLowerCase())) {
+			return getPreferences(application).get(key.toLowerCase());
+		} else {
+			return defaultValue;
+		}
+	}
+	
+	public void setPreference(@Nonnull final String application,@Nonnull final String key,@Nullable final String value) {
+		if (value==null) {
+			d("delete from userpreferences where userid=? and preferencename=?",application.toLowerCase(),key.toLowerCase());
+		} else {
+			d("replace into userpreferences(userid,application,preferencename,preferencevalue) values(?,?,?,?)",getId(),application.toLowerCase(),key.toLowerCase(),value);
+		}
+		preferencesCache.purge(this);
+	}
 }

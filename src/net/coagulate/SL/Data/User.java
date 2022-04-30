@@ -530,7 +530,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 	
 	public void setPreference(@Nonnull final String application,@Nonnull final String key,@Nullable final String value) {
 		if (value==null) {
-			d("delete from userpreferences where userid=? and preferencename=?",application.toLowerCase(),key.toLowerCase());
+			d("delete from userpreferences where userid=? and application=? and preferencename=?",getId(),application.toLowerCase(),key.toLowerCase());
 		} else {
 			d("replace into userpreferences(userid,application,preferencename,preferencevalue) values(?,?,?,?)",getId(),application.toLowerCase(),key.toLowerCase(),value);
 		}

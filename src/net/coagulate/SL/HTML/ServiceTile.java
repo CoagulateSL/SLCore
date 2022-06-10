@@ -2,6 +2,8 @@ package net.coagulate.SL.HTML;
 
 import net.coagulate.Core.HTML.Container;
 
+import javax.annotation.Nonnull;
+
 public class ServiceTile extends Container {
 
 
@@ -22,9 +24,8 @@ public class ServiceTile extends Container {
     }
 
     @Override
-    public String toString() {
+    public void toString(@Nonnull final StringBuilder s) {
         final String fixedHeight = "130";
-        final StringBuilder s = new StringBuilder();
         if (url!=null) { s.append("<a href=\"").append(url).append("\">"); }
         s.append("<li style=\"vertical-align: top; white-space: normal; color:black; border-style: solid; border-width: 5px; min-height: 250px; width: 200px; text-align: center; margin: 5px; padding: 5px; list-style-type: none; display: inline-block;\">\n");
         if (imageUrl==null) { s.append("<h3 align=\"center\">").append(moduleName); }
@@ -39,6 +40,5 @@ public class ServiceTile extends Container {
                 .append("</p>");
         s.append("</li>");
         if (url!=null) { s.append("</a>"); }
-        return s.toString();
     }
 }

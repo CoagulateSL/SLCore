@@ -15,6 +15,7 @@ import net.coagulate.GPHUD.Modules.Instance.Distribution;
 import net.coagulate.SL.*;
 import net.coagulate.SL.Data.EventQueue;
 import net.coagulate.SL.Data.RegionStats;
+import net.coagulate.SL.Data.SystemManagement;
 import net.coagulate.SL.Data.User;
 import net.coagulate.SL.HTTPPipelines.SLPageTemplate;
 import net.coagulate.SL.HTTPPipelines.Url;
@@ -127,6 +128,14 @@ public class ControlPanel {
 						add(stacktrace.toString());
 			}
 		}
+		if ("CacheOff".equals(state.parameter("CacheOff"))) {
+			SystemManagement.restrictCaches();
+			page.form().add("Caching limited");
+		}
+		if ("CacheOn".equals(state.parameter("CacheOn"))) {
+			SystemManagement.unrestrictCaches();
+			page.form().add("Caching restored to default behaviour");
+		}
 		if ("Recalc Names".equals(state.parameter("Recalc Names"))) {
 			EventQueue.queue("JSLBotBridge","recalcnames",60,new JSONObject());
 			page.form().add("Added recalcnames to event queue");
@@ -179,9 +188,9 @@ public class ControlPanel {
 			page.form().add(new Raw(ChangeLogging.asHtml()));
 		}
 		if ("GPHUD Permit".equals(state.parameter("GPHUD Permit"))) {
-			User user=User.findUsername(state.parameter("input"), false);
+			final User user=User.findUsername(state.parameter("input"),false);
 			user.setPreference("gphud","instancepermit",Integer.toString(UnixTime.getUnixTime()+(60*60*24*7)));
-			net.coagulate.GPHUD.State gpstate=new net.coagulate.GPHUD.State();
+			final net.coagulate.GPHUD.State gpstate=new net.coagulate.GPHUD.State();
 			gpstate.setAvatar(user);
 			SL.im(user.getUUID(),"""
 					===== GPHUD Information =====
@@ -210,6 +219,8 @@ public class ControlPanel {
 				    submit("SystemException").
 					submit("LoggedOnlyException").
 				    submit("Shutdown").
+		            submit("CacheOff").
+				    submit("CacheOn").
 					submit("RegionStatsArchival").
 					submit("ForceMaintenance").
 					submit("FormatUsername").

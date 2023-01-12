@@ -211,6 +211,8 @@ public class Config {
 	
 	public static int getQuotaInterval() {return getInt("report-quota-interval",43200);}
 	
+	public static boolean runSelfTests() {return getBoolean("self-test",false); }
+	
 	public enum GRID {SECONDLIFE,OSGRID}
 	
 	public static String getBrandingName() {return getString("branding-name","");}

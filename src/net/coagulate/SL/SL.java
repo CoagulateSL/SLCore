@@ -43,18 +43,16 @@ import static java.util.logging.Level.SEVERE;
  * @author Iain Price
  */
 public class SL extends Thread {
-	@Nullable
-	private static Logger log;
-	private static boolean shutdown;
-	private static boolean errored;
-	@Nullable
-	private static DBConnection db;
-	@Nullable
-	private static HTTPListener listener;
-	private static final Map<String,SLModule> modules=new TreeMap<>();
-	private static boolean imWarned;
+	private static final     Map<String,SLModule> modules=new TreeMap<>();
+	@Nullable private static Logger               log;
+	private static           boolean              shutdown;
+	private static           boolean              errored;
+	@Nullable private static DBConnection         db;
+	@Nullable private static HTTPListener         listener;
+	private static           boolean              imWarned;
 	
-	private SL() {}
+	private SL() {
+	}
 	
 	public static List<ServiceTile> getServiceTiles() {
 		final Map<ServiceTile,Integer> tiles=new HashMap<>();
@@ -89,7 +87,9 @@ public class SL extends Thread {
 	
 	@Nonnull
 	public static Logger log(final String subspace) {
-		if (log==null) {throw new SystemInitialisationException("Logger is not initialised by the time it is used");}
+		if (log==null) {
+			throw new SystemInitialisationException("Logger is not initialised by the time it is used");
+		}
 		return Logger.getLogger(log.getName()+"."+subspace);
 	}
 	
@@ -115,9 +115,12 @@ public class SL extends Thread {
 			while (!shutdown) {
 				try { //noinspection BusyWait
 					Thread.sleep(1000);
-				} catch (final InterruptedException ignored) {}
+				} catch (final InterruptedException ignored) {
+				}
 				if (!shutdown) {
-					try {runMaintenance();} catch (final Throwable t) {
+					try {
+						runMaintenance();
+					} catch (final Throwable t) {
 						System.out.println("Uh oh, maintenance crashed, even though it's crash proofed (primaryNode()?)");
 						t.printStackTrace();
 					}
@@ -156,7 +159,9 @@ public class SL extends Thread {
 					failCount++;
 					maintenanceFails.put(module.getName(),failCount);
 					if (failCount>=5) {
-						SL.reportString("Maintenance DISABLED for "+module.getName(),null,"Module exceeded 5 fail counts");
+						SL.reportString("Maintenance DISABLED for "+module.getName(),
+						                null,
+						                "Module exceeded 5 fail counts");
 					}
 				}
 			}
@@ -191,19 +196,17 @@ public class SL extends Thread {
 		return new Img(getBannerURL());
 	}
 	
-	public static void report(final String header,
-							  @Nullable final Throwable t,
-							  @Nullable final DumpableState state) {
+	public static void report(final String header,@Nullable final Throwable t,@Nullable final DumpableState state) {
 		
 		log().warning(ExceptionTools.getPertinent(t));
 		reportString(header,t,(state!=null?state.toHTML():"No state supplied"));
 	}
 	
-	public static void reportString(final String header,
-									@Nullable final Throwable t,
-									@Nullable final String additional) {
+	public static void reportString(final String header,@Nullable final Throwable t,@Nullable final String additional) {
 		String output="";
-		if (t!=null) {output+=ExceptionTools.dumpException(t)+"<br><hr><br>";}
+		if (t!=null) {
+			output+=ExceptionTools.dumpException(t)+"<br><hr><br>";
+		}
 		if (additional!=null) {
 			output+=additional;
 		}
@@ -221,10 +224,12 @@ public class SL extends Thread {
 				}
 				LogHandler.alreadyMailed(t);
 				if (LogHandler.suppress(t)) {
-					System.out.println("Exception Report Suppressed "+LogHandler.getCount(t)+"x"+LogHandler.getSignature(t));
+					System.out.println(
+							"Exception Report Suppressed "+LogHandler.getCount(t)+"x"+LogHandler.getSignature(t));
 					return;
 				}
-				MailTools.mail((Config.getDevelopment()?"Dev":"PROD")+" EX : "+header+" - "+t.getLocalizedMessage(),output);
+				MailTools.mail((Config.getDevelopment()?"Dev":"PROD")+" EX : "+header+" - "+t.getLocalizedMessage(),
+				               output);
 				return;
 			}
 			MailTools.mail((Config.getDevelopment()?"Dev":"PROD")+" EX : "+header,output);
@@ -245,12 +250,12 @@ public class SL extends Thread {
 		return "https://picture-service.secondlife.com/"+textureUUID+"/320x240.jpg";
 	}
 	
-	public static String getClientIP(final HttpRequest req,
-									 final HttpContext context) {
+	public static String getClientIP(final HttpRequest req,final HttpContext context) {
 		
 		final Header[] headers=req.getHeaders("X-Forwarded-For");
 		try {
-			@SuppressWarnings("deprecation") final HttpInetConnection connection=(HttpInetConnection)context.getAttribute(org.apache.http.protocol.ExecutionContext.HTTP_CONNECTION);
+			@SuppressWarnings("deprecation") final HttpInetConnection connection=
+					(HttpInetConnection)context.getAttribute(org.apache.http.protocol.ExecutionContext.HTTP_CONNECTION);
 			final InetAddress ia=connection.getRemoteAddress();
 			final StringBuilder ret=new StringBuilder();
 			if (!ia.isLoopbackAddress()) {
@@ -336,21 +341,29 @@ public class SL extends Thread {
 				module.registerChanges();
 			}
 			// something about mails may break later on so we send a test mail here...
-			MailTools.mail("CoagulateSL "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" ("+SL.getStackBuildDate()+")",htmlVersionDump().toString());
+			MailTools.mail(
+					"CoagulateSL "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" ("+
+					SL.getStackBuildDate()+")",htmlVersionDump().toString());
 			// TODO Pricing.initialise();
 			listener=new HTTPListener(Config.getPort(),URLDistribution.getPageMapper());
 			log().config("Disable caching at startup pending primary node detection");
 			SystemManagement.restrictCaches();
 			log().info("Startup complete.");
-			log().info("========================================================================================================================");
-			log().info(outerPad("=====[ Coagulate "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"Second Life Services ]======"));
-			log().info("========================================================================================================================");
+			log().info(
+					"========================================================================================================================");
+			log().info(outerPad(
+					"=====[ Coagulate "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"Second Life Services ]======"));
+			log().info(
+					"========================================================================================================================");
 			for (final SLModule module: modules.values()) {
-				log().info(spacePad(module.getBuildDateString()+" - "+module.commitId()+" - "+module.getName()+" - "+module.getDescription()));
+				log().info(spacePad(module.getBuildDateString()+" - "+module.commitId()+" - "+module.getName()+" - "+
+				                    module.getDescription()));
 			}
-			log().info("------------------------------------------------------------------------------------------------------------------------");
+			log().info(
+					"------------------------------------------------------------------------------------------------------------------------");
 			log().info(spacePad(SL.getStackBuildDate()+" - CoagulateSL Stack"));
-			log().info("========================================================================================================================");
+			log().info(
+					"========================================================================================================================");
 		}
 		// print stack trace is discouraged, but the log handler may not be ready yet.
 		catch (@Nonnull final Throwable e) {
@@ -367,19 +380,22 @@ public class SL extends Thread {
 		final Table t=new Table();
 		p.add(t);
 		t.collapsedBorder();
-		t.row().header("Name").
-				header("Commit Date").
-				header("Commit Hash").
-				header("Description");
+		t.row().header("Name").header("Commit Date").header("Commit Hash").header("Description");
 		for (final SLModule module: modules()) {
-			t.row().data(module.getName()).
-					data(module.getBuildDateString()).
-					data(module.commitId()).
-					data(module.getDescription());
+			t.row()
+			 .data(module.getName())
+			 .data(module.getBuildDateString())
+			 .data(module.commitId())
+			 .data(module.getDescription());
 		}
-		t.row().header("CoagulateSL").alignCell("left").
-				header(SL.getStackBuildDate()).alignCell("left").
-				header("Coagulate SL Stack Build Information").alignCell("left").spanCell(2);
+		t.row()
+		 .header("CoagulateSL")
+		 .alignCell("left")
+		 .header(SL.getStackBuildDate())
+		 .alignCell("left")
+		 .header("Coagulate SL Stack Build Information")
+		 .alignCell("left")
+		 .spanCell(2);
 		t.styleCascade("padding: 2px");
 		return new Preformatted().add(p);
 	}
@@ -416,14 +432,19 @@ public class SL extends Thread {
 		final Set<Class<? extends SLModule>> moduleList=ClassTools.getSubclasses(SLModule.class);
 		for (final Class<? extends SLModule> module: moduleList) {
 			if (modules.containsKey(module.getName())) {
-				throw new SystemBadValueException("Conflict for module name "+module.getName()+" between "+modules.get(module.getName()).getClass().getSimpleName()+" and "+modules.get(module.getName()).getClass().getSimpleName());
+				throw new SystemBadValueException("Conflict for module name "+module.getName()+" between "+
+				                                  modules.get(module.getName()).getClass().getSimpleName()+" and "+
+				                                  modules.get(module.getName()).getClass().getSimpleName());
 			}
 			try {
 				final SLModule instance=module.getDeclaredConstructor().newInstance();
 				modules.put(instance.getName(),instance);
-			} catch (final InstantiationException|IllegalAccessException|InvocationTargetException|
-						   NoSuchMethodException e) {
-				throw new SystemImplementationException("Error instantiating module "+module.getSimpleName()+" - "+e.getLocalizedMessage(),e);
+			} catch (final InstantiationException|
+			               IllegalAccessException|
+			               InvocationTargetException|
+			               NoSuchMethodException e) {
+				throw new SystemImplementationException(
+						"Error instantiating module "+module.getSimpleName()+" - "+e.getLocalizedMessage(),e);
 			}
 		}
 	}
@@ -454,7 +475,9 @@ public class SL extends Thread {
 		weakInvoke("JSLBotBridge","groupinvite",uuid,groupUUID,roleUUID);
 	}
 	
-	public static Collection<SLModule> modules() {return modules.values();}
+	public static Collection<SLModule> modules() {
+		return modules.values();
+	}
 	
 	/**
 	 * a branding name regardless of who owns it (i.e. can return Coagulate SL)
@@ -462,8 +485,12 @@ public class SL extends Thread {
 	 * @return a branding name regardless of who owns it (i.e. can return Coagulate SL)
 	 */
 	public static String brandNameUniversal() {
-		if (Config.isOfficial()) {return "Coagulate SL";}
-		if (!Config.getBrandingName().isBlank()) {return Config.getBrandingName();}
+		if (Config.isOfficial()) {
+			return "Coagulate SL";
+		}
+		if (!Config.getBrandingName().isBlank()) {
+			return Config.getBrandingName();
+		}
 		return "Unknown";
 	}
 	

@@ -3,6 +3,7 @@ package net.coagulate.SL;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 public abstract class TestFrameworkPrototype {
 	protected final SelfTest.PassFailRecord results=new SelfTest.PassFailRecord();
 	public          Logger                  logger;

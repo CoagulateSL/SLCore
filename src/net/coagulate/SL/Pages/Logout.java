@@ -9,13 +9,15 @@ import javax.annotation.Nonnull;
  * @author Iain Price
  */
 public class Logout {
-
-	@Url(url="/Logout",authenticate = false)
+	
+	@Url(url="/Logout", authenticate=false)
 	public static void logout(@Nonnull final State state) {
 		state.logout();
-		state.root().
-				header3("Your session has been ended").
-				p().a("/","Click here to return to the login page").align("center");
+		state.root()
+		     .header3("Your session has been ended")
+		     .p()
+		     .a("/","Click here to return to the login page")
+		     .align("center");
 	}
-
+	
 }

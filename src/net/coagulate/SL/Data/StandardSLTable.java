@@ -10,12 +10,12 @@ public abstract class StandardSLTable extends StandardTableRow {
 	protected StandardSLTable(final int id) {
 		super(id);
 	}
-
+	
 	// ---------- INSTANCE ----------
 	@Nonnull
 	@Override
 	public DBConnection getDatabase() {
 		return SL.getDB();
 	}
-
+	
 }

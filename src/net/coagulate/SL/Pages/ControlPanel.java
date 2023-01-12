@@ -38,55 +38,58 @@ public class ControlPanel {
 			throw new UserAccessDeniedException("Unauthorised access to Control Panel from "+state.userNullable());
 		}
 		Page.page().template(new SLPageTemplate(SLPageTemplate.PAGELAYOUT.NONE));
-		final Container page = state.page().root();
+		final Container page=state.page().root();
 		page.header1("Control Panel");
 		if ("NameAPI".equals(state.parameter("NameAPI"))) {
 			try {
-				final String ret= GetAgentID.getAgentID(state.parameter("input"));
+				final String ret=GetAgentID.getAgentID(state.parameter("input"));
 				page.p(new Preformatted(state.parameter("input")+" resolved to "+ret));
+			} catch (final Throwable t) {
+				page.add(new Paragraph(new Preformatted(t.getLocalizedMessage())));
 			}
-			catch (final Throwable t) { page.add(new Paragraph(new Preformatted(t.getLocalizedMessage()))); }
 		}
 		if ("FindUserName".equals(state.parameter("FindUserName"))) {
 			try {
-                final User user = User.findUsername(state.parameter("input"), false);
+				final User user=User.findUsername(state.parameter("input"),false);
 				page.p(new Preformatted(state.parameter("input")+" username resolved to "+user));
+			} catch (final Throwable t) {
+				page.add(new Paragraph(new Preformatted(t.getLocalizedMessage())));
 			}
-			catch (final Throwable t) { page.add(new Paragraph(new Preformatted(t.getLocalizedMessage()))); }
 		}
 		if ("FindUserKey".equals(state.parameter("FindUserKey"))) {
 			try {
-                final User user = User.findUserKeyNullable(state.parameter("input"));
+				final User user=User.findUserKeyNullable(state.parameter("input"));
 				page.p(new Preformatted(state.parameter("input")+" username resolved to "+user));
+			} catch (final Throwable t) {
+				page.add(new Paragraph(new Preformatted(t.getLocalizedMessage())));
 			}
-			catch (final Throwable t) { page.add(new Paragraph(new Preformatted(t.getLocalizedMessage()))); }
 		}
 		if ("ReFormatUsernames".equals(state.parameter("ReFormatUsernames"))) {
 			try {
-				final String ret= User.reformatUsernames();
+				final String ret=User.reformatUsernames();
 				page.p(new Preformatted("Output: "+ret));
+			} catch (final Throwable t) {
+				page.add(new Paragraph(new Preformatted(t.getLocalizedMessage())));
 			}
-			catch (final Throwable t) { page.add(new Paragraph(new Preformatted(t.getLocalizedMessage()))); }
 		}
 		if ("FormatUsername".equals(state.parameter("FormatUsername"))) {
 			try {
-				final String ret= User.formatUsername(state.parameter("input"));
+				final String ret=User.formatUsername(state.parameter("input"));
 				page.p(new Preformatted(state.parameter("input")+" resolved to "+ret));
+			} catch (final Throwable t) {
+				page.add(new Paragraph(new Preformatted(t.getLocalizedMessage())));
 			}
-			catch (final Throwable t) { page.add(new Paragraph(new Preformatted(t.getLocalizedMessage()))); }
 		}
 		if ("Test Mail".equals(state.parameter("Test Mail"))) {
 			page.p("Sending mail");
 			try {
-				MailTools.mail("SL Stack "+ Config.getHostName(),
+				MailTools.mail("SL Stack "+Config.getHostName(),
 				               "sl-cluster-alerts@predestined.net",
 				               "SL Mail Tester",
 				               "sl-cluster-alerts@predestined.net",
 				               "SL Cluster mail test",
-				               "Test OK"
-				              );
-			}
-			catch (@Nonnull final MessagingException ex) {
+				               "Test OK");
+			} catch (@Nonnull final MessagingException ex) {
 				Logger.getLogger(ControlPanel.class.getName()).log(Level.SEVERE,null,ex);
 				//todo
 				//noinspection deprecation
@@ -94,18 +97,19 @@ public class ControlPanel {
 			}
 			page.p("Sent mail");
 		}
-		if("ForceMaintenance".equals(state.parameter("ForceMaintenance"))) {
-            for (final SLModule module : SL.modules()) {
-                SL.log("ControlPanel").warning("Forcing maintenance run on " + module.getName());
-                module.maintenance();
-            }
+		if ("ForceMaintenance".equals(state.parameter("ForceMaintenance"))) {
+			for (final SLModule module: SL.modules()) {
+				SL.log("ControlPanel").warning("Forcing maintenance run on "+module.getName());
+				module.maintenance();
+			}
 		}
 		if ("Thread Profile Info".equals(state.parameter("Thread Profile Info"))) {
 			page.add(StackTraceProfiler.htmlDump());
 		}
 		if ("Thread Info".equals(state.parameter("Thread Info"))) {
 			final Table t=new Table();
-			t.border(); t.collapsedBorder();
+			t.border();
+			t.collapsedBorder();
 			page.add(t);
 			t.row().header("Name").header("Daemon").header("Stacktrace");
 			final Map<Thread,StackTraceElement[]> threads=Thread.getAllStackTraces();
@@ -116,16 +120,17 @@ public class ControlPanel {
 				for (final StackTraceElement element: stack) {
 					final String className=element.getClassName();
 					if (className.startsWith("net.coagulate.")) {
-                        if (!stacktrace.isEmpty()) {
+						if (!stacktrace.isEmpty()) {
 							stacktrace.append("<br>");
 						}
-						stacktrace.append(className).append("/").append(element.getMethodName()).append(":").append(element.getLineNumber());
+						stacktrace.append(className)
+						          .append("/")
+						          .append(element.getMethodName())
+						          .append(":")
+						          .append(element.getLineNumber());
 					}
 				}
-                t.row().
-						add(thread.getName()).
-						add(String.valueOf(thread.isDaemon())).
-						add(stacktrace.toString());
+				t.row().add(thread.getName()).add(String.valueOf(thread.isDaemon())).add(stacktrace.toString());
 			}
 		}
 		if ("CacheOff".equals(state.parameter("CacheOff"))) {
@@ -148,27 +153,30 @@ public class ControlPanel {
 			throw new UserInputStateException("Manually triggered user exception");
 		}
 		if ("LoggedOnlyException".equals(state.parameter("LoggedOnlyException"))) {
-			SL.log().log(Level.INFO,"Manually generated logged only exception",new SystemBadValueException("Manually generated log event"));
+			SL.log()
+			  .log(Level.INFO,
+			       "Manually generated logged only exception",
+			       new SystemBadValueException("Manually generated log event"));
 			//todo
 			//noinspection deprecation
 			page.form().add(new Raw("<p>Sent event</P>"));
 		}
 		if ("CacheStats".equals(state.parameter("CacheStats"))) {
-            final List<Cache.CacheStats> stats = Cache.getSummarisedStats();
-            final StringBuilder output = new StringBuilder();
-            output.append("<table><tr><th>Cache Name</th><th>Elements</th><th>Cache Hits</th><th>Cache Misses</th></tr>");
-            for (final Cache.CacheStats stat : stats) {
-                output.append("<tr><td>");
-                output.append(stat.cacheName);
-                output.append("</td><td>");
-                output.append(stat.size);
-                output.append("</td><td>");
-                output.append(stat.cacheHit);
-                output.append("</td><td>");
-                output.append(stat.cacheMiss);
-                output.append("</td><td>");
-                if (stat.cacheHit + stat.cacheMiss > 0) {
-					output.append((stat.cacheHit * 100) / (stat.cacheMiss + stat.cacheHit)).append("%");
+			final List<Cache.CacheStats> stats=Cache.getSummarisedStats();
+			final StringBuilder output=new StringBuilder();
+			output.append("<table><tr><th>Cache Name</th><th>Elements</th><th>Cache Hits</th><th>Cache Misses</th></tr>");
+			for (final Cache.CacheStats stat: stats) {
+				output.append("<tr><td>");
+				output.append(stat.cacheName);
+				output.append("</td><td>");
+				output.append(stat.size);
+				output.append("</td><td>");
+				output.append(stat.cacheHit);
+				output.append("</td><td>");
+				output.append(stat.cacheMiss);
+				output.append("</td><td>");
+				if (stat.cacheHit+stat.cacheMiss>0) {
+					output.append((stat.cacheHit*100)/(stat.cacheMiss+stat.cacheHit)).append("%");
 				}
 				output.append("</td></tr>");
 			}
@@ -210,31 +218,38 @@ public class ControlPanel {
 		
 		//todo
 		//noinspection deprecation
-		page.form().add(new Raw("<input type=text name=input>")).
-				submit("GS Test").
-				    submit("Thread Info").
-					submit("Thread Profile Info").
-				    submit("Test Mail").
-				    submit("UserException").
-				    submit("SystemException").
-					submit("LoggedOnlyException").
-				    submit("Shutdown").
-		            submit("CacheOff").
-				    submit("CacheOn").
-					submit("RegionStatsArchival").
-					submit("ForceMaintenance").
-					submit("FormatUsername").
-					submit("ReFormatUsernames").
-					submit("FindUserKey").submit("FindUserName").
-				    submit("NameAPI").submit("Out of permit SQL").submit("Recalc Names").submit("CacheStats").submit("ChangeLog").submit("GPHUD Permit");
-
-        for (final String traceProfile : TraceProfiler.profiles()) {
-            page.header1(traceProfile);
-            //todo
-            //noinspection deprecation
-            page.add(new Raw(TraceProfiler.reportProfile(traceProfile)));
-        }
+		page.form()
+		    .add(new Raw("<input type=text name=input>"))
+		    .submit("GS Test")
+		    .submit("Thread Info")
+		    .submit("Thread Profile Info")
+		    .submit("Test Mail")
+		    .submit("UserException")
+		    .submit("SystemException")
+		    .submit("LoggedOnlyException")
+		    .submit("Shutdown")
+		    .submit("CacheOff")
+		    .submit("CacheOn")
+		    .submit("RegionStatsArchival")
+		    .submit("ForceMaintenance")
+		    .submit("FormatUsername")
+		    .submit("ReFormatUsernames")
+		    .submit("FindUserKey")
+		    .submit("FindUserName")
+		    .submit("NameAPI")
+		    .submit("Out of permit SQL")
+		    .submit("Recalc Names")
+		    .submit("CacheStats")
+		    .submit("ChangeLog")
+		    .submit("GPHUD Permit");
+		
+		for (final String traceProfile: TraceProfiler.profiles()) {
+			page.header1(traceProfile);
+			//todo
+			//noinspection deprecation
+			page.add(new Raw(TraceProfiler.reportProfile(traceProfile)));
+		}
 		page.add(EventQueue.tabulate());
 	}
-
+	
 }

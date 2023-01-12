@@ -10,43 +10,56 @@ import java.util.Date;
 import java.util.Map;
 
 public class JavaCore extends SLModule {
-    @Nullable
-    @Override
-    public Map<ServiceTile, Integer> getServices() {
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public String getName() { return "JavaCore"; }
-
-    @Nonnull
-    @Override
-    public String getDescription() { return "Core Java utilities and libraries"; }
-
-    @Override
-    public void shutdown() {}
-
-    @Override
-    public void startup() {}
-
-    @Override
-    public void initialise() {}
-
-    @Override
-    public void maintenance() {}
-
-    @Override
-    public void maintenanceInternal() {}
-
-    @Override
-    public String commitId() { return JavaCoreBuildInfo.COMMITID; }
-
-    @Override
-    public Date getBuildDate() { return JavaCoreBuildInfo.BUILDDATE; }
-
-    @Override
-    protected int schemaUpgrade(final DBConnection db, final String schemaName, final int currentVersion) {
-        return currentVersion;
-    }
+	@Nullable
+	@Override
+	public Map<ServiceTile,Integer> getServices() {
+		return null;
+	}
+	
+	@Nonnull
+	@Override
+	public String getName() {
+		return "JavaCore";
+	}
+	
+	@Nonnull
+	@Override
+	public String getDescription() {
+		return "Core Java utilities and libraries";
+	}
+	
+	@Override
+	public void shutdown() {
+	}
+	
+	@Override
+	public void startup() {
+	}
+	
+	@Override
+	public void initialise() {
+	}
+	
+	@Override
+	public void maintenance() {
+	}
+	
+	@Override
+	public void maintenanceInternal() {
+	}
+	
+	@Override
+	public String commitId() {
+		return JavaCoreBuildInfo.COMMITID;
+	}
+	
+	@Override
+	public Date getBuildDate() {
+		return JavaCoreBuildInfo.BUILDDATE;
+	}
+	
+	@Override
+	protected int schemaUpgrade(final DBConnection db,final String schemaName,final int currentVersion) {
+		return currentVersion;
+	}
 }

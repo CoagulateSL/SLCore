@@ -16,11 +16,11 @@ import static java.util.logging.Level.SEVERE;
  * @author Iain Price
  */
 public class SSOExchange {
-
-	@UrlPrefix(url="/SSO/",authenticate = false)
+	
+	@UrlPrefix(url="/SSO/", authenticate=false)
 	public static void handle(@Nonnull final State state) {
 		try {
-
+			
 			final String token=state.getUri().replaceFirst("/SSO/","");
 			final User user=User.getSSO(token);
 			if (user==null) {
@@ -34,17 +34,19 @@ public class SSOExchange {
 			state.page().addHeader("Set-Cookie","coagulateslsessionid="+session.token()+"; HttpOnly; Path=/; Secure;");
 			state.page().addHeader("Location","/");
 			state.page().responseCode(HttpStatus.SC_SEE_OTHER);
-		}
-		catch (@Nonnull final Exception ex) {
+		} catch (@Nonnull final Exception ex) {
 			SL.log().log(SEVERE,"SSO?",ex);
 			state.page().responseCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
 			// todo
-			state.page().add(new Preformatted().add("500 - Internal Server Error").add("Internal Exception, see debug logs"));
+			state.page()
+			     .add(new Preformatted().add("500 - Internal Server Error").add("Internal Exception, see debug logs"));
 		}
 	}
-
+	
 	@Nonnull
 	@Override
-	public String toString() { return "SSOExchange"; }
-
+	public String toString() {
+		return "SSOExchange";
+	}
+	
 }

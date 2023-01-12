@@ -7,28 +7,36 @@ import javax.annotation.Nullable;
  * @author Iain Price
  */
 public class Bots extends StandardSLTable {
-
+	
 	public Bots(final int id) {
 		super(id);
 	}
-
+	
 	// ---------- INSTANCE ----------
 	@Nonnull
 	@Override
 	public String getTableName() {
 		return "bots";
 	}
-
+	
 	@Nullable
-	public String getFirstName() { return getStringNullable("firstname"); }
-
+	public String getFirstName() {
+		return getStringNullable("firstname");
+	}
+	
 	@Nullable
-	public String getLastName() { return getStringNullable("lastname"); }
-
+	public String getLastName() {
+		return getStringNullable("lastname");
+	}
+	
 	@Nullable
-	public String getPassword() { return getStringNullable("password"); }
-
+	public String getPassword() {
+		return getStringNullable("password");
+	}
+	
 	@Nonnull
-	public User getOwner() { return User.get(getInt("ownerid")); }
-
+	public User getOwner() {
+		return User.get(getInt("ownerid"));
+	}
+	
 }

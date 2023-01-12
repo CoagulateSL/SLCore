@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.logging.Level.SEVERE;
+
 public class SelfTest {
 	public static class PassFailRecord {
 		private final List<TestFrameworkPrototype.TestResult> results=new ArrayList<>();

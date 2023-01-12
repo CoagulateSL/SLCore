@@ -20,9 +20,10 @@ import static java.util.logging.Level.CONFIG;
  * @author Iain Price
  */
 public class CATruster implements X509TrustManager, HostnameVerifier {
-
+	
 	// we cludge it all together here to avoid anyone having to care about keystores and stuff
-	private static final String certificate = // this is the Linden Labs internal CA and thus not in any typical trusted package.
+	private static final    String            certificate =
+			// this is the Linden Labs internal CA and thus not in any typical trusted package.
 			"""
 					-----BEGIN CERTIFICATE-----
 					MIIEUDCCA7mgAwIBAgIJAN4ppNGwj6yIMA0GCSqGSIb3DQEBBAUAMIHMMQswCQYD
@@ -50,7 +51,7 @@ public class CATruster implements X509TrustManager, HostnameVerifier {
 					e6ef37VGyiOEFFjnUIbuk0RWty0orN76q/lI/xjCi15XSA/VSq2j4vmnwfZcPTDu
 					glmQ1A==
 					-----END CERTIFICATE-----""";
-	private static final String certificate2 = """
+	private static final    String            certificate2="""
 			-----BEGIN CERTIFICATE-----
 			MIIDSjCCAjKgAwIBAgIQRK+wgNajJ7qJMDmGLvhAazANBgkqhkiG9w0BAQUFADA/
 			MSQwIgYDVQQKExtEaWdpdGFsIFNpZ25hdHVyZSBUcnVzdCBDby4xFzAVBgNVBAMT
@@ -71,10 +72,9 @@ public class CATruster implements X509TrustManager, HostnameVerifier {
 			JDGFoqgCWjBH4d1QB7wCCZAA62RjYJsWvIjJEubSfZGL+T0yjWW06XyxV3bqxbYo
 			Ob8VZRzI9neWagqNdwvYkQsEjgfbKbYK7p2CNTUQ
 			-----END CERTIFICATE-----""";
-	private static X509Certificate[] cas;
-	@Nonnull
-	private static Boolean initialised = false;
-
+	private static          X509Certificate[] cas;
+	@Nonnull private static Boolean           initialised =false;
+	
 	public CATruster() {
 		try {
 			// SSL connections to the SL service use a CA signed and held by Linden Labs.
@@ -82,53 +82,53 @@ public class CATruster implements X509TrustManager, HostnameVerifier {
 			// we just use our own customised trust manager
 			// long winded java way of faking reading the cert from a stream
 			final InputStream stream=new ByteArrayInputStream(certificate.getBytes(StandardCharsets.UTF_8));
-			final X509Certificate ca=(X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(stream);
+			final X509Certificate ca=
+					(X509Certificate)CertificateFactory.getInstance("X.509").generateCertificate(stream);
 			final InputStream stream2=new ByteArrayInputStream(certificate2.getBytes(StandardCharsets.UTF_8));
-			final X509Certificate ca2=(X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(stream2);
-			cas=new X509Certificate[]{ca,ca2};
+			final X509Certificate ca2=
+					(X509Certificate)CertificateFactory.getInstance("X.509").generateCertificate(stream2);
+			cas=new X509Certificate[] {ca,ca2};
 			// we're a TLS handler
 			final SSLContext sc=SSLContext.getInstance("TLS");
-			sc.init(null,new TrustManager[]{this},new java.security.SecureRandom());
+			sc.init(null,new TrustManager[] {this},new java.security.SecureRandom());
 			// install
 			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-		}
-		catch (@Nonnull final CertificateException|KeyManagementException|NoSuchAlgorithmException ex) {
+		} catch (@Nonnull final CertificateException|KeyManagementException|NoSuchAlgorithmException ex) {
 			throw new AssertionError("Error configuring SSL CA Trust",ex);
 		}
 	}
-
+	
 	// ---------- STATICS ----------
 	public static synchronized void initialise() {
-		if (initialised) { return; }
+		if (initialised) {
+			return;
+		}
 		final CATruster truster=new CATruster();
 		HttpsURLConnection.setDefaultHostnameVerifier(truster);
 		initialised=true;
 		Logger.getLogger(CATruster.class.getCanonicalName()).log(CONFIG,"Trusted CA roots implemented");
 	}
-
+	
 	// ---------- INSTANCE ----------
 	@Override
-	public boolean verify(final String hostname,
-						  @Nonnull final SSLSession session) {
-		throw new AssertionError("Verify for " + hostname + " called with session " + session);
+	public boolean verify(final String hostname,@Nonnull final SSLSession session) {
+		throw new AssertionError("Verify for "+hostname+" called with session "+session);
 		//return true;
 	}
-
+	
 	@Override
-	public void checkClientTrusted(final X509Certificate[] chain,
-								   final String authType) {
+	public void checkClientTrusted(final X509Certificate[] chain,final String authType) {
 		throw new AssertionError("CheckClientTrusted called in LLCATruster");
 	}
-
+	
 	@Override
-	public void checkServerTrusted(final X509Certificate[] chain,
-								   final String authType) {
+	public void checkServerTrusted(final X509Certificate[] chain,final String authType) {
 		// FIXME
 		//System.out.println("Cert len:"+xcs.length);
 		//System.out.println("Random string:"+string);
 		//throw new AssertionError("CheckServerTrusted called in LLCATruster");
 	}
-
+	
 	@Override
 	public X509Certificate[] getAcceptedIssuers() {
 		return cas;

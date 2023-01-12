@@ -16,37 +16,35 @@ import java.util.Map;
  * @author Iain Price
  */
 public class SQLTable extends Table {
-
-	private final String sql;
-	private final Object[] params;
-	private final DBConnection db;
-	@Nonnull
-	private final List<Column> columns;
-
-	public SQLTable(final DBConnection db,
-	                final String sql,
-	                final Object... params) {
+	
+	private final          String       sql;
+	private final          Object[]     params;
+	private final          DBConnection db;
+	@Nonnull private final List<Column> columns;
+	
+	public SQLTable(final DBConnection db,final String sql,final Object... params) {
 		this.db=db;
 		this.sql=sql;
 		this.params=params;
 		columns=new ArrayList<>();
 	}
-
+	
 	// ---------- INSTANCE ----------
 	@Nonnull
-	public SQLTable column(final String header,
-	                       final String columnname) { return column(header,columnname,null,Alignment.NONE); }
-
+	public SQLTable column(final String header,final String columnname) {
+		return column(header,columnname,null,Alignment.NONE);
+	}
+	
 	@Nonnull
-	public SQLTable column(final String header,
-	                       final String columnname,
-	                       final Renderer renderer) { return column(header,columnname,renderer,Alignment.NONE); }
-
+	public SQLTable column(final String header,final String columnname,final Renderer renderer) {
+		return column(header,columnname,renderer,Alignment.NONE);
+	}
+	
 	@Nonnull
-	public SQLTable column(final String header,
-	                       final String columnname,
-	                       final Alignment alignment) { return column(header,columnname,null,alignment); }
-
+	public SQLTable column(final String header,final String columnname,final Alignment alignment) {
+		return column(header,columnname,null,alignment);
+	}
+	
 	@Nonnull
 	public SQLTable column(final String header,
 	                       final String columnname,
@@ -56,13 +54,13 @@ public class SQLTable extends Table {
 		header(header);
 		return this;
 	}
-
+	
 	@Nonnull
 	public SQLTable rowGenerator(final TRGenerator generator) {
 		super.rowGenerator(generator);
 		return this;
 	}
-
+	
 	@Nonnull
 	public String contentRows(final State st) {
 		final Results results=db.dq(sql,params);
@@ -84,43 +82,47 @@ public class SQLTable extends Table {
 		}
 		return r.toString();
 	}
-
+	
 	// ----- Internal Instance -----
 	@Nonnull
 	private String openCell(@Nonnull final Column column) {
-		if (column.alignment==Alignment.LEFT) { return "<td align=left>"; }
-		if (column.alignment==Alignment.CENTER) { return "<td align=center>"; }
-		if (column.alignment==Alignment.RIGHT) { return "<td align=right>"; }
+		if (column.alignment==Alignment.LEFT) {
+			return "<td align=left>";
+		}
+		if (column.alignment==Alignment.CENTER) {
+			return "<td align=center>";
+		}
+		if (column.alignment==Alignment.RIGHT) {
+			return "<td align=right>";
+		}
 		return "<td>";
 	}
-
+	
 	static class Column {
-
-		final String columnname;
-		final String header;
-		final Renderer renderer;
+		
+		final String    columnname;
+		final String    header;
+		final Renderer  renderer;
 		final Alignment alignment;
-
-		Column(final String header,
-		       final String columnname,
-		       final Renderer renderer,
-		       final Alignment alignment) {
+		
+		Column(final String header,final String columnname,final Renderer renderer,final Alignment alignment) {
 			this.header=header;
 			this.columnname=columnname;
 			this.renderer=renderer;
 			this.alignment=alignment;
 		}
-
+		
 		// ---------- INSTANCE ----------
 		@Nullable
-		public String render(final State state,
-		                     @Nullable final String value) {
+		public String render(final State state,@Nullable final String value) {
 			if (renderer==null) {
-				if (value==null) { return ""; }
+				if (value==null) {
+					return "";
+				}
 				return value;
 			}
 			return renderer.render(state,value);
 		}
 	}
-
+	
 }

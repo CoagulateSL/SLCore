@@ -12,11 +12,11 @@ import javax.annotation.Nonnull;
  * @author Iain Price
  */
 public class Ping {
-
-	@Url(url="/Ping",authenticate = false,pageType = PageType.PLAINTEXT)
+	
+	@Url(url="/Ping", authenticate=false, pageType=PageType.PLAINTEXT)
 	public static void ping(@Nonnull final State state) {
 		final String response="hostname:"+Config.getHostName();
 		state.add(new PlainText(response));
 	}
-
+	
 }

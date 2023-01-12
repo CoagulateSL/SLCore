@@ -339,6 +339,8 @@ public class SL extends Thread {
 			MailTools.mail("CoagulateSL "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" ("+SL.getStackBuildDate()+")",htmlVersionDump().toString());
 			// TODO Pricing.initialise();
 			listener=new HTTPListener(Config.getPort(),URLDistribution.getPageMapper());
+			log().config("Disable caching at startup pending primary node detection");
+			SystemManagement.restrictCaches();
 			log().info("Startup complete.");
 			log().info("========================================================================================================================");
 			log().info(outerPad("=====[ Coagulate "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"Second Life Services ]======"));

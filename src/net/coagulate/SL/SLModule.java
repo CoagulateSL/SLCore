@@ -140,4 +140,8 @@ public abstract class SLModule {
     }
 
     public void registerChanges() {}
+    
+    public SelfTest.PassFailRecord selfTest() {
+        return new SelfTest.PassFailRecord();
+    }
 }

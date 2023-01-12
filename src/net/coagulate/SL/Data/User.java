@@ -496,14 +496,29 @@ public class User extends StandardSLTable implements Comparable<User> {
     }
 	
 	public static Cache<User,Map<String,Map<String,String>>> preferencesCache=Cache.getCache("slcore/userpferences",60*60);
+	/**
+	 * @param application  Application to get preference for
+	 * @param key          Preference
+	 * @param defaultValue Default value to return if the user has none set
+	 * @return The user's preference value
+	 */
+	@Nonnull
+	public String getPreferenceNotNull(@Nonnull final String application,
+	                                   @Nonnull final String key,
+	                                   @Nonnull final String defaultValue) {
+		final String r=getPreferences(application).getOrDefault(key.toLowerCase(),defaultValue);
+		if (r!=null ) { return r; }
+		return defaultValue;
+	}
+	
 	@Nonnull
 	public Map<String,Map<String,String>> getPreferences() {
 		return preferencesCache.get(this,()->{
-			Map<String,Map<String,String>> preferences=new TreeMap<>();
-			for (ResultsRow row:dq("select * from userpreferences where userid=?",getId())) {
-				String application=row.getString("application");
-				String pref=row.getString("preferencename");
-				String val=row.getString("preferencevalue");
+			final Map<String,Map<String,String>> preferences=new TreeMap<>();
+			for (final ResultsRow row:dq("select * from userpreferences where userid=?",getId())) {
+				final String application=row.getString("application");
+				final String pref=row.getString("preferencename");
+				final String val=row.getString("preferencevalue");
 				if (!preferences.containsKey(application)) {
 					preferences.put(application,new TreeMap<String,String>());
 				}

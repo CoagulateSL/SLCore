@@ -10,11 +10,11 @@ import javax.annotation.Nonnull;
  * @author Iain Price
  */
 public class Versions {
-
-	@Url(url="/versions",authenticate = false)
+	
+	@Url(url="/versions", authenticate=false)
 	public static void versionInformation(@Nonnull final State state) {
 		//todo set PAGE LAYOUT CENTER COLUMN
 		state.add(SL.htmlVersionDump());
 	}
-
+	
 }

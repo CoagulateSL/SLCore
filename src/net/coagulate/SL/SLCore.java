@@ -29,9 +29,13 @@ import static java.util.logging.Level.*;
 public class SLCore extends SLModule {
 	public static final boolean DEBUG_URLS=false;
 	
-	public final String commitId() {return SLCoreBuildInfo.COMMITID;}
+	public static final int SLCORE_DATABASE_SCHEMA_VERSION=7;
 	
-	public Date getBuildDate() {return SLCoreBuildInfo.BUILDDATE;}
+	@Nonnull
+	@Override
+	public String getName() {
+		return "SLCore";
+	}
 	
 	@Nullable
 	@Override
@@ -46,14 +50,23 @@ public class SLCore extends SLModule {
 	
 	@Nonnull
 	@Override
-	public String getName() {return "SLCore";}
-	
-	@Nonnull
-	@Override
-	public String getDescription() {return "Provides core services";}
+	public String getDescription() {
+		return "Provides core services";
+	}
 	
 	@Override
-	public void shutdown() {}
+	public void shutdown() {
+	}
+	
+	@Override
+	public void maintenance() {
+		for (final EventQueue event: EventQueue.getOutstandingEvents()) {
+			final String module=event.getModuleName();
+			if (SL.hasModule(module)) {
+				SL.getModule(module).processEvent(event);
+			}
+		}
+	}
 	
 	@Override
 	public void startup() {
@@ -116,26 +129,6 @@ public class SLCore extends SLModule {
 		}
 	}
 	
-	private void checkMethod(final Method m) {
-		final String qualifiedMethodName=m.getDeclaringClass().getCanonicalName()+"."+m.getName();
-		try {
-			if (!m.canAccess(null)) {
-				throw new SystemImplementationException("No public access on "+qualifiedMethodName+" during URL setup");
-			}
-		} catch (final IllegalArgumentException e) {
-			throw new SystemImplementationException("Not a static method? on URL setup for "+qualifiedMethodName,e);
-		}
-		if (m.getParameterCount()!=1) {
-			throw new SystemImplementationException("Incorrect parameters on "+qualifiedMethodName+" during URL setup (Should be singular state)");
-		}
-		if (!m.getParameters()[0].getType().equals(State.class)) {
-			throw new SystemImplementationException("Parameter on "+qualifiedMethodName+" is not of correct type during URL setup");
-		}
-		if (!m.getReturnType().equals(void.class)) {
-			throw new SystemImplementationException("Wrong return type on "+qualifiedMethodName+" during URL setup");
-		}
-	}
-	
 	@Override
 	public void maintenanceInternal() {
 		if (nextRun("SLCore-Cache-Clear",60,30)) {
@@ -152,16 +145,13 @@ public class SLCore extends SLModule {
 		}
 	}
 	
-	@Override
-	public void maintenance() {
-		for (final EventQueue event: EventQueue.getOutstandingEvents()) {
-			final String module=event.getModuleName();
-			if (SL.hasModule(module)) {
-				SL.getModule(module).processEvent(event);
-			}
-		}
+	public final String commitId() {
+		return SLCoreBuildInfo.COMMITID;
 	}
 	
+	public Date getBuildDate() {
+		return SLCoreBuildInfo.BUILDDATE;
+	}
 	
 	@Override
 	protected int schemaUpgrade(final DBConnection db,final String schemaName,int currentVersion) {
@@ -176,21 +166,21 @@ public class SLCore extends SLModule {
 			SL.log("SLCore").log(CONFIG,"Upgrading schema from 2 to 3");
 			SL.log("SLCore").log(CONFIG,"Schema: Introduce the eventqueue table");
 			db.d("""
-					CREATE TABLE `eventqueue` (
-					  `eventid` INT NOT NULL AUTO_INCREMENT,
-					  `modulename` VARCHAR(64) NOT NULL,
-					  `commandname` VARCHAR(64) NOT NULL,
-					  `queued` INT NOT NULL,
-					  `expires` INT NOT NULL,
-					  `claimed` INT NULL DEFAULT NULL,
-					  `completed` INT NULL DEFAULT NULL,
-					  `status` VARCHAR(64) NOT NULL DEFAULT '',
-					  `structureddata` VARCHAR(4096) NOT NULL DEFAULT '{}',
-					  PRIMARY KEY (`eventid`),
-					  UNIQUE INDEX `eventid_UNIQUE` (`eventid` ASC),
-					  INDEX `eventqueue_queued` (`queued` ASC),
-					  INDEX `eventqueue_expires` (`expires` ASC),
-					  INDEX `eventqueue_claimed` (`claimed` ASC));""");
+					     CREATE TABLE `eventqueue` (
+					       `eventid` INT NOT NULL AUTO_INCREMENT,
+					       `modulename` VARCHAR(64) NOT NULL,
+					       `commandname` VARCHAR(64) NOT NULL,
+					       `queued` INT NOT NULL,
+					       `expires` INT NOT NULL,
+					       `claimed` INT NULL DEFAULT NULL,
+					       `completed` INT NULL DEFAULT NULL,
+					       `status` VARCHAR(64) NOT NULL DEFAULT '',
+					       `structureddata` VARCHAR(4096) NOT NULL DEFAULT '{}',
+					       PRIMARY KEY (`eventid`),
+					       UNIQUE INDEX `eventid_UNIQUE` (`eventid` ASC),
+					       INDEX `eventqueue_queued` (`queued` ASC),
+					       INDEX `eventqueue_expires` (`expires` ASC),
+					       INDEX `eventqueue_claimed` (`claimed` ASC));""");
 		}
 		if (currentVersion==3) {
 			currentVersion=4;
@@ -215,31 +205,31 @@ public class SLCore extends SLModule {
 			SL.log("SLCore").log(CONFIG,"Upgrading schema from 6 to 7");
 			SL.log("SLCore").log(CONFIG,"Schema: Added user preferences table");
 			db.d("""
-					CREATE TABLE `userpreferences` (
-					  `id` INT NOT NULL AUTO_INCREMENT,
-					  `userid` INT NOT NULL,
-					  `application` VARCHAR(64) NOT NULL,
-					  `preferencename` VARCHAR(64) NOT NULL,
-					  `preferencevalue` VARCHAR(4096) NOT NULL,
-					  PRIMARY KEY (`id`),
-					  INDEX `userpreferences_users_userid_idx` (`userid` ASC) VISIBLE,
-					  INDEX `userpreferences_userid_index` (`userid` ASC) INVISIBLE,
-					  INDEX `userpreferences_userapplication` (`userid` ASC, `application` ASC) VISIBLE,
-					  UNIQUE INDEX `userpreferences_uniqueness_constraint` (`userid` ASC, `application` ASC, `preferencename` ASC) VISIBLE,
-					  CONSTRAINT `userpreferences_users_userid`
-					    FOREIGN KEY (`userid`)
-					    REFERENCES `users` (`id`)
-					    ON DELETE CASCADE
-					    ON UPDATE RESTRICT);""");
+					     CREATE TABLE `userpreferences` (
+					       `id` INT NOT NULL AUTO_INCREMENT,
+					       `userid` INT NOT NULL,
+					       `application` VARCHAR(64) NOT NULL,
+					       `preferencename` VARCHAR(64) NOT NULL,
+					       `preferencevalue` VARCHAR(4096) NOT NULL,
+					       PRIMARY KEY (`id`),
+					       INDEX `userpreferences_users_userid_idx` (`userid` ASC) VISIBLE,
+					       INDEX `userpreferences_userid_index` (`userid` ASC) INVISIBLE,
+					       INDEX `userpreferences_userapplication` (`userid` ASC, `application` ASC) VISIBLE,
+					       UNIQUE INDEX `userpreferences_uniqueness_constraint` (`userid` ASC, `application` ASC, `preferencename` ASC) VISIBLE,
+					       CONSTRAINT `userpreferences_users_userid`
+					         FOREIGN KEY (`userid`)
+					         REFERENCES `users` (`id`)
+					         ON DELETE CASCADE
+					         ON UPDATE RESTRICT);""");
 		}
 		// don't forget to update  SLCORE_DATABASE_SCHEMA_VERSION
 		return currentVersion;
 	}
 	
-	public static final int SLCORE_DATABASE_SCHEMA_VERSION=7;
-	
 	private void reportDBStats() {
-		if (Config.getDevelopment()) {return;} // only log for production.
+		if (Config.getDevelopment()) {
+			return;
+		} // only log for production.
 		int queries=0;
 		int updates=0;
 		long queryTime=0;
@@ -252,13 +242,21 @@ public class SLCore extends SLModule {
 			updates=updates+stats.updates;
 			queryTime=queryTime+stats.queryTotal;
 			updateTime=updateTime+stats.updateTotal;
-			if (stats.queryMax>queryMax) {queryMax=stats.queryMax;}
-			if (stats.updateMax>updateMax) {updateMax=stats.updateMax;}
+			if (stats.queryMax>queryMax) {
+				queryMax=stats.queryMax;
+			}
+			if (stats.updateMax>updateMax) {
+				updateMax=stats.updateMax;
+			}
 		}
 		float queryAverage=0;
 		float updateAverage=0;
-		if (queries>0) {queryAverage=((float)queryTime)/queries;}
-		if (updates>0) {updateAverage=((float)updateTime)/updates;}
+		if (queries>0) {
+			queryAverage=((float)queryTime)/queries;
+		}
+		if (updates>0) {
+			updateAverage=((float)updateTime)/updates;
+		}
 		String results="";
 		results+=Config.getHostName().toLowerCase()+" mariadb.cluster.queries "+queries+"\n";
 		results+=Config.getHostName().toLowerCase()+" mariadb.cluster.queryavg "+queryAverage+"\n";
@@ -267,7 +265,10 @@ public class SLCore extends SLModule {
 		results+=Config.getHostName().toLowerCase()+" mariadb.cluster.updateavg "+updateAverage+"\n";
 		results+=Config.getHostName().toLowerCase()+" mariadb.cluster.updatemax "+updateMax+"\n";
 		try {
-			@SuppressWarnings("CallToRuntimeExec") final Process zabbix=Runtime.getRuntime().exec(new String[]{"/usr/bin/zabbix_sender","-z",Config.getZabbixServer(),"-i-"});
+			@SuppressWarnings("CallToRuntimeExec") final Process zabbix=Runtime.getRuntime()
+			                                                                   .exec(new String[] {
+					                                                                   "/usr/bin/zabbix_sender","-z",
+					                                                                   Config.getZabbixServer(),"-i-"});
 			zabbix.getOutputStream().write(results.getBytes(StandardCharsets.UTF_8));
 			zabbix.getOutputStream().close();
 			//final String output=
@@ -293,6 +294,28 @@ public class SLCore extends SLModule {
 			log(WARNING,"Error while passing stats to zabbix",e);
 		} catch (@Nonnull final InterruptedException e) {
 			log(WARNING,"Interrupted while passing stats to zabbix",e);
+		}
+	}
+	
+	private void checkMethod(final Method m) {
+		final String qualifiedMethodName=m.getDeclaringClass().getCanonicalName()+"."+m.getName();
+		try {
+			if (!m.canAccess(null)) {
+				throw new SystemImplementationException("No public access on "+qualifiedMethodName+" during URL setup");
+			}
+		} catch (final IllegalArgumentException e) {
+			throw new SystemImplementationException("Not a static method? on URL setup for "+qualifiedMethodName,e);
+		}
+		if (m.getParameterCount()!=1) {
+			throw new SystemImplementationException(
+					"Incorrect parameters on "+qualifiedMethodName+" during URL setup (Should be singular state)");
+		}
+		if (!m.getParameters()[0].getType().equals(State.class)) {
+			throw new SystemImplementationException(
+					"Parameter on "+qualifiedMethodName+" is not of correct type during URL setup");
+		}
+		if (!m.getReturnType().equals(void.class)) {
+			throw new SystemImplementationException("Wrong return type on "+qualifiedMethodName+" during URL setup");
 		}
 	}
 	

@@ -7,8 +7,11 @@ import java.lang.annotation.*;
 @Documented
 @Target(ElementType.METHOD)
 public @interface Url {
-    @Nonnull String url();
-    boolean authenticate() default true; // HTML only.
-    PageType pageType() default PageType.HTML;
-    boolean digest() default true; // SLAPI only
+	@Nonnull String url();
+	
+	boolean authenticate() default true; // HTML only.
+	
+	PageType pageType() default PageType.HTML;
+	
+	boolean digest() default true; // SLAPI only
 }

@@ -16,6 +16,7 @@ import net.coagulate.Core.HTML.Elements.Preformatted;
 import net.coagulate.Core.HTML.Elements.Table;
 import net.coagulate.Core.HTTP.HTTPListener;
 import net.coagulate.Core.HTTP.URLDistribution;
+import net.coagulate.Core.HTTP.URLMapper;
 import net.coagulate.Core.Tools.*;
 import net.coagulate.SL.Data.EventQueue;
 import net.coagulate.SL.Data.SystemManagement;
@@ -348,6 +349,10 @@ public class SL extends Thread {
 			listener=new HTTPListener(Config.getPort(),URLDistribution.getPageMapper());
 			log().config("Disable caching at startup pending primary node detection");
 			SystemManagement.restrictCaches();
+			if (Config.logRequests()) {
+				URLMapper.LOGREQUESTS=true;
+				log().config("Enabled per request tracking");
+			}
 			log().info("Startup complete.");
 			log().info(
 					"========================================================================================================================");

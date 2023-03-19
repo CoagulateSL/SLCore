@@ -164,6 +164,7 @@ public class ControlPanel {
 		if ("CacheStats".equals(state.parameter("CacheStats"))) {
 			final List<Cache.CacheStats> stats=Cache.getSummarisedStats();
 			final StringBuilder output=new StringBuilder();
+			output.append("<p>Cache status is "+Cache.cacheStatus());
 			output.append("<table><tr><th>Cache Name</th><th>Elements</th><th>Cache Hits</th><th>Cache Misses</th></tr>");
 			for (final Cache.CacheStats stat: stats) {
 				output.append("<tr><td>");

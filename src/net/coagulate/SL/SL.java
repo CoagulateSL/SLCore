@@ -355,7 +355,7 @@ public class SL extends Thread {
 			}
 			// tune the profiler
 			log().config("Tuning Stack Trace Profiler");
-			StackTraceProfiler.ignore("net.coagulate.Core.Database.DBConnection");
+			StackTraceProfiler.ignorePrefix("net.coagulate.Core.Database");
 
 			log().info("Startup complete.");
 			log().info(

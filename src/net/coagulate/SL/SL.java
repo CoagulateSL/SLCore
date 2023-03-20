@@ -353,6 +353,10 @@ public class SL extends Thread {
 				URLMapper.LOGREQUESTS=true;
 				log().config("Enabled per request tracking");
 			}
+			// tune the profiler
+			log().config("Tuning Stack Trace Profiler");
+			StackTraceProfiler.ignore("net.coagulate.Core.Database.DBConnection");
+
 			log().info("Startup complete.");
 			log().info(
 					"========================================================================================================================");

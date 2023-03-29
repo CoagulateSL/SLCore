@@ -142,6 +142,78 @@ public class SL extends Thread {
 	
 	private static final Map<String,Integer> maintenanceFails=new HashMap<>();
 	
+	private static void startup() {
+		try {
+			ClassTools.getClasses();
+			log().config("Configuring default developer mail target");
+			configureMailTarget(); // mails are gonna be messed up coming from logging init
+			log().config("Scanning for modules");
+			findModules();
+			log().config("Initialising Core URL DistributorPageMapper");
+			if (Config.getDevelopment()) {
+				log().config("SL DEVELOPMENT Services starting up on "+Config.getHostName());
+			} else {
+				log().config("SL Services starting up on "+Config.getHostName());
+			}
+			db=new MySqlDBConnection("SL"+(Config.getDevelopment()?"DEV":""),Config.getJdbc());
+			for (final SLModule module: modules.values()) {
+				log().config("Initialising module - "+module.getName());
+				module.initialise();
+			}
+			// turn on path tracing AFTER initialisation as initialisation may update the schema from the module directly
+			if (Config.getDatabasePathTracing()) {
+				log().config("Database calling path verification is enabled for SLCore and primary SL services");
+				db.permit("net.coagulate.SL.Data");
+			}
+			for (final SLModule module: modules.values()) {
+				log().config("Starting module - "+module.getName());
+				module.startup();
+				module.registerChanges();
+			}
+			// something about mails may break later on so we send a test mail here...
+			MailTools.mail(
+					"CoagulateSL "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" ("+
+					SL.getStackBuildDate()+")",htmlVersionDump().toString());
+			// TODO Pricing.initialise();
+			listener=new HTTPListener(Config.getPort(),URLDistribution.getPageMapper());
+			log().config("Disable caching at startup pending primary node detection");
+			SystemManagement.restrictCaches();
+			if (Config.logRequests()) {
+				URLMapper.LOGREQUESTS=true;
+				log().config("Enabled per request tracking");
+			}
+			// tune the profiler
+			log().config("Tuning Stack Trace Profiler");
+			StackTraceProfiler.ignorePrefix("net.coagulate.Core.Database");
+			log().config("Prepopulating caches");
+			preLoadCaches();
+			log().config("Preloaded caching complete");
+
+			log().info("Startup complete.");
+			log().info(
+					"========================================================================================================================");
+			log().info(outerPad(
+					"=====[ Coagulate "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"Second Life Services ]======"));
+			log().info(
+					"========================================================================================================================");
+			for (final SLModule module: modules.values()) {
+				log().info(spacePad(module.getBuildDateString()+" - "+module.commitId()+" - "+module.getName()+" - "+
+				                    module.getDescription()));
+			}
+			log().info(
+					"------------------------------------------------------------------------------------------------------------------------");
+			log().info(spacePad(SL.getStackBuildDate()+" - CoagulateSL Stack"));
+			log().info(
+					"========================================================================================================================");
+		}
+		// print stack trace is discouraged, but the log handler may not be ready yet.
+		catch (@Nonnull final Throwable e) {
+			errored=true;
+			e.printStackTrace();
+			log().log(SEVERE,"Startup failed: "+e.getLocalizedMessage(),e);
+			shutdown=true;
+		}
+	}
 	private static void runMaintenance() {
 		final boolean activeNode=SystemManagement.primaryNode();
 		for (final SLModule module: modules.values()) {
@@ -313,73 +385,13 @@ public class SL extends Thread {
 		MailTools.defaultserver=Config.getMailServer();
 	}
 	
-	private static void startup() {
-		try {
-			ClassTools.getClasses();
-			log().config("Configuring default developer mail target");
-			configureMailTarget(); // mails are gonna be messed up coming from logging init
-			log().config("Scanning for modules");
-			findModules();
-			log().config("Initialising Core URL DistributorPageMapper");
-			if (Config.getDevelopment()) {
-				log().config("SL DEVELOPMENT Services starting up on "+Config.getHostName());
-			} else {
-				log().config("SL Services starting up on "+Config.getHostName());
+	public static void preLoadCaches() {
+		for (final SLModule module:modules()) {
+			try {
+				module.preLoadCaches();
+			} catch (final Exception e) {
+				log(module.getName()).log(SEVERE,"Cache preloading exceptioned",e);
 			}
-			db=new MySqlDBConnection("SL"+(Config.getDevelopment()?"DEV":""),Config.getJdbc());
-			for (final SLModule module: modules.values()) {
-				log().config("Initialising module - "+module.getName());
-				module.initialise();
-			}
-			// turn on path tracing AFTER initialisation as initialisation may update the schema from the module directly
-			if (Config.getDatabasePathTracing()) {
-				log().config("Database calling path verification is enabled for SLCore and primary SL services");
-				db.permit("net.coagulate.SL.Data");
-			}
-			for (final SLModule module: modules.values()) {
-				log().config("Starting module - "+module.getName());
-				module.startup();
-				module.registerChanges();
-			}
-			// something about mails may break later on so we send a test mail here...
-			MailTools.mail(
-					"CoagulateSL "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" ("+
-					SL.getStackBuildDate()+")",htmlVersionDump().toString());
-			// TODO Pricing.initialise();
-			listener=new HTTPListener(Config.getPort(),URLDistribution.getPageMapper());
-			log().config("Disable caching at startup pending primary node detection");
-			SystemManagement.restrictCaches();
-			if (Config.logRequests()) {
-				URLMapper.LOGREQUESTS=true;
-				log().config("Enabled per request tracking");
-			}
-			// tune the profiler
-			log().config("Tuning Stack Trace Profiler");
-			StackTraceProfiler.ignorePrefix("net.coagulate.Core.Database");
-
-			log().info("Startup complete.");
-			log().info(
-					"========================================================================================================================");
-			log().info(outerPad(
-					"=====[ Coagulate "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"Second Life Services ]======"));
-			log().info(
-					"========================================================================================================================");
-			for (final SLModule module: modules.values()) {
-				log().info(spacePad(module.getBuildDateString()+" - "+module.commitId()+" - "+module.getName()+" - "+
-				                    module.getDescription()));
-			}
-			log().info(
-					"------------------------------------------------------------------------------------------------------------------------");
-			log().info(spacePad(SL.getStackBuildDate()+" - CoagulateSL Stack"));
-			log().info(
-					"========================================================================================================================");
-		}
-		// print stack trace is discouraged, but the log handler may not be ready yet.
-		catch (@Nonnull final Throwable e) {
-			errored=true;
-			e.printStackTrace();
-			log().log(SEVERE,"Startup failed: "+e.getLocalizedMessage(),e);
-			shutdown=true;
 		}
 	}
 	

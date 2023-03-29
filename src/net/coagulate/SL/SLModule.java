@@ -56,6 +56,7 @@ public abstract class SLModule {
 	public abstract void initialise();
 	
 	public abstract void maintenance(); // called only if we're the master node
+	public void preLoadCaches() {}
 	
 	public abstract void maintenanceInternal(); // called regardless
 	

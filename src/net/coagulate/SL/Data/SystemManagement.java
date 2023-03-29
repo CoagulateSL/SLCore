@@ -36,9 +36,6 @@ public class SystemManagement {
 		if (!wasMasterNode) {
 			SL.log("Maintenance").config("We are now the master node!");
 			SL.log("Maintenance").config("Enabling caching due to transition to primary/maintenance node");
-			SL.log("Maintenance").config("Preloading caches");
-			SL.preLoadCaches();
-			SL.log("Maintenance").config("Cache prepopulation is complete");
 			SystemManagement.unrestrictCaches();
 			wasMasterNode=true;
 			if (Config.getDevelopment()&&Config.runSelfTests()&!ranSelfTest) {

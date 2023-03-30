@@ -45,6 +45,7 @@ public class SelfTest {
 	
 	public static class SelfTestRunner extends Thread {
 		public void run() {
+			boolean clean=false;
 			try {
 				this.setName("Self test runner");
 				final PassFailRecord total=new PassFailRecord();
@@ -58,6 +59,7 @@ public class SelfTest {
 				}
 				if (total.fails==0) {
 					SL.log().info("PASS PASS PASS : All "+total.passes+" self tests successfully passed");
+					clean=true;
 				} else {
 					SL.log().severe("FAIL FAIL FAIL : "+total.fails+" self tests FAILED ("+total.passes+" succeeded)");
 					try {
@@ -88,7 +90,7 @@ public class SelfTest {
 			}
 			if (Config.getSelfTestOnly()) {
 				SL.log().warning("Self test only flag is set, exiting.");
-				System.exit(1);
+				System.exit(clean?0:1);
 			}
 			
 		}

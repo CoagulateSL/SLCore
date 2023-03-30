@@ -37,7 +37,8 @@ public class JavaCore extends SLModule {
 	}
 	
 	@Override
-	public void initialise() {
+	public boolean initialise() {
+		return true;
 	}
 	
 	@Override

@@ -45,50 +45,52 @@ public class SelfTest {
 	
 	public static class SelfTestRunner extends Thread {
 		public void run() {
-			this.setName("Self test runner");
-			final PassFailRecord total=new PassFailRecord();
-			SL.log().info("Beginning system wide self tests");
-			for (final SLModule module: SL.modules()) {
-				SL.log().info("Beginning self test on module "+module.getName());
-				final PassFailRecord results=module.selfTest();
-				total.mergeResults(results);
-				SL.log()
-				  .info("Finished self test on module "+module.getName()+", "+results.passes+" passes, "+results.fails+
-				        " fails (Total: "+total.passes+" passed, "+total.fails+" failed)");
-			}
-			if (total.fails==0) {
-				SL.log().info("PASS PASS PASS : All "+total.passes+" self tests successfully passed");
-				if (Config.getSelfTestOnly()) {
-					SL.log().warning("Self test only flag is set, exiting.");
-					System.exit(0);
+			try {
+				this.setName("Self test runner");
+				final PassFailRecord total=new PassFailRecord();
+				SL.log().info("Beginning system wide self tests");
+				for (final SLModule module: SL.modules()) {
+					SL.log().info("Beginning self test on module "+module.getName());
+					final PassFailRecord results=module.selfTest();
+					total.mergeResults(results);
+					SL.log()
+					  .info("Finished self test on module "+module.getName()+", "+results.passes+" passes, "+results.fails+" fails (Total: "+total.passes+" passed, "+total.fails+" failed)");
 				}
-			} else {
-				SL.log().severe("FAIL FAIL FAIL : "+total.fails+" self tests FAILED ("+total.passes+" succeeded)");
-				try {
-					final StringBuilder body=new StringBuilder("<html><body><table>");
-					for (final TestFrameworkPrototype.TestResult r: total.results()) {
-						if (r.pass()) {
-							body.append("<tr bgcolor=#d0ffd0>");
-						} else {
-							body.append("<tr bgcolor=#ffd0d0>");
+				if (total.fails==0) {
+					SL.log().info("PASS PASS PASS : All "+total.passes+" self tests successfully passed");
+				} else {
+					SL.log().severe("FAIL FAIL FAIL : "+total.fails+" self tests FAILED ("+total.passes+" succeeded)");
+					try {
+						final StringBuilder body=new StringBuilder("<html><body><table>");
+						for (final TestFrameworkPrototype.TestResult r: total.results()) {
+							if (r.pass()) {
+								body.append("<tr bgcolor=#d0ffd0>");
+							} else {
+								body.append("<tr bgcolor=#ffd0d0>");
+							}
+							body.append("<td>").append(r.pass()?"Pass":"FAIL").append("</td>");
+							body.append("<td>").append(r.name()).append("</td>");
+							body.append("<td>").append(r.message()).append("</td>");
+							body.append("</tr>");
 						}
-						body.append("<td>").append(r.pass()?"Pass":"FAIL").append("</td>");
-						body.append("<td>").append(r.name()).append("</td>");
-						body.append("<td>").append(r.message()).append("</td>");
-						body.append("</tr>");
+						body.append("</table></body></html>");
+						if (Config.getDeveloperEmail()!=null && !Config.getDeveloperEmail().isBlank()) {
+							MailTools.mail(LogHandler.mailprefix+" SELF TEST FAILED: "+total.fails+"/"+(total.fails+total.passes)+" failed, "+total.passes+" passed.",
+							               body.toString());
+						}
+					} catch (final MessagingException mailfail) {
+						SL.log().log(SEVERE,"Failed to mail out about self tests failing : "+mailfail,mailfail);
 					}
-					body.append("</table></body></html>");
-					MailTools.mail(
-							LogHandler.mailprefix+" SELF TEST FAILED: "+total.fails+"/"+(total.fails+total.passes)+
-							" failed, "+total.passes+" passed.",body.toString());
-				} catch (final MessagingException mailfail) {
-					SL.log().log(SEVERE,"Failed to mail out about self tests failing : "+mailfail,mailfail);
-				}
-				if (Config.getSelfTestOnly()) {
-					SL.log().warning("Self test only flag is set, exiting.");
-					System.exit(1);
 				}
 			}
+			catch (final Exception e) {
+				SL.log().log(SEVERE,"Exception escaped self testing",e);
+			}
+			if (Config.getSelfTestOnly()) {
+				SL.log().warning("Self test only flag is set, exiting.");
+				System.exit(1);
+			}
+			
 		}
 		
 	}

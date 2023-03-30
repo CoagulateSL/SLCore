@@ -73,7 +73,7 @@ public class SLCore extends SLModule {
 	}
 	
 	@Override
-	public void initialise() {
+	public boolean initialise() {
 		final Logger logger=Logger.getLogger(getClass().getCanonicalName());
 		schemaCheck(SL.getDB(),"slcore",SLCORE_DATABASE_SCHEMA_VERSION);
 		URLDistribution.register("",HTMLMapper.get());
@@ -127,6 +127,7 @@ public class SLCore extends SLModule {
 				}
 			}
 		}
+		return true;
 	}
 	
 	@Override

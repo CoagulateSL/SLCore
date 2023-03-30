@@ -156,9 +156,13 @@ public class SL extends Thread {
 				log().config("SL Services starting up on "+Config.getHostName());
 			}
 			db=new MySqlDBConnection("SL"+(Config.getDevelopment()?"DEV":""),Config.getJdbc());
-			for (final SLModule module: modules.values()) {
+			final List<SLModule> modlist=new ArrayList<>(modules.values());
+			for (final SLModule module:modlist) {
 				log().config("Initialising module - "+module.getName());
-				module.initialise();
+				if (!module.initialise()) {
+					log().warning("Module "+module.getName()+" opted not to initialise, non fatally, removing from system");
+					modules.remove(module.getName());
+				}
 			}
 			// turn on path tracing AFTER initialisation as initialisation may update the schema from the module directly
 			if (Config.getDatabasePathTracing()) {

@@ -53,7 +53,7 @@ public abstract class SLModule {
 	
 	public abstract void startup();
 	
-	public abstract void initialise();
+	public abstract boolean initialise();
 	
 	public abstract void maintenance(); // called only if we're the master node
 	public void preLoadCaches() {}

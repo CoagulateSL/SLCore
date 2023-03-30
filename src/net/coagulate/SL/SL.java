@@ -175,9 +175,12 @@ public class SL extends Thread {
 				module.registerChanges();
 			}
 			// something about mails may break later on so we send a test mail here...
-			MailTools.mail(
-					"CoagulateSL "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+" ("+
-					SL.getStackBuildDate()+")",htmlVersionDump().toString());
+			// if we have a developer email address anyway
+			if (Config.getDeveloperEmail()!=null && !Config.getDeveloperEmail().isEmpty()) {
+				MailTools.mail(
+						"CoagulateSL "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+
+						" ("+SL.getStackBuildDate()+")",htmlVersionDump().toString());
+			}
 			// TODO Pricing.initialise();
 			listener=new HTTPListener(Config.getPort(),URLDistribution.getPageMapper());
 			log().config("Disable caching at startup pending primary node detection");

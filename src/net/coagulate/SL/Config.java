@@ -320,4 +320,6 @@ public class Config {
 	public static String getSecondLifeAPIKey() {
 		return getString("getagentidkey","");
 	}
+	
+	public static boolean getSelfTestOnly() { return getBoolean("self-test-only",false); }
 }

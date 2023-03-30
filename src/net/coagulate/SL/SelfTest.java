@@ -58,6 +58,10 @@ public class SelfTest {
 			}
 			if (total.fails==0) {
 				SL.log().info("PASS PASS PASS : All "+total.passes+" self tests successfully passed");
+				if (Config.getSelfTestOnly()) {
+					SL.log().warning("Self test only flag is set, exiting.");
+					System.exit(0);
+				}
 			} else {
 				SL.log().severe("FAIL FAIL FAIL : "+total.fails+" self tests FAILED ("+total.passes+" succeeded)");
 				try {
@@ -79,6 +83,10 @@ public class SelfTest {
 							" failed, "+total.passes+" passed.",body.toString());
 				} catch (final MessagingException mailfail) {
 					SL.log().log(SEVERE,"Failed to mail out about self tests failing : "+mailfail,mailfail);
+				}
+				if (Config.getSelfTestOnly()) {
+					SL.log().warning("Self test only flag is set, exiting.");
+					System.exit(1);
 				}
 			}
 		}

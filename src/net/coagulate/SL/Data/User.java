@@ -12,6 +12,7 @@ import net.coagulate.Core.Tools.Cache;
 import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.Passwords;
 import net.coagulate.Core.Tools.Tokens;
+import net.coagulate.GPHUD.Data.CacheConfig;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.GetAgentID;
 import net.coagulate.SL.SL;
@@ -93,29 +94,29 @@ public class User extends StandardSLTable implements Comparable<User> {
 		}
 	}
 	
+	public static User findUsernameNullable(@Nonnull final String name,final boolean trustName) {
+		try { return findUsername(name,trustName); }
+		catch (RuntimeException ignore) { return null; } // hmm
+	}
 	/**
 	 * Find avatar in database, by name or key.
 	 *
 	 * @return Avatar object
 	 */
-	@Nullable
-	public static User findUsernameNullable(@Nonnull final String username,final boolean trustName) {
-		try {
-			return findUsername(username,trustName);
-		} catch (@Nonnull final Throwable t) {
-			return null;
-		}
+	@Nonnull
+	public static User findUsername(@Nonnull final String name,final boolean trustName) {
+		final String finalName=formatUsername(name);
+		return userNameResolverCache.get(name,()->{
+			Integer id=SL.getDB().dqiNotNull("select id from users where username=?",finalName);
+			if (id==null) {
+				return createByName(finalName,trustName);
+			} else {
+				return User.get(id);
+			}
+		});
 	}
 	
-	@Nonnull
-	public static User findUsername(@Nonnull String name,final boolean trustName) {
-		name=formatUsername(name);
-		try {
-			return User.get(SL.getDB().dqiNotNull("select id from users where username=?",name));
-		} catch (final NoDataException e) {
-			return createByName(name,trustName);
-		}
-	}
+	private static Cache<String,User> userNameResolverCache=Cache.getCache("SL/UserNameResolver",CacheConfig.PERMANENT_CONFIG,true);
 	
 	@Nonnull
 	public static String formatUsername(String username) {
@@ -204,6 +205,8 @@ public class User extends StandardSLTable implements Comparable<User> {
 					SL.log("User").info("Creating new avatar entry for '"+name+"'");
 				}
 				SL.getDB().d("insert into users(username,lastactive,avatarkey) values(?,?,?)",name,getUnixTime(),key);
+				uuidLookup.purge(key);
+				userNameResolverCache.purge(name);
 			} catch (@Nonnull final DBException ex) {
 				SL.log("User").log(SEVERE,"Exception creating avatar "+name,ex);
 				throw ex;
@@ -258,15 +261,6 @@ public class User extends StandardSLTable implements Comparable<User> {
 		return results;
 	}
 	
-	@Nullable
-	public static User findUserKeyNullable(@Nonnull final String uuid) {
-		try {
-			return findUserKey(uuid);
-		} catch (final NoDataException e) {
-			return null;
-		}
-	}
-	
 	public static Set<User> getDevelopers() {
 		final Set<User> ret=new TreeSet<>();
 		for (final ResultsRow result: SL.getDB().dq("select id from users where developerkey is not null")) {
@@ -277,8 +271,23 @@ public class User extends StandardSLTable implements Comparable<User> {
 	
 	@Nonnull
 	public static User findUserKey(@Nonnull final String uuid) {
-		return new User(SL.getDB().dqiNotNull("select id from users where avatarkey like ?",uuid));
+		User user=findUserKeyNullable(uuid);
+		if (user==null) {
+			throw new UserInputLookupFailureException("Found no avatar registered against UUID "+uuid);
+		}
+		return user;
 	}
+	
+	@Nullable
+	public static User findUserKeyNullable(@Nonnull final String uuid) {
+		return uuidLookup.get(uuid,()->{
+			Integer id=SL.getDB().dqi("select id from users where avatarkey like ?",uuid);
+			if (id==null) { return null; }
+			return get(id);
+		});
+	}
+
+	private static Cache<String,User> uuidLookup=Cache.getCache("SL/UUIDUserMapCache",CacheConfig.PERMANENT_CONFIG,true);
 	
 	public static Map<Integer,String> getIdToNameMap() {
 		final Map<Integer,String> avatarNames=new TreeMap<>();

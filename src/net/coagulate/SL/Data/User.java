@@ -94,13 +94,17 @@ public class User extends StandardSLTable implements Comparable<User> {
 		}
 	}
 	
+	public static User findUsernameNullable(@Nonnull final String name,final boolean trustName) {
+		try { return findUsername(name,trustName); }
+		catch (RuntimeException ignore) { return null; } // hmm
+	}
 	/**
 	 * Find avatar in database, by name or key.
 	 *
 	 * @return Avatar object
 	 */
-	@Nullable
-	public static User findUsernameNullable(@Nonnull final String name,final boolean trustName) {
+	@Nonnull
+	public static User findUsername(@Nonnull final String name,final boolean trustName) {
 		final String finalName=formatUsername(name);
 		return userNameResolverCache.get(name,()->{
 			Integer id=SL.getDB().dqiNotNull("select id from users where username=?",finalName);
@@ -263,6 +267,15 @@ public class User extends StandardSLTable implements Comparable<User> {
 			ret.add(User.get(result.getInt()));
 		}
 		return ret;
+	}
+	
+	@Nonnull
+	public static User findUserKey(@Nonnull final String uuid) {
+		User user=findUserKeyNullable(uuid);
+		if (user==null) {
+			throw new UserInputLookupFailureException("Found no avatar registered against UUID "+uuid);
+		}
+		return user;
 	}
 	
 	@Nullable

@@ -10,6 +10,7 @@ import net.coagulate.Core.Tools.ByteTools;
 import net.coagulate.Core.Tools.Cache;
 import net.coagulate.Core.Tools.ClassTools;
 import net.coagulate.SL.Data.EventQueue;
+import net.coagulate.SL.Data.User;
 import net.coagulate.SL.HTML.ServiceTile;
 import net.coagulate.SL.HTTPPipelines.*;
 
@@ -326,6 +327,11 @@ public class SLCore extends SLModule {
 	
 	private void log(final Level warning,final String s) {
 		SL.log("DBStats").log(warning,s);
+	}
+	
+	@Override
+	public void preLoadCaches() {
+		User.preLoadCache();
 	}
 }
 

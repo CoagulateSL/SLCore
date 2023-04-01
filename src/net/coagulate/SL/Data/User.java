@@ -13,6 +13,9 @@ import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.Passwords;
 import net.coagulate.Core.Tools.Tokens;
 import net.coagulate.GPHUD.Data.CacheConfig;
+import net.coagulate.GPHUD.Data.Char;
+import net.coagulate.GPHUD.Data.Instance;
+import net.coagulate.GPHUD.GPHUD;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.GetAgentID;
 import net.coagulate.SL.SL;
@@ -21,6 +24,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.logging.Level.SEVERE;
 import static net.coagulate.Core.Tools.UnixTime.getUnixTime;
@@ -623,5 +627,16 @@ public class User extends StandardSLTable implements Comparable<User> {
 			  value);
 		}
 		preferencesCache.purge(this);
+	}
+	
+	public static void preLoadCache() {
+		final AtomicInteger loaded=new AtomicInteger();
+		SL.getDB().dqSlow("select id,username,avatarkey from users").forEach((row)->{
+			User u=User.get(row.getInt("id"));
+			userNameResolverCache.set(row.getString("username"),u);
+			uuidLookup.set(row.getString("avatarkey"),u);
+			loaded.getAndIncrement();
+		});
+		GPHUD.getLogger("PreLoadCache").config("Loaded "+loaded+" user/avatar records");
 	}
 }

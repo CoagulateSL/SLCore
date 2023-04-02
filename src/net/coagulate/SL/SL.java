@@ -393,6 +393,7 @@ public class SL extends Thread {
 	}
 	
 	public static void preLoadCaches() {
+		if (Cache.isRestricted()) { SL.log("PreCache").info("Skipping pre-caching due to restricted caching status"); }
 		for (final SLModule module:modules()) {
 			try {
 				module.preLoadCaches();

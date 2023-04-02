@@ -111,7 +111,9 @@ public class User extends StandardSLTable implements Comparable<User> {
 	public static User findUsername(@Nonnull final String name,final boolean trustName) {
 		final String finalName=formatUsername(name);
 		return userNameResolverCache.get(name,()->{
-			Integer id=SL.getDB().dqi("select id from users where username=?",finalName);
+			Integer id=null;
+			try { id=SL.getDB().dqi("select id from users where username=?",finalName); }
+			catch (NoDataException ignore) {}
 			if (id==null) {
 				return createByName(finalName,trustName);
 			} else {

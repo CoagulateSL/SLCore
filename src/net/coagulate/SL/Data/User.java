@@ -13,8 +13,6 @@ import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.Passwords;
 import net.coagulate.Core.Tools.Tokens;
 import net.coagulate.GPHUD.Data.CacheConfig;
-import net.coagulate.GPHUD.Data.Char;
-import net.coagulate.GPHUD.Data.Instance;
 import net.coagulate.GPHUD.GPHUD;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.GetAgentID;
@@ -34,8 +32,8 @@ import static net.coagulate.Core.Tools.UnixTime.getUnixTime;
  */
 public class User extends StandardSLTable implements Comparable<User> {
 	
-	private static final Map<Integer,User> users=new HashMap<>();
-	public static Cache<User,Map<String,Map<String,String>>> preferencesCache=
+	private static final Map<Integer,User>                          users           =new HashMap<>();
+	public static        Cache<User,Map<String,Map<String,String>>> preferencesCache=
 			Cache.getCache("slcore/userpferences",60*60);
 	
 	private User(final int id) {
@@ -52,7 +50,8 @@ public class User extends StandardSLTable implements Comparable<User> {
 	public static User getSystem() {
 		return findOrCreate("SYSTEM","DEADBEEF",true);
 	}
-	private              String            userNameCache;
+	
+	private String userNameCache;
 	
 	@Nullable
 	public static User resolveDeveloperKey(@Nullable final String key) {
@@ -99,9 +98,13 @@ public class User extends StandardSLTable implements Comparable<User> {
 	}
 	
 	public static User findUsernameNullable(@Nonnull final String name,final boolean trustName) {
-		try { return findUsername(name,trustName); }
-		catch (RuntimeException ignore) { return null; } // hmm
+		try {
+			return findUsername(name,trustName);
+		} catch (RuntimeException ignore) {
+			return null;
+		} // hmm
 	}
+	
 	/**
 	 * Find avatar in database, by name or key.
 	 *
@@ -112,8 +115,10 @@ public class User extends StandardSLTable implements Comparable<User> {
 		final String finalName=formatUsername(name);
 		return userNameResolverCache.get(name,()->{
 			Integer id=null;
-			try { id=SL.getDB().dqi("select id from users where username=?",finalName); }
-			catch (NoDataException ignore) {}
+			try {
+				id=SL.getDB().dqi("select id from users where username=?",finalName);
+			} catch (NoDataException ignore) {
+			}
 			if (id==null) {
 				return createByName(finalName,trustName);
 			} else {
@@ -122,7 +127,8 @@ public class User extends StandardSLTable implements Comparable<User> {
 		});
 	}
 	
-	private static Cache<String,User> userNameResolverCache=Cache.getCache("SL/UserNameResolver",CacheConfig.PERMANENT_CONFIG,true);
+	private static Cache<String,User> userNameResolverCache=
+			Cache.getCache("SL/UserNameResolver",CacheConfig.PERMANENT_CONFIG,true);
 	
 	@Nonnull
 	public static String formatUsername(String username) {
@@ -185,63 +191,74 @@ public class User extends StandardSLTable implements Comparable<User> {
 	 *
 	 * @throws SystemBadValueException if it is necessary to create the user and both username and key are not presented
 	 */
-	public static User findOrCreate(@Nullable String name,@Nonnull final String key,final boolean trustName) {
-		if (name==null||"???".equals(name)||"(???)".equals(name)||"Loading...".equals(name)||
-		    "(Loading...)".equals(name)) {
-			name="";
-		}
-		if (!name.isEmpty()) {
-			name=formatUsername(name);
-		}
-		Integer userid=null;
-		try {
-			userid=SL.getDB().dqi("select id from users where (avatarkey=?)",key);
-		} catch (@Nonnull final NoDataException ignored) {
-		}
-		if (userid==null) {
-			if (key.isEmpty()) {
-				throw new SystemBadValueException("Empty avatar key blocks creation");
-			}
-			if (name.isEmpty()) {
-				throw new SystemBadValueException("Empty avatar name blocks creation (for key "+key+")");
-			}
-			try {
-				// special key used by the SYSTEM avatar
-				if (!"DEADBEEF".equals(key)) {
-					SL.log("User").info("Creating new avatar entry for '"+name+"'");
+	public static User findOrCreate(final @Nullable String inName,@Nonnull final String key,final boolean trustName) {
+		return uuidLookup.get(key,()->{
+			final String name;
+			if (inName==null||"???".equals(inName)||"(???)".equals(inName)||"Loading...".equals(inName)||
+			    "(Loading...)".equals(inName)) {
+				name="";
+			} else {
+				if (!inName.isEmpty()) {
+					name=formatUsername(inName);
+				} else {
+					name="";
 				}
-				SL.getDB().d("insert into users(username,lastactive,avatarkey) values(?,?,?)",name,getUnixTime(),key);
-				uuidLookup.purge(key);
-				userNameResolverCache.purge(name);
-			} catch (@Nonnull final DBException ex) {
-				SL.log("User").log(SEVERE,"Exception creating avatar "+name,ex);
-				throw ex;
 			}
+			Integer userid=null;
 			try {
-				userid=SL.getDB().dqi("select id from users where avatarkey=?",key);
+				userid=SL.getDB().dqi("select id from users where (avatarkey=?)",key);
 			} catch (@Nonnull final NoDataException ignored) {
 			}
-		}
-		if (userid==null) {
-			SL.log("User").severe("Failed to find avatar '"+name+"' after creating it");
-			throw new NoDataException("Failed to find avatar object for name '"+name+"' after we created it!");
-		}
-		final User u=get(userid);
-		final String currentUsername=u.getUsername();
-		//System.out.println("Find or create for "+key+" -> "+userid+" current "+currentUsername+" supplied "+name);
-		if (trustName&&!name.isEmpty()&&!currentUsername.equalsIgnoreCase(name)) {
-			u.setUsername(name);
-			try {
-				SL.report("Name change:"+currentUsername+" -> "+name+" for "+key,
-				          new Exception("Here "+currentUsername+" -> "+name),
-				          null);
-				MailTools.mail("Name change:"+currentUsername+" -> "+name+" for "+key,
-				               "Name change:"+currentUsername+" -> "+name+" for "+key);
-			} catch (final MessagingException exception) {
-				SL.report("Exception during mailer (!)",exception,null);
+			if (userid==null) {
+				if (key.isEmpty()) {
+					throw new SystemBadValueException("Empty avatar key blocks creation");
+				}
+				if (name.isEmpty()) {
+					throw new SystemBadValueException("Empty avatar name blocks creation (for key "+key+")");
+				}
+				try {
+					// special key used by the SYSTEM avatar
+					if (!"DEADBEEF".equals(key)) {
+						SL.log("User").info("Creating new avatar entry for '"+name+"'");
+					}
+					SL.getDB()
+					  .d("insert into users(username,lastactive,avatarkey) values(?,?,?)",name,getUnixTime(),key);
+					uuidLookup.purge(key);
+					userNameResolverCache.purge(name);
+				} catch (@Nonnull final DBException ex) {
+					SL.log("User").log(SEVERE,"Exception creating avatar "+name,ex);
+					throw ex;
+				}
+				try {
+					userid=SL.getDB().dqi("select id from users where avatarkey=?",key);
+				} catch (@Nonnull final NoDataException ignored) {
+				}
 			}
-		}
-		return u;
+			if (userid==null) {
+				SL.log("User").severe("Failed to find avatar '"+name+"' after creating it");
+				throw new NoDataException("Failed to find avatar object for name '"+name+"' after we created it!");
+			}
+			final User u=get(userid);
+			final String currentUsername=u.getUsername();
+			//System.out.println("Find or create for "+key+" -> "+userid+" current "+currentUsername+" supplied "+name);
+			if (trustName&&!name.isEmpty()&&!currentUsername.equalsIgnoreCase(name)) {
+				u.setUsername(name);
+				try {
+					SL.report("Name change:"+currentUsername+" -> "+name+" for "+key,
+					          new Exception("Here "+currentUsername+" -> "+name),
+					          null);
+					MailTools.mail("Name change:"+currentUsername+" -> "+name+" for "+key,
+					               "Name change:"+currentUsername+" -> "+name+" for "+key);
+				} catch (final MessagingException exception) {
+					SL.report("Exception during mailer (!)",exception,null);
+				}
+			}
+			if (!name.isBlank()) {
+				userNameResolverCache.set(name,u);
+			}
+			uuidLookup.set(key,u);
+			return u;
+		});
 	}
 	
 	public String getUsername() {
@@ -288,12 +305,15 @@ public class User extends StandardSLTable implements Comparable<User> {
 	public static User findUserKeyNullable(@Nonnull final String uuid) {
 		return uuidLookup.get(uuid,()->{
 			Integer id=SL.getDB().dqi("select id from users where avatarkey like ?",uuid);
-			if (id==null) { return null; }
+			if (id==null) {
+				return null;
+			}
 			return get(id);
 		});
 	}
-
-	private static Cache<String,User> uuidLookup=Cache.getCache("SL/UUIDUserMapCache",CacheConfig.PERMANENT_CONFIG,true);
+	
+	private static Cache<String,User> uuidLookup=
+			Cache.getCache("SL/UUIDUserMapCache",CacheConfig.PERMANENT_CONFIG,true);
 	
 	public static Map<Integer,String> getIdToNameMap() {
 		final Map<Integer,String> avatarNames=new TreeMap<>();

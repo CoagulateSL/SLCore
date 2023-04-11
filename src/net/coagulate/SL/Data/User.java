@@ -100,7 +100,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 	public static User findUsernameNullable(@Nonnull final String name,final boolean trustName) {
 		try {
 			return findUsername(name,trustName);
-		} catch (RuntimeException ignore) {
+		} catch (final RuntimeException ignore) {
 			return null;
 		} // hmm
 	}
@@ -117,7 +117,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 			Integer id=null;
 			try {
 				id=SL.getDB().dqi("select id from users where username=?",finalName);
-			} catch (NoDataException ignore) {
+			} catch (final NoDataException ignore) {
 			}
 			if (id==null) {
 				return createByName(finalName,trustName);
@@ -127,7 +127,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 		});
 	}
 	
-	private static Cache<String,User> userNameResolverCache=
+	private static final Cache<String,User> userNameResolverCache=
 			Cache.getCache("SL/UserNameResolver",CacheConfig.PERMANENT_CONFIG,true);
 	
 	@Nonnull
@@ -184,14 +184,14 @@ public class User extends StandardSLTable implements Comparable<User> {
 	 * Note trustName should be set to false if the username is retrieved from HTTP headers from Objects which seem to update later than other methods.
 	 * For usernames retrieved from the new GetAgentID LL API this should be set to TRUE to update the database with the new name.
 	 *
-	 * @param name      Optional name of the avatar, creation will not proceed without this value, otherwise it may be null
+	 * @param inName      Optional name of the avatar, creation will not proceed without this value, otherwise it may be null
 	 * @param key       Mandatory UUID string of the avatar
 	 * @param trustName Trust the username supplied to the point we will update our recorded username if it differs.
 	 * @return The User object for this avatar
 	 *
 	 * @throws SystemBadValueException if it is necessary to create the user and both username and key are not presented
 	 */
-	public static User findOrCreate(final @Nullable String inName,@Nonnull final String key,final boolean trustName) {
+	public static User findOrCreate(@Nullable final String inName,@Nonnull final String key,final boolean trustName) {
 		return uuidLookup.get(key,()->{
 			final String name;
 			if (inName==null||"???".equals(inName)||"(???)".equals(inName)||"Loading...".equals(inName)||
@@ -294,7 +294,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 	
 	@Nonnull
 	public static User findUserKey(@Nonnull final String uuid) {
-		User user=findUserKeyNullable(uuid);
+		final User user=findUserKeyNullable(uuid);
 		if (user==null) {
 			throw new UserInputLookupFailureException("Found no avatar registered against UUID "+uuid);
 		}
@@ -304,7 +304,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 	@Nullable
 	public static User findUserKeyNullable(@Nonnull final String uuid) {
 		return uuidLookup.get(uuid,()->{
-			Integer id=SL.getDB().dqi("select id from users where avatarkey like ?",uuid);
+			final Integer id=SL.getDB().dqi("select id from users where avatarkey like ?",uuid);
 			if (id==null) {
 				return null;
 			}
@@ -312,7 +312,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 		});
 	}
 	
-	private static Cache<String,User> uuidLookup=
+	private static final Cache<String,User> uuidLookup=
 			Cache.getCache("SL/UUIDUserMapCache",CacheConfig.PERMANENT_CONFIG,true);
 	
 	public static Map<Integer,String> getIdToNameMap() {
@@ -654,7 +654,7 @@ public class User extends StandardSLTable implements Comparable<User> {
 	public static void preLoadCache() {
 		final AtomicInteger loaded=new AtomicInteger();
 		SL.getDB().dqSlow("select id,username,avatarkey from users").forEach((row)->{
-			User u=User.get(row.getInt("id"));
+			final User u=User.get(row.getInt("id"));
 			userNameResolverCache.set(row.getString("username"),u);
 			uuidLookup.set(row.getString("avatarkey"),u);
 			loaded.getAndIncrement();

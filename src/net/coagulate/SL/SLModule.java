@@ -86,6 +86,7 @@ public abstract class SLModule {
 	}
 	
 	public void schemaCheck(final DBConnection db,final String schemaName,final int requiredVersion) {
+		db.permit(this.getClass().getCanonicalName());
 		try {
 			int currentVersion=getSchemaVersion(db,schemaName);
 			if (currentVersion>requiredVersion) {

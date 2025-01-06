@@ -304,11 +304,15 @@ public class User extends StandardSLTable implements Comparable<User> {
 	@Nullable
 	public static User findUserKeyNullable(@Nonnull final String uuid) {
 		return uuidLookup.get(uuid,()->{
-			final Integer id=SL.getDB().dqi("select id from users where avatarkey like ?",uuid);
-			if (id==null) {
+			try {
+				final Integer id=SL.getDB().dqi("select id from users where avatarkey like ?",uuid);
+				if (id==null) {
+					return null;
+				}
+				return get(id);
+			} catch (final NoDataException e) {
 				return null;
 			}
-			return get(id);
 		});
 	}
 	

@@ -322,4 +322,8 @@ public class Config {
 	}
 	
 	public static boolean getSelfTestOnly() { return getBoolean("self-test-only",false); }
+	
+	public static boolean cluster() {
+		return getBoolean("cluster",false);
+	}
 }

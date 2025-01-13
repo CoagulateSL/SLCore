@@ -183,8 +183,14 @@ public class SL extends Thread {
 			}
 			// TODO Pricing.initialise();
 			listener=new HTTPListener(Config.getPort(),URLDistribution.getPageMapper());
-			log().config("Disable caching at startup pending primary node detection");
-			SystemManagement.restrictCaches();
+			if (Config.cluster()) {
+				log().config("Clustering is enabled ; disabling caching at startup pending primary node detection");
+				SystemManagement.restrictCaches();
+			} else {
+				log().config("Prepopulating caches");
+				preLoadCaches();
+				log().config("Preloaded caching complete");
+			}
 			if (Config.logRequests()) {
 				URLMapper.LOGREQUESTS=true;
 				log().config("Enabled per request tracking");
@@ -192,15 +198,13 @@ public class SL extends Thread {
 			// tune the profiler
 			log().config("Tuning Stack Trace Profiler");
 			StackTraceProfiler.ignorePrefix("net.coagulate.Core.Database");
-			log().config("Prepopulating caches");
-			preLoadCaches();
-			log().config("Preloaded caching complete");
 
 			log().info("Startup complete.");
 			log().info(
 					"========================================================================================================================");
 			log().info(outerPad(
 					"=====[ Coagulate "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"Second Life Services ]======"));
+			log().info(outerPad("---[ Clustering is "+(Config.cluster()?"enabled":"disabled")+" ]---"));
 			log().info(
 					"========================================================================================================================");
 			for (final SLModule module: modules.values()) {

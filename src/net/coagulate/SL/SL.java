@@ -157,10 +157,11 @@ public class SL extends Thread {
 			}
 			db=new MySqlDBConnection("SL"+(Config.getDevelopment()?"DEV":""),Config.getJdbc());
 			final List<SLModule> modlist=new ArrayList<>(modules.values());
-			for (final SLModule module:modlist) {
+			for (final SLModule module: modlist) {
 				log().config("Initialising module - "+module.getName());
 				if (!module.initialise()) {
-					log().warning("Module "+module.getName()+" opted not to initialise, non fatally, removing from system");
+					log().warning(
+							"Module "+module.getName()+" opted not to initialise, non fatally, removing from system");
 					modules.remove(module.getName());
 				}
 			}
@@ -176,7 +177,7 @@ public class SL extends Thread {
 			}
 			// something about mails may break later on so we send a test mail here...
 			// if we have a developer email address anyway
-			if (Config.getDeveloperEmail()!=null && !Config.getDeveloperEmail().isEmpty()) {
+			if (Config.getDeveloperEmail()!=null&&!Config.getDeveloperEmail().isEmpty()) {
 				MailTools.mail(
 						"CoagulateSL "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+
 						" ("+SL.getStackBuildDate()+")",htmlVersionDump().toString());
@@ -198,7 +199,7 @@ public class SL extends Thread {
 			// tune the profiler
 			log().config("Tuning Stack Trace Profiler");
 			StackTraceProfiler.ignorePrefix("net.coagulate.Core.Database");
-
+			
 			log().info("Startup complete.");
 			log().info(
 					"========================================================================================================================");
@@ -225,6 +226,7 @@ public class SL extends Thread {
 			shutdown=true;
 		}
 	}
+	
 	private static void runMaintenance() {
 		final boolean activeNode=SystemManagement.primaryNode();
 		for (final SLModule module: modules.values()) {
@@ -397,8 +399,10 @@ public class SL extends Thread {
 	}
 	
 	public static void preLoadCaches() {
-		if (Cache.isRestricted()) { SL.log("PreCache").info("Skipping pre-caching due to restricted caching status"); }
-		for (final SLModule module:modules()) {
+		if (Cache.isRestricted()) {
+			SL.log("PreCache").info("Skipping pre-caching due to restricted caching status");
+		}
+		for (final SLModule module: modules()) {
 			try {
 				module.preLoadCaches();
 			} catch (final Exception e) {

@@ -143,7 +143,9 @@ public class SL extends Thread {
 						log().log(SEVERE,"Maintenance crashed?",t);
 					}
 				}
-				maintenanceRunTime.add((System.nanoTime()-time)/1000000.0f);
+				maintenanceRunTime.add(
+						(System.nanoTime()-time)/10000000.0f); // 1 million * 10, nanosecs -> ms *10, i.e. percent
+				// because 100 ( 10ms) = 1s.  and we want this loop to tune to 1sec runs.
 				if (loopno%60==0) {
 					// punt to zabbix at some point
 					log().fine("Maintenance run stats: "+maintenanceRunTime.statistics());

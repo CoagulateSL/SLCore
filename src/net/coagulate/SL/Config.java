@@ -100,7 +100,7 @@ public class Config {
 	}
 	
 	public static String getDeveloperEmail() {
-		return getString("developermail");
+		return getString("developermail","");
 	}
 	
 	public static String getMailServer() {
@@ -321,5 +321,11 @@ public class Config {
 		return getString("getagentidkey","");
 	}
 	
-	public static boolean getSelfTestOnly() { return getBoolean("self-test-only",false); }
+	public static boolean getSelfTestOnly() {
+		return getBoolean("self-test-only",false);
+	}
+	
+	public static boolean cluster() {
+		return getBoolean("cluster",false);
+	}
 }

@@ -1,8 +1,8 @@
 package net.coagulate.SL.Data;
 
 import net.coagulate.Core.Database.DBConnection;
+import net.coagulate.Core.Database.ResultsRow;
 import net.coagulate.Core.Tools.Cache;
-import net.coagulate.Core.Tools.UnixTime;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.SL;
 import net.coagulate.SL.SelfTest;
@@ -15,37 +15,74 @@ public class SystemManagement {
 		return database.dqiNotNull("select max(version) from schemaversions where name like ?",schemaName);
 	}
 	
+	/**
+	 * Describes if we are the PRIMARY MAINTENANCE NODE.
+	 * Also inherited the responsibility of starting or stopping cache.
+	 * This function is called every maint loop ; approx once a second.
+	 *
+	 * @return True if we should action the maintenance tasks.
+	 */
 	public static boolean primaryNode() {
-		// default schema has this being empty :P
-		final int rowCount=SL.getDB().dqiNotNull("select count(*) from masternode");
-		if (rowCount==0) {
-			SL.getDB().d("insert into masternode(name) values(?)",Config.getHostName());
-			SL.log("Maintenance").config("Claimed the master node role as it was unset");
-		}
-		final String name=SL.getDB().dqs("select name from masternode");
-		if (!Config.getHostName().equalsIgnoreCase(name)) {
-			if (wasMasterNode) {
-				SL.log("Maintenance").config("We are no longer the master node!");
-				wasMasterNode=false;
-				SL.log("Maintenance").config("Disabling caching due to demotion from primary/maintenance node");
-				SystemManagement.restrictCaches();
-			}
-			return false;
-		} // not the master node
-		// if we are the master node, shall we update our last run so that things know things are working ... thing.
-		if (!wasMasterNode) {
-			SL.log("Maintenance").config("We are now the master node!");
-			SL.log("Maintenance").config("Enabling caching due to transition to primary/maintenance node");
-			SystemManagement.unrestrictCaches();
-			wasMasterNode=true;
-			if (Config.getDevelopment()&&Config.runSelfTests()&!ranSelfTest) {
+		// if clustering is disabled we are always the primary and only node, assuming our sysadmin set it up properly.
+		if (!Config.cluster()) {
+			if (!ranSelfTest&&Config.getDevelopment()&&Config.runSelfTests()) {
 				ranSelfTest=true;
 				new SelfTest.SelfTestRunner().start();
 			}
+			return true;
 		}
-		final int lastRun=SL.getDB().dqiNotNull("select lastrun from masternode");
-		if (UnixTime.getUnixTime()>(lastRun+60)) {
-			SL.getDB().d("update masternode set lastrun=?",UnixTime.getUnixTime());
+		// on the off chance this table is empty
+		final int rowCount=SL.getDB().dqiNotNull("select count(*) from cluster");
+		if (rowCount==0) {
+			SL.getDB()
+			  .d("INSERT INTO `cluster`(`maintnode`,`mainttransfer`,`cachenode`) values(?,?,?)",
+			     Config.getHostName(),
+			     null,
+			     Config.getHostName());
+			SL.log("Maintenance").config("Claimed the maint node role and cache server as it was unset");
+		}
+		// consider starting or stopping the cache
+		final ResultsRow clusterinfo=SL.getDB().dq("select *  from cluster limit 0,1").first();
+		final boolean shouldWeCache=Config.getHostName().equalsIgnoreCase(clusterinfo.getString("cachenode"));
+		if (shouldWeCache!=cacheEnabled()) {
+			// need to start or stop cache
+			if (shouldWeCache) {
+				SL.log("Maintenance").config("Enabling caching due to cluster config change");
+				SystemManagement.unrestrictCaches();
+				if (Config.getDevelopment()&&Config.runSelfTests()&&!ranSelfTest) {
+					ranSelfTest=true;
+					new SelfTest.SelfTestRunner().start();
+				}
+			} else {
+				SL.log("Maintenance").config("Disabling caching due to cluster config change");
+				SystemManagement.restrictCaches();
+			}
+		}
+		// caching status updated, what about the maintenance thread, are we elected?
+		if (!Config.getHostName().equalsIgnoreCase(clusterinfo.getString("maintnode"))) {
+			// we are not the current maint node
+			if (wasMasterNode) {
+				SL.log("Maintenance").config("Stopped running the maintenance task");
+				wasMasterNode=false;
+			}
+			return false;
+		}
+		// are we transfering?
+		final String transferto=clusterinfo.getStringNullable("mainttransfer");
+		if (transferto!=null) {
+			// okay then
+			SL.log("Maintenance")
+			  .config("Transfering maintenance runner role to "+transferto+" due to cluster config change");
+			SL.getDB().d("UPDATE `cluster` SET `maintnode`=?, `mainttransfer`=?",transferto,null);
+			if (wasMasterNode) {
+				SL.log("Maintenance").config("Stopped running the maintenance task");
+				wasMasterNode=false;
+			}
+			return false;
+		}
+		if (!wasMasterNode) {
+			SL.log("Maintenance").config("Started running the maintenance task");
+			wasMasterNode=true;
 		}
 		return true;
 	}
@@ -75,6 +112,15 @@ public class SystemManagement {
 	 */
 	public static String cacheStatus() {
 		return "Cache module eager flushing is "+Cache.eagerCacheFlush+".";
+	}
+	
+	/**
+	 * Returns the status of wether we're caching or not.
+	 *
+	 * @return The current cache enablement status
+	 */
+	public static boolean cacheEnabled() {
+		return Cache.cacheEnabled();
 	}
 }
 

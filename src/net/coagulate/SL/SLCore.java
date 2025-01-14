@@ -30,7 +30,7 @@ import static java.util.logging.Level.*;
 public class SLCore extends SLModule {
 	public static final boolean DEBUG_URLS=false;
 	
-	public static final int SLCORE_DATABASE_SCHEMA_VERSION=7;
+	public static final int SLCORE_DATABASE_SCHEMA_VERSION=8;
 	
 	@Nonnull
 	@Override
@@ -223,6 +223,17 @@ public class SLCore extends SLModule {
 					         REFERENCES `users` (`id`)
 					         ON DELETE CASCADE
 					         ON UPDATE RESTRICT);""");
+		}
+		if (currentVersion==7) {
+			currentVersion=8;
+			SL.log("SLCore").log(CONFIG,"Upgrading schema from 7 to 8");
+			SL.log("SLCore").log(CONFIG,"Schema: Create cluster state table");
+			db.d("CREATE TABLE `cluster` (`maintnode` VARCHAR(64) NULL,`mainttransfer` VARCHAR(64) NULL,`cachenode` VARCHAR(64) NULL);");
+			SL.log("SLCore").log(CONFIG,"Schema: Populate cluster table with this node as maint and cache node");
+			db.d("INSERT INTO `cluster`(`maintnode`,`mainttransfer`,`cachenode`) values(?,?,?)",
+			     Config.getHostName(),
+			     null,
+			     Config.getHostName());
 		}
 		// don't forget to update  SLCORE_DATABASE_SCHEMA_VERSION
 		return currentVersion;

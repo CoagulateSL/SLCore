@@ -55,6 +55,21 @@ public class SL extends Thread {
 	private SL() {
 	}
 	
+	static Stats maintenanceRunTime=new Stats(300);
+	
+	
+	@Nonnull
+	public static Logger log(final String subspace) {
+		if (log==null) {
+			throw new SystemInitialisationException("Logger is not initialised by the time it is used");
+		}
+		return Logger.getLogger(log.getName()+"."+subspace);
+	}
+	
+	public static void shutdown() {
+		shutdown=true;
+	}
+	
 	public static List<ServiceTile> getServiceTiles() {
 		final Map<ServiceTile,Integer> tiles=new HashMap<>();
 		for (final SLModule module: SL.modules()) {
@@ -65,7 +80,7 @@ public class SL extends Thread {
 		}
 		final List<ServiceTile> services=new ArrayList<>();
 		while (!tiles.isEmpty()) {
-			int min=999999999;
+			int min=Integer.MAX_VALUE;
 			for (final Map.Entry<ServiceTile,Integer> tile: tiles.entrySet()) {
 				if (tile.getValue()<min) {
 					min=tile.getValue();
@@ -85,19 +100,6 @@ public class SL extends Thread {
 		return services;
 	}
 	
-	
-	@Nonnull
-	public static Logger log(final String subspace) {
-		if (log==null) {
-			throw new SystemInitialisationException("Logger is not initialised by the time it is used");
-		}
-		return Logger.getLogger(log.getName()+"."+subspace);
-	}
-	
-	public static void shutdown() {
-		shutdown=true;
-	}
-	
 	// Where it all begins
 	public static void main(@Nonnull final String[] args) {
 		if (args.length!=1) {
@@ -113,18 +115,40 @@ public class SL extends Thread {
 			startup();
 			Runtime.getRuntime().addShutdownHook(new SL());
 			new StackTraceProfiler().start();
+			long time=0;
+			int loopno=0;
 			while (!shutdown) {
-				try { //noinspection BusyWait
-					Thread.sleep(1000);
+				try {
+					long sleepfor=1000;
+					if (time>0) {
+						sleepfor=(time+1000000000-System.nanoTime())/1000000;
+					}
+					if (sleepfor>1000) {
+						sleepfor=1000;
+					}
+					if (sleepfor>0) {
+						//noinspection BusyWait
+						Thread.sleep(sleepfor);
+					}
 				} catch (final InterruptedException ignored) {
 				}
+				time=System.nanoTime();
 				if (!shutdown) {
 					try {
 						runMaintenance();
+						loopno++;
 					} catch (final Throwable t) {
 						System.out.println("Uh oh, maintenance crashed, even though it's crash proofed (primaryNode()?)");
 						t.printStackTrace();
+						log().log(SEVERE,"Maintenance crashed?",t);
 					}
+				}
+				maintenanceRunTime.add(
+						(System.nanoTime()-time)/10000000.0f); // 1 million * 10, nanosecs -> ms *10, i.e. percent
+				// because 100 ( 10ms) = 1s.  and we want this loop to tune to 1sec runs.
+				if (loopno%60==0) {
+					// punt to zabbix at some point
+					log().fine("Maintenance run stats (% of target utilisation): "+maintenanceRunTime.statistics());
 				}
 			}
 		} catch (@Nonnull final Throwable t) {
@@ -157,10 +181,11 @@ public class SL extends Thread {
 			}
 			db=new MySqlDBConnection("SL"+(Config.getDevelopment()?"DEV":""),Config.getJdbc());
 			final List<SLModule> modlist=new ArrayList<>(modules.values());
-			for (final SLModule module:modlist) {
+			for (final SLModule module: modlist) {
 				log().config("Initialising module - "+module.getName());
 				if (!module.initialise()) {
-					log().warning("Module "+module.getName()+" opted not to initialise, non fatally, removing from system");
+					log().warning(
+							"Module "+module.getName()+" opted not to initialise, non fatally, removing from system");
 					modules.remove(module.getName());
 				}
 			}
@@ -176,15 +201,21 @@ public class SL extends Thread {
 			}
 			// something about mails may break later on so we send a test mail here...
 			// if we have a developer email address anyway
-			if (Config.getDeveloperEmail()!=null && !Config.getDeveloperEmail().isEmpty()) {
+			if (!Config.getDeveloperEmail().isEmpty()) {
 				MailTools.mail(
 						"CoagulateSL "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+
 						" ("+SL.getStackBuildDate()+")",htmlVersionDump().toString());
 			}
 			// TODO Pricing.initialise();
 			listener=new HTTPListener(Config.getPort(),URLDistribution.getPageMapper());
-			log().config("Disable caching at startup pending primary node detection");
-			SystemManagement.restrictCaches();
+			if (Config.cluster()) {
+				log().config("Clustering is enabled ; disabling caching at startup pending primary node detection");
+				SystemManagement.restrictCaches();
+			} else {
+				log().config("Prepopulating caches");
+				preLoadCaches();
+				log().config("Preloaded caching complete");
+			}
 			if (Config.logRequests()) {
 				URLMapper.LOGREQUESTS=true;
 				log().config("Enabled per request tracking");
@@ -192,15 +223,13 @@ public class SL extends Thread {
 			// tune the profiler
 			log().config("Tuning Stack Trace Profiler");
 			StackTraceProfiler.ignorePrefix("net.coagulate.Core.Database");
-			log().config("Prepopulating caches");
-			preLoadCaches();
-			log().config("Preloaded caching complete");
-
+			
 			log().info("Startup complete.");
 			log().info(
 					"========================================================================================================================");
 			log().info(outerPad(
 					"=====[ Coagulate "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"Second Life Services ]======"));
+			log().info(outerPad("----------[ Clustering is "+(Config.cluster()?"enabled ":"disabled")+" ]----------"));
 			log().info(
 					"========================================================================================================================");
 			for (final SLModule module: modules.values()) {
@@ -221,6 +250,7 @@ public class SL extends Thread {
 			shutdown=true;
 		}
 	}
+	
 	private static void runMaintenance() {
 		final boolean activeNode=SystemManagement.primaryNode();
 		for (final SLModule module: modules.values()) {
@@ -393,8 +423,10 @@ public class SL extends Thread {
 	}
 	
 	public static void preLoadCaches() {
-		if (Cache.isRestricted()) { SL.log("PreCache").info("Skipping pre-caching due to restricted caching status"); }
-		for (final SLModule module:modules()) {
+		if (Cache.isRestricted()) {
+			SL.log("PreCache").info("Skipping pre-caching due to restricted caching status");
+		}
+		for (final SLModule module: modules()) {
 			try {
 				module.preLoadCaches();
 			} catch (final Exception e) {

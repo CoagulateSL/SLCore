@@ -205,7 +205,7 @@ public class SL extends Thread {
 					"========================================================================================================================");
 			log().info(outerPad(
 					"=====[ Coagulate "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"Second Life Services ]======"));
-			log().info(outerPad("---[ Clustering is "+(Config.cluster()?"enabled":"disabled")+" ]---"));
+			log().info(outerPad("----------[ Clustering is "+(Config.cluster()?"enabled ":"disabled")+" ]----------"));
 			log().info(
 					"========================================================================================================================");
 			for (final SLModule module: modules.values()) {

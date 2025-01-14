@@ -227,8 +227,6 @@ public class SLCore extends SLModule {
 		if (currentVersion==7) {
 			currentVersion=8;
 			SL.log("SLCore").log(CONFIG,"Upgrading schema from 7 to 8");
-			SL.log("SLCore").log(CONFIG,"Schema: Drop table masternode");
-			db.d("DROP TABLE `masternode`");
 			SL.log("SLCore").log(CONFIG,"Schema: Create cluster state table");
 			db.d("CREATE TABLE `cluster` (`maintnode` VARCHAR(64) NULL,`mainttransfer` VARCHAR(64) NULL,`cachenode` VARCHAR(64) NULL);");
 			SL.log("SLCore").log(CONFIG,"Schema: Populate cluster table with this node as maint and cache node");

@@ -25,6 +25,10 @@ public class SystemManagement {
 	public static boolean primaryNode() {
 		// if clustering is disabled we are always the primary and only node, assuming our sysadmin set it up properly.
 		if (!Config.cluster()) {
+			if (!ranSelfTest&&Config.getDevelopment()&&Config.runSelfTests()) {
+				ranSelfTest=true;
+				new SelfTest.SelfTestRunner().start();
+			}
 			return true;
 		}
 		// on the off chance this table is empty

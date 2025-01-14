@@ -65,7 +65,7 @@ public class SL extends Thread {
 		}
 		final List<ServiceTile> services=new ArrayList<>();
 		while (!tiles.isEmpty()) {
-			int min=999999999;
+			int min=Integer.MAX_VALUE;
 			for (final Map.Entry<ServiceTile,Integer> tile: tiles.entrySet()) {
 				if (tile.getValue()<min) {
 					min=tile.getValue();

@@ -100,7 +100,7 @@ public class Config {
 	}
 	
 	public static String getDeveloperEmail() {
-		return getString("developermail");
+		return getString("developermail","");
 	}
 	
 	public static String getMailServer() {

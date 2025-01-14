@@ -199,7 +199,7 @@ public class SL extends Thread {
 			}
 			// something about mails may break later on so we send a test mail here...
 			// if we have a developer email address anyway
-			if (Config.getDeveloperEmail()!=null&&!Config.getDeveloperEmail().isEmpty()) {
+			if (!Config.getDeveloperEmail().isEmpty()) {
 				MailTools.mail(
 						"CoagulateSL "+(Config.getDevelopment()?"DEVELOPMENT ":"")+"startup on "+Config.getHostName()+
 						" ("+SL.getStackBuildDate()+")",htmlVersionDump().toString());

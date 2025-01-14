@@ -55,6 +55,21 @@ public class SL extends Thread {
 	private SL() {
 	}
 	
+	static Stats maintenanceRunTime=new Stats(300);
+	
+	
+	@Nonnull
+	public static Logger log(final String subspace) {
+		if (log==null) {
+			throw new SystemInitialisationException("Logger is not initialised by the time it is used");
+		}
+		return Logger.getLogger(log.getName()+"."+subspace);
+	}
+	
+	public static void shutdown() {
+		shutdown=true;
+	}
+	
 	public static List<ServiceTile> getServiceTiles() {
 		final Map<ServiceTile,Integer> tiles=new HashMap<>();
 		for (final SLModule module: SL.modules()) {
@@ -84,20 +99,7 @@ public class SL extends Thread {
 		}
 		return services;
 	}
-	
-	
-	@Nonnull
-	public static Logger log(final String subspace) {
-		if (log==null) {
-			throw new SystemInitialisationException("Logger is not initialised by the time it is used");
-		}
-		return Logger.getLogger(log.getName()+"."+subspace);
-	}
-	
-	public static void shutdown() {
-		shutdown=true;
-	}
-	
+
 	// Where it all begins
 	public static void main(@Nonnull final String[] args) {
 		if (args.length!=1) {
@@ -113,18 +115,38 @@ public class SL extends Thread {
 			startup();
 			Runtime.getRuntime().addShutdownHook(new SL());
 			new StackTraceProfiler().start();
+			long time=0;
+			int loopno=0;
 			while (!shutdown) {
-				try { //noinspection BusyWait
-					Thread.sleep(1000);
+				try {
+					long sleepfor=1000;
+					if (time>0) {
+						sleepfor=(time+1000000000-System.nanoTime())/1000000;
+					}
+					if (sleepfor>1000) {
+						sleepfor=1000;
+					}
+					if (sleepfor>0) {
+						//noinspection BusyWait
+						Thread.sleep(sleepfor);
+					}
 				} catch (final InterruptedException ignored) {
 				}
+				time=System.nanoTime();
 				if (!shutdown) {
 					try {
 						runMaintenance();
+						loopno++;
 					} catch (final Throwable t) {
 						System.out.println("Uh oh, maintenance crashed, even though it's crash proofed (primaryNode()?)");
 						t.printStackTrace();
+						log().log(SEVERE,"Maintenance crashed?",t);
 					}
+				}
+				maintenanceRunTime.add((System.nanoTime()-time)/1000000.0f);
+				if (loopno%60==0) {
+					// punt to zabbix at some point
+					log().fine("Maintenance run stats: "+maintenanceRunTime.statistics());
 				}
 			}
 		} catch (@Nonnull final Throwable t) {

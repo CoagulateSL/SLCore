@@ -16,6 +16,10 @@ public class SystemManagement {
 	}
 	
 	public static boolean primaryNode() {
+		// if clustering is disabled we are always the primary and only node, assuming our sysadmin set it up properly.
+		if (!Config.cluster()) {
+			return true;
+		}
 		// default schema has this being empty :P
 		final int rowCount=SL.getDB().dqiNotNull("select count(*) from masternode");
 		if (rowCount==0) {

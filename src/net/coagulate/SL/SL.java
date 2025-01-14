@@ -99,7 +99,7 @@ public class SL extends Thread {
 		}
 		return services;
 	}
-
+	
 	// Where it all begins
 	public static void main(@Nonnull final String[] args) {
 		if (args.length!=1) {
@@ -148,7 +148,7 @@ public class SL extends Thread {
 				// because 100 ( 10ms) = 1s.  and we want this loop to tune to 1sec runs.
 				if (loopno%60==0) {
 					// punt to zabbix at some point
-					log().fine("Maintenance run stats: "+maintenanceRunTime.statistics());
+					log().fine("Maintenance run stats (% of target utilisation): "+maintenanceRunTime.statistics());
 				}
 			}
 		} catch (@Nonnull final Throwable t) {

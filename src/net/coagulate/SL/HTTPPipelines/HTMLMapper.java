@@ -80,10 +80,10 @@ public class HTMLMapper extends URLMapper<Method> {
 					                           "https://www.coagulate.net/wiki/index.php/RPHUD",
 					                           "Limited Documentation Here").add(")"))
 			                           .add(new ListItem("GPHUD - Next Generation RP HUD (").a(
-					                           "https://sl.coagulate.net/Docs/GPHUD/",
+					                           "https://docs.sl.coagulate.net/",
 					                           "Documentation").add(")"))
 			                           .add(new ListItem("Quiet Life Rentals - Land rental company in Second Life (").a(
-					                           "https://coagulate.sl/Docs/QLR/",
+					                           "https://quietliferentals.coagulate.net/",
 					                           "Documentation").add(")")))
 			   .add(new Paragraph("These services are run by ").a(
 					   "secondlife:///app/agent/8dc52677-bea8-4fc3-b69b-21c5e2224306/about",

@@ -61,7 +61,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>${project.basedir}/../JavaCore/src</source>
+                                <source>${project.basedir}/JavaCore/src</source>
                             </sources>
                         </configuration>
                     </execution>

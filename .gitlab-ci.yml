@@ -7,10 +7,10 @@ update-job:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - echo https://gitlab-ci-token:$ACCESS@gitlab.coagulate.net >.gitcredentials
-    - git clone https://gitlab.coagulate.net/CoagulateSL/LSLR
+    - git clone https://gitlab.coagulate.net/CoagulateSL/LSLR --git-credentials-path ./.gitcredentials
     - cd LSLR
-    - git pull --recurse-submodules
-    - git submodule update --remote --recursive
+    - git pull --recurse-submodules --git-credentials-path ../.gitcredentials
+    - git submodule update --remote --recursive --git-credentials-path ../.gitcredentials
     - git config --global user.name 'GitLab bot'
     - git config --global user.email 'gitlabbot@predestined.net'
-    - git commit -am "Updated LSLR" && git push || echo "No changes to commit"
+    - git commit -am "Updated LSLR" && git push --git-credentials-path ../.gitcredentials || echo "No changes to commit"

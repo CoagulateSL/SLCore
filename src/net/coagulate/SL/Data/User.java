@@ -12,8 +12,7 @@ import net.coagulate.Core.Tools.Cache;
 import net.coagulate.Core.Tools.MailTools;
 import net.coagulate.Core.Tools.Passwords;
 import net.coagulate.Core.Tools.Tokens;
-import net.coagulate.GPHUD.Data.CacheConfig;
-import net.coagulate.GPHUD.GPHUD;
+import net.coagulate.SL.CacheConfig;
 import net.coagulate.SL.Config;
 import net.coagulate.SL.GetAgentID;
 import net.coagulate.SL.SL;
@@ -663,6 +662,6 @@ public class User extends StandardSLTable implements Comparable<User> {
 			uuidLookup.set(row.getString("avatarkey"),u);
 			loaded.getAndIncrement();
 		});
-		GPHUD.getLogger("PreLoadCache").config("Loaded "+loaded+" user/avatar records");
+		SL.log("PreLoadCache").config("Loaded "+loaded+" user/avatar records");
 	}
 }

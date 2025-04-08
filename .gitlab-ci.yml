@@ -6,7 +6,7 @@ update-job:
   rules:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
-    - git clone https://gitlab-ci-token:$ACCESS@gitlab.coagulate.net/CoagulateSL/LSLR.git
+    - git clone https://gitlab-ci-token:$ACCESS@git.coagulate.net/CoagulateSL/LSLR.git
     - cd LSLR
     - git pull --recurse-submodules
     - git submodule update --remote --recursive

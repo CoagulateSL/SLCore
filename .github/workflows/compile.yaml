@@ -18,8 +18,7 @@ jobs:
         with:
           repository: 'CoagulateSL/SLCore'
           path: SLCore
-          with:
-            submodules: 'true'          
+          submodules: 'true'          
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:

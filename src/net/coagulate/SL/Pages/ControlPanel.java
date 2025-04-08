@@ -11,7 +11,6 @@ import net.coagulate.Core.HTML.Elements.Raw;
 import net.coagulate.Core.HTML.Elements.Table;
 import net.coagulate.Core.HTML.Page;
 import net.coagulate.Core.Tools.*;
-import net.coagulate.GPHUD.Modules.Instance.Distribution;
 import net.coagulate.SL.*;
 import net.coagulate.SL.Data.EventQueue;
 import net.coagulate.SL.Data.RegionStats;
@@ -196,25 +195,10 @@ public class ControlPanel {
 		if ("ChangeLog".equals(state.parameter("ChangeLog"))) {
 			page.form().add(new Raw(ChangeLogging.asHtml()));
 		}
-		if ("GPHUD Permit".equals(state.parameter("GPHUD Permit"))) {
-			final User user=User.findUsername(state.parameter("input"),false);
-			user.setPreference("gphud","instancepermit",Integer.toString(UnixTime.getUnixTime()+(60*60*24*7)));
-			final net.coagulate.GPHUD.State gpstate=new net.coagulate.GPHUD.State();
-			gpstate.setAvatar(user);
-			SL.im(user.getUUID(),"""
-					===== GPHUD Information =====
-					You have been issued a permit to create an installation of GPHUD.
-					This permit expires in one week.
-					
-					You should have been given an item named GPHUD Region Server.
-					Rez this on one of your regions and say into local chat
-					**createinstance <shortname>
-					Replacing <shortname> with a reasonable name for your installation.
-					
-					Once complete, allow 60 seconds for the device to start up and then
-					click the server to be given a HUD.  From here the bottom right quick button
-					will take you to the website for further configuration.""");
-			Distribution.getServer(gpstate);
+		if (SL.hasModule("GPHUD")) {
+			if ("GPHUD Permit".equals(state.parameter("GPHUD Permit"))) {
+				SL.getModule("GPHUD").weakInvoke("permit",state.parameter("input"));
+			}
 		}
 		
 		//todo

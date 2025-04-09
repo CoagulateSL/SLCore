@@ -14,3 +14,12 @@ update-job:
     - git config --global user.name 'GitLab bot'
     - git config --global user.email 'gitlabbot@predestined.net'
     - git commit -am "Updated SLCore" && git push || echo "No changes to commit"
+    - cd ..
+    - git clone https://gitlab-ci-token:$ACCESS@git.coagulate.net/CoagulateSL/Billing.git
+    - cd Billing
+    - git pull --recurse-submodules
+    - git submodule init
+    - git submodule update --remote --recursive
+    - git config --global user.name 'GitLab bot'
+    - git config --global user.email 'gitlabbot@predestined.net'
+    - git commit -am "Updated SLCore" && git push || echo "No changes to commit"    

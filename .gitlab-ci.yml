@@ -7,6 +7,7 @@ update-job:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
     - cd ..
+    - ls -l
     - git clone https://gitlab-ci-token:$ACCESS@git.coagulate.net/CoagulateSL/LSLR.git
     - cd LSLR
     - git submodule init

@@ -214,10 +214,10 @@ public class SLCore extends SLModule {
 					       `preferencename` VARCHAR(64) NOT NULL,
 					       `preferencevalue` VARCHAR(4096) NOT NULL,
 					       PRIMARY KEY (`id`),
-					       INDEX `userpreferences_users_userid_idx` (`userid` ASC) VISIBLE,
-					       INDEX `userpreferences_userid_index` (`userid` ASC) INVISIBLE,
-					       INDEX `userpreferences_userapplication` (`userid` ASC, `application` ASC) VISIBLE,
-					       UNIQUE INDEX `userpreferences_uniqueness_constraint` (`userid` ASC, `application` ASC, `preferencename` ASC) VISIBLE,
+					       INDEX `userpreferences_users_userid_idx` (`userid` ASC),
+					       INDEX `userpreferences_userid_index` (`userid` ASC),
+					       INDEX `userpreferences_userapplication` (`userid` ASC, `application` ASC),
+					       UNIQUE INDEX `userpreferences_uniqueness_constraint` (`userid` ASC, `application` ASC, `preferencename` ASC),
 					       CONSTRAINT `userpreferences_users_userid`
 					         FOREIGN KEY (`userid`)
 					         REFERENCES `users` (`id`)

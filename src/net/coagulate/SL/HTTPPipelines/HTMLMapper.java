@@ -69,6 +69,7 @@ public class HTMLMapper extends URLMapper<Method> {
 		state.page().add(content);
 	}
 	
+	@Nonnull
 	private static Container getTop() {
 		final Container top=new Container();
 		top.add(new Paragraph(new Header1("Welcome to "+SL.brandNameUniversal())));
@@ -76,14 +77,11 @@ public class HTMLMapper extends URLMapper<Method> {
 			top.p("SL.Coagulate.net is an umbrella service that contains a set of different services used in Second Life.")
 			   .p()
 			   .add(new PlainText("Currently this consists of the following:"))
-			   .add(new UnorderedList().add(new ListItem("RPHUD -  Obsolete RP HUD (").a(
-					                           "https://www.coagulate.net/wiki/index.php/RPHUD",
-					                           "Limited Documentation Here").add(")"))
-			                           .add(new ListItem("GPHUD - Next Generation RP HUD (").a(
+			   .add(new UnorderedList().add(new ListItem("GPHUD - Next Generation RP HUD (").a(
 					                           "https://docs.sl.coagulate.net/",
 					                           "Documentation").add(")"))
 			                           .add(new ListItem("Quiet Life Rentals - Land rental company in Second Life (").a(
-					                           "https://quietliferentals.coagulate.net/",
+					                           "https://docs.quietliferentals.coagulate.net/",
 					                           "Documentation").add(")")))
 			   .add(new Paragraph("These services are run by ").a(
 					   "secondlife:///app/agent/8dc52677-bea8-4fc3-b69b-21c5e2224306/about",

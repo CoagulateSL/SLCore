@@ -328,4 +328,6 @@ public class Config {
 	public static boolean cluster() {
 		return getBoolean("cluster",false);
 	}
+	
+	public static String getGPHUDChangeLogGroup() { return getString("gphud-changelog-group",""); }
 }

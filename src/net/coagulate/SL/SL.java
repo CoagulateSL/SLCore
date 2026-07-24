@@ -241,6 +241,9 @@ public class SL extends Thread {
 			log().info(spacePad(SL.getStackBuildDate()+" - CoagulateSL Stack"));
 			log().info(
 					"========================================================================================================================");
+			for (final SLModule module: modules.values()) {
+				module.postStartup();
+			}
 		}
 		// print stack trace is discouraged, but the log handler may not be ready yet.
 		catch (@Nonnull final Throwable e) {

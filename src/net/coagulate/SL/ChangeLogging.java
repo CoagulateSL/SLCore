@@ -3,8 +3,11 @@ package net.coagulate.SL;
 import java.util.*;
 
 public class ChangeLogging {
-	public static final Map<String,Map<String,Map<String,Set<Change>>>> changes=
+	private static final Map<String,Map<String,Map<String,Set<Change>>>> changes=
 			new TreeMap<>(Comparator.reverseOrder());
+	// it maps dates -> a map of applications -> map component to Set of changes
+	
+	public static Map<String,Map<String,Map<String,Set<Change>>>> changes() { return changes; }
 	
 	public static String asHtml() {
 		final StringBuilder s=new StringBuilder();

@@ -170,4 +170,7 @@ public abstract class SLModule {
 	public SelfTest.PassFailRecord selfTest() {
 		return new SelfTest.PassFailRecord();
 	}
+	
+	public void postStartup() {
+	}
 }

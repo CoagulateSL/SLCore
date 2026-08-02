@@ -341,10 +341,14 @@ public class SL extends Thread {
 							"Exception Report Suppressed "+LogHandler.getCount(t)+"x"+LogHandler.getSignature(t));
 					return;
 				}
-				if (!Config.getDeveloperEmail().isBlank()) { MailTools.mail((Config.getDevelopment()?"Dev":"PROD")+" EX : "+header+" - "+t.getLocalizedMessage(),output); }
+				if (!Config.getDeveloperEmail().isBlank()) { MailTools.mail((Config.getDevelopment()?"Dev":"PROD")+" EX : "+header+" - "+t.getLocalizedMessage(),output); } else {
+					t.printStackTrace();
+				}
 				return;
 			}
-			if (!Config.getDeveloperEmail().isBlank()) { MailTools.mail((Config.getDevelopment()?"Dev":"PROD")+" EX : "+header,output); }
+			if (!Config.getDeveloperEmail().isBlank()) { MailTools.mail((Config.getDevelopment()?"Dev":"PROD")+" EX : "+header,output); } else {
+				System.err.println(output);
+			}
 		} catch (@Nonnull final MessagingException e) {
 			log().log(SEVERE,"Exception mailing out about exception",e);
 		}
